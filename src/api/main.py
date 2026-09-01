@@ -17,14 +17,21 @@ from src.matcher.calendar_sync import CalendarSyncGenerator
 from src.matcher.compliance_checker import ComplianceChecker
 from src.matcher.profile_matcher import ProfileGrantMatcher
 from src.matcher.proposal_drafter import ProposalDrafter
+from src.matcher.student_matcher import StudentScholarshipMatcher
 from src.schemas.foa import (
     AgencyType,
+    DocumentCheckItem,
+    EducationLevel,
     FundingOpportunity,
+    HinglishExplainer,
     IngestionReport,
     MatchResult,
     ProfileMatchRequest,
     ProposalSkeleton,
     ResearchDomain,
+    SocialCategory,
+    StudentProfileRequest,
+    StudentScholarshipMatchResult,
 )
 
 logger = logging.getLogger("MadadgaarAI.API")
@@ -38,21 +45,26 @@ compliance_checker = ComplianceChecker()
 profile_matcher = ProfileGrantMatcher(hybrid_search=hybrid_search, compliance_checker=compliance_checker)
 calendar_generator = CalendarSyncGenerator()
 proposal_drafter = ProposalDrafter()
+student_matcher = StudentScholarshipMatcher(normalizer=normalizer)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Bootstrap seed dataset if empty
+    # Bootstrap seed dataset including student scholarships
     existing = normalizer.load_all_opportunities()
-    if not existing:
-        logger.info("Initializing database with baseline Indian FOA dataset...")
-        seeds = get_seed_foa_dataset()
-        for s in seeds:
-            normalizer.save_opportunity(s)
+    seeds = get_seed_foa_dataset()
+    has_new = False
+    for s in seeds:
+        saved = normalizer.save_opportunity(s)
+        if saved:
+            has_new = True
+    
+    if has_new or len(existing) == 0:
+        logger.info("Indexed and updated opportunities database (Grants + Student Scholarships).")
         normalizer.export_to_json_and_csv()
         hybrid_search.rebuild_index()
     else:
-        logger.info(f"Database contains {len(existing)} existing opportunities.")
+        logger.info(f"Database contains {len(existing)} opportunities. Index verified.")
         hybrid_search.rebuild_index()
     yield
 
@@ -234,3 +246,75 @@ async def get_statistics():
         "agency_breakdown": agency_counts,
         "database_path": str(normalizer.db_path),
     }
+
+
+# -------------------------------------------------------------
+# Student Scholarship Endpoints (Vidyarthi AI)
+# -------------------------------------------------------------
+
+@app.post("/api/student/match", response_model=List[StudentScholarshipMatchResult])
+async def match_student_profile(req: StudentProfileRequest):
+    """Evaluates student profile and returns ranked eligible scholarships with checklists & guides."""
+    return student_matcher.match_student(req)
+
+
+@app.get("/api/student/scholarships", response_model=List[FundingOpportunity])
+async def list_student_scholarships(
+    agency: Optional[AgencyType] = None,
+    max_family_income: Optional[float] = None,
+):
+    """Retrieves all active Indian student scholarships with optional filters."""
+    all_student_foas = student_matcher.get_all_student_scholarships()
+    if agency:
+        all_student_foas = [f for f in all_student_foas if f.agency == agency]
+    return all_student_foas
+
+
+@app.get("/api/student/scholarships/{foa_id}/checklist", response_model=List[DocumentCheckItem])
+async def get_scholarship_document_checklist(foa_id: str):
+    """Generates official document checklist with issuing authority for a scholarship."""
+    foa = normalizer.get_opportunity_by_id(foa_id)
+    if not foa:
+        raise HTTPException(status_code=404, detail=f"Scholarship '{foa_id}' not found")
+    return student_matcher.generate_document_checklist(foa)
+
+
+@app.get("/api/student/scholarships/{foa_id}/hinglish", response_model=HinglishExplainer)
+async def get_scholarship_hinglish_guide(foa_id: str):
+    """Generates simplified Hindi/Hinglish summary for easy understanding and sharing."""
+    foa = normalizer.get_opportunity_by_id(foa_id)
+    if not foa:
+        raise HTTPException(status_code=404, detail=f"Scholarship '{foa_id}' not found")
+    return student_matcher.generate_hinglish_guide(foa)
+
+
+@app.get("/api/student/meta")
+async def get_student_meta_options():
+    """Returns dropdown metadata options for student profile builder."""
+    return {
+        "states": [
+            "All India",
+            "Uttar Pradesh",
+            "Maharashtra",
+            "Bihar",
+            "Rajasthan",
+            "Madhya Pradesh",
+            "West Bengal",
+            "Karnataka",
+            "Tamil Nadu",
+            "Andhra Pradesh",
+            "Telangana",
+            "Kerala",
+            "Gujarat",
+            "Punjab",
+            "Haryana",
+            "Odisha",
+            "Assam / North Eastern States",
+            "Delhi NCR",
+            "Jammu & Kashmir",
+        ],
+        "education_levels": [e.value for e in EducationLevel],
+        "social_categories": [c.value for c in SocialCategory],
+        "genders": ["Female", "Male", "Transgender"],
+    }
+

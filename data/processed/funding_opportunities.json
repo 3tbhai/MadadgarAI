@@ -1,5 +1,693 @@
 [
   {
+    "foa_id": "SCHOLARSHIP-NSP-POSTMATRIC-SC-2026",
+    "title": "Post-Matric Scholarship for Scheduled Caste (SC) Students",
+    "agency": "NSP",
+    "scheme_name": "Centrally Sponsored Post-Matric Scholarship for SCs",
+    "source_url": "https://scholarships.gov.in",
+    "pdf_download_url": "https://scholarships.gov.in/guidelines.pdf",
+    "raw_document_hash": "2b71767cc39ff028e4248aa6f557479f7ff1d833e6033b3f09c27662ede5af67",
+    "brief_summary": "Comprehensive financial support for SC students studying from Class 11 up to Post-Doctoral degrees. Covers 100% compulsory non-refundable college tuition fees plus a monthly maintenance allowance up to \u20b91,200/month. Annual family income ceiling: \u20b92.5 Lakhs.",
+    "thematic_areas": [
+      "SC Students",
+      "Tuition Fee Reimbursement",
+      "Maintenance Allowance",
+      "Higher Education",
+      "Social Justice"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Universal Higher Education Access for Scheduled Caste Students",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Passed Class 10th / Matriculation and enrolled in recognized Post-Matric course",
+      "max_age_limit": 40,
+      "eligible_institutions": [
+        "All Govt, Govt-Aided, and Recognized Private Universities/Colleges"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Candidate must belong to Scheduled Caste (SC) community. Annual family income from all sources must not exceed Rs. 2.50 Lakhs. Enrolled in recognized post-matric course (Class 11, 12, Diploma, Degree, PG, PhD)."
+    },
+    "deadlines": {
+      "open_date": "2026-07-01",
+      "closing_date": "2026-12-31",
+      "extended_closing_date": null,
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-12-31"
+    },
+    "financials": {
+      "max_amount_inr": 120000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Full reimbursement of all non-refundable compulsory fees (tuition, library, exam, sports fee) plus monthly maintenance allowance from Rs. 4,000 to Rs. 13,500 per annum depending on course group."
+    },
+    "full_text_content": "MINISTRY OF SOCIAL JUSTICE AND EMPOWERMENT\nPOST MATRIC SCHOLARSHIP FOR SC STUDENTS\nCoverage: Full Tuition & Compulsory Fee waiver + Monthly Maintenance Allowance.\nEligibility: SC category, Family Income <= Rs. 2.5 Lakhs per year. Apply via NSP portal.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-NSP-POSTMATRIC-ST-2026",
+    "title": "Post-Matric Scholarship for Scheduled Tribe (ST) Students",
+    "agency": "NSP",
+    "scheme_name": "Post-Matric Scholarship for STs",
+    "source_url": "https://scholarships.gov.in",
+    "pdf_download_url": "https://scholarships.gov.in/guidelines.pdf",
+    "raw_document_hash": "3cf1ffe0ed56fad19206b19e4e5e3145704c3b83f56c4348c17142725098cd34",
+    "brief_summary": "Universal educational grant covering full tuition fees, book grants, and maintenance allowances for ST students pursuing Class 11, 12, Diploma, Professional Degrees (Engineering/MBBS), and PG/PhD courses. Family income <= \u20b92.5 Lakhs.",
+    "thematic_areas": [
+      "ST Students",
+      "Tribal Affairs",
+      "Tuition Waiver",
+      "Hostel Allowance",
+      "Higher Education"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Educational Upliftment & Full Fee Support for Scheduled Tribe Students",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Passed Class 10th and admitted to post-matric educational institution",
+      "max_age_limit": 40,
+      "eligible_institutions": [
+        "Govt & UGC/AICTE Recognized Institutions across India"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Candidate must belong to Scheduled Tribe (ST). Annual family income <= Rs. 2.50 Lakhs. Enrolled in post-matric studies."
+    },
+    "deadlines": {
+      "open_date": "2026-07-01",
+      "closing_date": "2026-12-31",
+      "extended_closing_date": null,
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-12-31"
+    },
+    "financials": {
+      "max_amount_inr": 120000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "100% Tuition fee refund + monthly hostel/day-scholar allowance + study tour and thesis typing charges."
+    },
+    "full_text_content": "MINISTRY OF TRIBAL AFFAIRS\nPOST-MATRIC SCHOLARSHIPS FOR ST STUDENTS 2026\nFull fee reimbursement and maintenance stipend for Tribal students across India. Income limit: Rs 2.5L/year.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-NSP-YASASVI-2026",
+    "title": "PM YASASVI Post-Matric Scholarship for OBC, EBC, and DNT Students",
+    "agency": "NSP",
+    "scheme_name": "PM Young Achievers Scholarship (PM YASASVI)",
+    "source_url": "https://scholarships.gov.in",
+    "pdf_download_url": "https://scholarships.gov.in/guidelines.pdf",
+    "raw_document_hash": "5c1319b63b234022256cc2713e7401e3613393bdfba1c8dc786edc69f63a9571",
+    "brief_summary": "Flagship central scheme for Other Backward Classes (OBC), Economically Backward Classes (EBC), and De-Notified Nomadic Tribes (DNT). Provides tuition fee assistance and maintenance allowance up to \u20b945,000/year for higher studies.",
+    "thematic_areas": [
+      "OBC Students",
+      "EBC Category",
+      "DNT Communities",
+      "Higher Education",
+      "Financial Assistance"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Empowering OBC, EBC, and Nomadic Tribe Youth in Higher Education",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Class 10th passed with valid OBC/EBC/DNT certificate",
+      "max_age_limit": 30,
+      "eligible_institutions": [
+        "Recognized Schools, Polytechnics, and Colleges"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Belonging to OBC / EBC / DNT categories. Family income must not exceed Rs. 2.5 Lakhs per annum."
+    },
+    "deadlines": {
+      "open_date": "2026-07-15",
+      "closing_date": "2026-11-30",
+      "extended_closing_date": null,
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-11-30"
+    },
+    "financials": {
+      "max_amount_inr": 45000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Financial assistance covering academic fees and maintenance allowance up to Rs. 45,000 per annum depending on the course group."
+    },
+    "full_text_content": "PM YASASVI SCHOLARSHIP SCHEME\nTarget: OBC, EBC, and DNT students pursuing Post-Matric education.\nAllowance: Up to Rs. 45,000/year. Family income <= Rs. 2.50 Lakhs/year.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-NSP-ISHAN-UDAY-2026",
+    "title": "UGC Ishan Uday Special Scholarship Scheme for North Eastern Region (NER)",
+    "agency": "UGC",
+    "scheme_name": "Ishan Uday Scholarship for North East",
+    "source_url": "https://scholarships.gov.in",
+    "pdf_download_url": "https://scholarships.gov.in/guidelines.pdf",
+    "raw_document_hash": "11f6255e5fc02df49e283e4e013c9e81c847fa87d6939ce1693df8b085bfe5fd",
+    "brief_summary": "10,000 dedicated scholarships per year for students with domicile in the North Eastern states (Assam, Arunachal Pradesh, Meghalaya, Manipur, Mizoram, Nagaland, Tripura, Sikkim). Provides \u20b95,400/month for General Degree and \u20b97,800/month for Technical, Medical, and Professional courses.",
+    "thematic_areas": [
+      "North East India",
+      "NER Domicile",
+      "UG Degree",
+      "Engineering & Medical",
+      "UGC"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Promoting Higher & Professional Education among North-East Students",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Passed Class 12th from NER and enrolled in 1st year of recognized UG program",
+      "max_age_limit": 25,
+      "eligible_institutions": [
+        "Any recognized Indian University / College (in NER or elsewhere in India)"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Students with domicile of North Eastern Region (NER) who have passed Class XII or equivalent examination from a school situated within NER. Enrolled in 1st year general or professional degree. Annual family income <= Rs. 4.5 Lakhs."
+    },
+    "deadlines": {
+      "open_date": "2026-08-01",
+      "closing_date": "2026-11-15",
+      "extended_closing_date": null,
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-11-15"
+    },
+    "financials": {
+      "max_amount_inr": 93600.0,
+      "stipend_monthly_inr": 7800.0,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Rs. 5,400 per month for general degree courses; Rs. 7,800 per month for technical, medical, engineering, and professional degree courses (disbursed for 10 months per year)."
+    },
+    "full_text_content": "UNIVERSITY GRANTS COMMISSION (UGC)\nISHAN UDAY SPECIAL SCHOLARSHIP SCHEME FOR NER\n1. Objective: Equal opportunity for higher education to students of North Eastern states.\n2. Slots: 10,000 fresh awards every year.\n3. Rate: Rs. 5,400/mo (General degree) | Rs. 7,800/mo (Engineering/Medical/Professional degree).\n4. Eligibility: Domicile of NER state, passed 12th from NER, family income <= 4.5 Lakhs.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-UGC-SGC-2026",
+    "title": "UGC Post Graduate Indira Gandhi Scholarship for Single Girl Child",
+    "agency": "UGC",
+    "scheme_name": "PG Indira Gandhi Scholarship for Single Girl Child",
+    "source_url": "https://www.ugc.gov.in/page/scholarships-and-fellowships.aspx",
+    "pdf_download_url": "https://www.ugc.gov.in/page/scholarships-and-fellowships.aspx/guidelines.pdf",
+    "raw_document_hash": "b62401ab21f88168949a3336af3503b81bc64614e32507f0667f966ef4d29279",
+    "brief_summary": "Empowers single girl children to pursue non-professional Master's postgraduate education. Provides \u20b936,200 per annum for 2 years (Full PG tenure) for female students who are the only child of their parents.",
+    "thematic_areas": [
+      "Single Girl Child",
+      "Postgraduate Education",
+      "Master Degree",
+      "Women Empowerment",
+      "UGC"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Encouraging Higher Education for Single Girl Children in Families",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Admitted to 1st year regular, full-time Master's (PG) course in any recognized university",
+      "max_age_limit": 30,
+      "eligible_institutions": [
+        "All UGC Recognized Central, State, Deemed & Private Universities"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Any single girl child of her parents (the only child in the family with no brother or sister). Enrolled in 1st year of regular Master's degree. Age <= 30 years. No family income ceiling restriction."
+    },
+    "deadlines": {
+      "open_date": "2026-08-01",
+      "closing_date": "2026-11-30",
+      "extended_closing_date": null,
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-11-30"
+    },
+    "financials": {
+      "max_amount_inr": 72400.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Rs. 3,100 per month (Rs. 36,200 per annum) for a period of 2 years (tenure of PG course)."
+    },
+    "full_text_content": "UGC POST GRADUATE INDIRA GANDHI SCHOLARSHIP FOR SINGLE GIRL CHILD\nTarget: Only girl child in family pursuing Master's Degree (M.A., M.Sc., M.Com, etc.).\nGrant: Rs. 36,200 per annum for 2 years. 3,000 fresh slots annually.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-UP-DASHMOTTAR-2026",
+    "title": "Uttar Pradesh Post-Matric Scholarship & Fee Reimbursement Scheme (Dashmottar)",
+    "agency": "State Govt",
+    "scheme_name": "UP Dashmottar Scholarship (Class 11, 12, UG, PG, Diploma)",
+    "source_url": "https://scholarship.up.gov.in",
+    "pdf_download_url": "https://scholarship.up.gov.in/guidelines.pdf",
+    "raw_document_hash": "ba3871c8f8c2ccdf03a5de9008611dd31466f454da95effbe51151ae4971b6ca",
+    "brief_summary": "Comprehensive state scholarship for Uttar Pradesh resident students. Covers 100% fee reimbursement (up to \u20b950,000+) plus non-refundable fees and maintenance allowance for students studying in UP colleges or national institutes.",
+    "thematic_areas": [
+      "Uttar Pradesh Domicile",
+      "Fee Refund",
+      "State Scholarship",
+      "SC/ST/OBC/General/Minority",
+      "College Students"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Universal State Fee Reimbursement for UP Resident Students",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Passed Class 10th/12th and enrolled in recognized Post-Matric course",
+      "max_age_limit": 40,
+      "eligible_institutions": [
+        "All UP State Colleges, Universities, AKTU, and National Institutes (IIT/NIT/CFTI) for UP domicile students"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Resident/Domicile of Uttar Pradesh. Annual family income <= Rs. 2,00,000 (for General, OBC, Minority) or <= Rs. 2,50,000 (for SC and ST candidates). Enrolled in recognized post-matric course."
+    },
+    "deadlines": {
+      "open_date": "2026-07-01",
+      "closing_date": "2026-12-10",
+      "extended_closing_date": "2026-12-31",
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-12-10"
+    },
+    "financials": {
+      "max_amount_inr": 60000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Full refund of approved tuition fee (up to Rs. 50,000/year for engineering/management/medical) plus annual maintenance stipend up to Rs. 10,000."
+    },
+    "full_text_content": "GOVERNMENT OF UTTAR PRADESH \u2014 SCHOLARSHIP & FEE REIMBURSEMENT ONLINE SYSTEM\nCovers: 100% tuition fee reimbursement and maintenance stipend for UP domicile students.\nIncome limit: Rs. 2.0 Lakhs (General/OBC/Minority) | Rs. 2.5 Lakhs (SC/ST). Apply on scholarship.up.gov.in.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-MAHADBT-EBC-2026",
+    "title": "MahaDBT Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulkh Shishyavrutti Yojna (EBC)",
+    "agency": "State Govt",
+    "scheme_name": "MahaDBT EBC Tuition Fee Reimbursement",
+    "source_url": "https://mahadbt.maharashtra.gov.in",
+    "pdf_download_url": "https://mahadbt.maharashtra.gov.in/guidelines.pdf",
+    "raw_document_hash": "a04f186d4d093a01aacccb07dc103c329954999de3dcd35b4c5699bb09c4449d",
+    "brief_summary": "Provides 50% tuition fee and examination fee reimbursement for economically weaker students in Maharashtra pursuing professional courses (Engineering, Medical, Pharmacy, MBA, Architecture, Polytechnic). Family income ceiling up to \u20b98 Lakhs.",
+    "thematic_areas": [
+      "Maharashtra Domicile",
+      "EBC",
+      "50% Tuition Fee Refund",
+      "Professional Courses",
+      "MahaDBT"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Tuition Fee Reimbursement for Economically Weaker Students in Maharashtra",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Admitted through CAP (Centralized Admission Process) into recognized professional course",
+      "max_age_limit": 35,
+      "eligible_institutions": [
+        "All Govt, Aided, and Unaided Private colleges in Maharashtra"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Domicile of Maharashtra state. Family income <= Rs. 8 Lakhs per annum. Admitted through CAP rounds in recognized Degree/Diploma professional course. Max 2 children per family."
+    },
+    "deadlines": {
+      "open_date": "2026-07-01",
+      "closing_date": "2026-12-31",
+      "extended_closing_date": null,
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-12-31"
+    },
+    "financials": {
+      "max_amount_inr": 75000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "50% of total Tuition Fees and 50% of Examination Fees reimbursed directly to student / college account."
+    },
+    "full_text_content": "GOVERNMENT OF MAHARASHTRA \u2014 MAHADBT DIRECT BENEFIT TRANSFER\nRAJARSHI SHAHU MAHARAJ EBC SCHEME\nCoverage: 50% Tuition and Exam fee waiver for Engineering, Pharmacy, Management, and Medical students.\nIncome limit: Rs. 8 Lakhs per year. Domicile: Maharashtra.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-KOTAK-KANYA-2026",
+    "title": "Kotak Kanya Scholarship for Meritorious Girls in Professional Graduation",
+    "agency": "CSR / Foundation",
+    "scheme_name": "Kotak Kanya Scholarship Programme",
+    "source_url": "https://kotakeducation.org/kotak-kanya-scholarship",
+    "pdf_download_url": "https://kotakeducation.org/kotak-kanya-scholarship/guidelines.pdf",
+    "raw_document_hash": "965763ae2bf72186a0cfa143820339cdcef8768f5b9b90b9481e137ad18f3cbf",
+    "brief_summary": "High-value CSR initiative providing \u20b91,50,000 per year until completion of professional graduation (Engineering, MBBS, Architecture, Design, 5-Year Integrated LLB) for female students securing >= 85% in Class 12 with family income <= \u20b96 Lakhs.",
+    "thematic_areas": [
+      "Merit-cum-Means",
+      "Girl Students",
+      "Engineering & MBBS",
+      "CSR Grant",
+      "Kotak Education Foundation"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "High-Value Professional Degree Sponsorship for Meritorious Female Students",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Secured >= 85% marks in Class 12 Board examination and admitted to 1st year professional degree",
+      "max_age_limit": 24,
+      "eligible_institutions": [
+        "NAAC/NIRF accredited Institutions across India"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Meritorious girl students who scored >= 85% in Class 12 board. Admitted to 1st year professional graduation (B.Tech, MBBS, Integrated Law, Design, Architecture). Annual family income <= Rs. 6,00,000."
+    },
+    "deadlines": {
+      "open_date": "2026-07-01",
+      "closing_date": "2026-10-31",
+      "extended_closing_date": "2026-11-15",
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-10-31"
+    },
+    "financials": {
+      "max_amount_inr": 600000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Rs. 1,50,000 per academic year until graduation to cover tuition fees, hostel, laptop, and academic expenses."
+    },
+    "full_text_content": "KOTAK EDUCATION FOUNDATION \u2014 KOTAK KANYA SCHOLARSHIP 2026\nAward: Rs. 1.5 Lakhs per year till graduation.\nTarget: Girl students admitted to 1st year professional courses (Engineering, Medical, Law) with 85%+ in 12th board. Income <= Rs. 6 Lakhs.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-RELIANCE-UG-2026",
+    "title": "Reliance Foundation Undergraduate Merit-cum-Means Scholarships",
+    "agency": "CSR / Foundation",
+    "scheme_name": "Reliance Foundation UG Scholarship",
+    "source_url": "https://www.scholarships.reliancefoundation.org",
+    "pdf_download_url": "https://www.scholarships.reliancefoundation.org/guidelines.pdf",
+    "raw_document_hash": "72f68722ae4404592ea9098f301f0d1c6d92f86d3d3bf3b3d53b75941c0c8f80",
+    "brief_summary": "5,000 undergraduate scholarships awarded annually. Provides up to \u20b92,00,000 grant over the degree duration to enable scholars to excel in their academic and leadership journey. Open to 1st-year UG students in all streams with family income up to \u20b915 Lakhs (priority to <= \u20b92.5 Lakhs).",
+    "thematic_areas": [
+      "Merit-cum-Means",
+      "Undergraduate Degree",
+      "All Streams",
+      "CSR Initiative",
+      "Reliance Foundation"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Empowering India's Brightest Undergraduates with Comprehensive Educational Grants",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Passed Class 12th with min 60% marks and currently enrolled in 1st year full-time UG degree",
+      "max_age_limit": 25,
+      "eligible_institutions": [
+        "Any recognized Degree College or University in India"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Indian resident enrolled in 1st year full-time undergraduate degree program in any discipline. Scored at least 60% in Class 12. Household annual income <= Rs. 15 Lakhs (preference to <= Rs. 2.5 Lakhs). Requires online aptitude test."
+    },
+    "deadlines": {
+      "open_date": "2026-08-01",
+      "closing_date": "2026-10-15",
+      "extended_closing_date": "2026-10-31",
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-10-15"
+    },
+    "financials": {
+      "max_amount_inr": 200000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Up to Rs. 2,00,000 across degree duration for tuition fees, books, laptops, and skill enhancement."
+    },
+    "full_text_content": "RELIANCE FOUNDATION SCHOLARSHIPS 2026\nAward: Up to Rs. 2 Lakhs for UG degree.\nSlots: 5,000 students per year. Eligibility: 1st year UG in any stream, >=60% in 12th, family income <= 15 Lakhs.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-HDFC-PARIVARTAN-2026",
+    "title": "HDFC Bank Parivartan's Educational Crisis Support Scholarship (ECSS)",
+    "agency": "CSR / Foundation",
+    "scheme_name": "HDFC Parivartan ECSS Programme",
+    "source_url": "https://www.hdfcbank.com/personal/about-us/corporate-social-responsibility",
+    "pdf_download_url": "https://www.hdfcbank.com/personal/about-us/corporate-social-responsibility/guidelines.pdf",
+    "raw_document_hash": "99fba763a8acd8295aa8519636a3a802b645e6ed06d928b5fbd5f383e9a42249",
+    "brief_summary": "Financial support for school, diploma, undergraduate, and postgraduate students from underprivileged backgrounds who are at risk of dropping out due to personal/economic crises. Provides up to \u20b975,000/year.",
+    "thematic_areas": [
+      "Crisis Support",
+      "School & College Students",
+      "Need-Based Aid",
+      "CSR",
+      "HDFC Bank"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Preventing Dropout and Supporting Underprivileged Students in Crisis",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Passed previous qualifying examination with at least 55% marks",
+      "max_age_limit": 30,
+      "eligible_institutions": [
+        "Recognized Schools, Colleges, and Universities across India"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Indian students enrolled in Class 1 to 12, Diploma, UG, or PG courses. Annual family income <= Rs. 2,50,000. Minimum 55% marks in previous class."
+    },
+    "deadlines": {
+      "open_date": "2026-07-01",
+      "closing_date": "2026-11-30",
+      "extended_closing_date": null,
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-11-30"
+    },
+    "financials": {
+      "max_amount_inr": 75000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "School (Class 1-12): Up to Rs. 35,000/year | Diploma/UG: Up to Rs. 45,000/year | Professional/PG: Up to Rs. 75,000/year."
+    },
+    "full_text_content": "HDFC BANK PARIVARTAN'S ECSS SCHOLARSHIP\nNeed-based educational support up to Rs. 75,000/year for students facing financial hardship.\nEligibility: Family income <= Rs. 2.5 Lakhs, min 55% marks in previous exam.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.992120Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-AICTE-PRAGATI-2026",
+    "title": "AICTE Pragati Scholarship Scheme for Girl Students (Technical Degree & Diploma)",
+    "agency": "AICTE",
+    "scheme_name": "Pragati Scholarship Scheme for Girls",
+    "source_url": "https://www.aicte-india.org/schemes/students-development-schemes/pragati",
+    "pdf_download_url": "https://www.aicte-india.org/schemes/students-development-schemes/pragati/guidelines.pdf",
+    "raw_document_hash": "deae776e8a4f33fce1d0a53d993add1762302c7c770a4ffe1d5180dd1248d965",
+    "brief_summary": "Empowers young women to pursue technical and engineering education. Provides \u20b950,000 per annum for tuition, equipment, books, and software. Open to female students admitted to 1st year Degree/Diploma in AICTE-approved institutions with annual family income up to \u20b98 Lakhs.",
+    "thematic_areas": [
+      "Girl Students",
+      "Women in Engineering",
+      "Technical Education",
+      "Tuition Support",
+      "AICTE"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Empowering Female Students in Technical & Engineering Education",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Class 12th (for Degree) or Class 10th (for Diploma) admitted to 1st year AICTE institution",
+      "max_age_limit": 30,
+      "eligible_institutions": [
+        "All AICTE Approved Institutions & Universities"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Female student admitted to 1st year Degree/Diploma course in an AICTE approved institution. Maximum 2 girls per family. Annual family income must not exceed Rs. 8 Lakhs per annum from all sources."
+    },
+    "deadlines": {
+      "open_date": "2026-08-01",
+      "closing_date": "2026-11-30",
+      "extended_closing_date": "2026-12-15",
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-11-30"
+    },
+    "financials": {
+      "max_amount_inr": 200000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "\u20b950,000 per annum for every year of study (max 4 years for Degree, 3 years for Diploma) as a single lump-sum grant for college fee, computer/laptop, books, and equipment purchase."
+    },
+    "full_text_content": "ALL INDIA COUNCIL FOR TECHNICAL EDUCATION (AICTE)\nPRAGATI SCHOLARSHIP SCHEME FOR GIRL STUDENTS 2026\n1. Objective: To provide encouragement and support to girl child to pursue technical education.\n2. Total Number of Scholarships: 10,000 per annum (Central Quota) + State allocations.\n3. Amount: Rs. 50,000 per annum towards college fee, books, equipment, laptops.\n4. Eligibility: Female candidate admitted to 1st year Degree/Diploma in AICTE approved college. Family income <= Rs. 8 Lakh/year. Maximum 2 girls per family.\n5. Application Mode: Online submission via National Scholarship Portal (NSP) or AICTE portal.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.991107Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-AICTE-SAKSHAM-2026",
+    "title": "AICTE Saksham Scholarship Scheme for Specially-Abled Students",
+    "agency": "AICTE",
+    "scheme_name": "Saksham Scholarship Scheme for Differently Abled",
+    "source_url": "https://www.aicte-india.org/schemes/students-development-schemes/saksham",
+    "pdf_download_url": "https://www.aicte-india.org/schemes/students-development-schemes/saksham/guidelines.pdf",
+    "raw_document_hash": "3d0f4b8e91ad4a7336fb59a2ff827da01ec672b453f1315d00e15bc8f74209b1",
+    "brief_summary": "Dedicated financial assistance to differently-abled students with disability not less than 40% pursuing technical degree or diploma courses. Provides \u20b950,000 per annum for educational and assistive technology expenses.",
+    "thematic_areas": [
+      "Differently Abled",
+      "PwD Students",
+      "Technical Education",
+      "Assistive Tech Support"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Empowering Specially Abled Students in Higher Technical Education",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Admitted to 1st year of Degree/Diploma course in AICTE approved institution",
+      "max_age_limit": 35,
+      "eligible_institutions": [
+        "AICTE Approved Technical Colleges"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Specially-abled candidate having disability of not less than 40%. Family income <= Rs. 8 Lakh per annum. Admitted to 1st year of Degree/Diploma in AICTE college."
+    },
+    "deadlines": {
+      "open_date": "2026-08-01",
+      "closing_date": "2026-11-30",
+      "extended_closing_date": null,
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-11-30"
+    },
+    "financials": {
+      "max_amount_inr": 200000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Rs. 50,000 per annum for tuition fees, purchase of books, stationery, accessible computer software, and assistive devices."
+    },
+    "full_text_content": "AICTE SAKSHAM SCHOLARSHIP SCHEME\nTarget: Differently abled students (>= 40% disability) pursuing technical degree/diploma.\nAmount: Rs. 50,000 per year. Eligibility: Admitted in AICTE institution, income <= 8 Lakhs/year.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.991107Z"
+  },
+  {
+    "foa_id": "SCHOLARSHIP-NSP-PMUSP-2026",
+    "title": "Central Sector Scheme of Scholarship for College and University Students (PM-USP)",
+    "agency": "NSP",
+    "scheme_name": "PM-USP Central Sector Scholarship",
+    "source_url": "https://scholarships.gov.in",
+    "pdf_download_url": "https://scholarships.gov.in/guidelines.pdf",
+    "raw_document_hash": "f8f8fc2b821790c9d2ede759100a64ad5bae983a4cafaf27bad9575b95b5d499",
+    "brief_summary": "Flagship Ministry of Education scheme providing financial support to meritorious students from low-income families. \u20b912,000/year for undergraduate years and \u20b920,000/year for postgraduate studies. Requires >80th percentile in relevant 12th Board examination and income <= \u20b94.5 Lakhs.",
+    "thematic_areas": [
+      "Merit-cum-Means",
+      "Higher Education",
+      "UG/PG College Students",
+      "Board Toppers",
+      "Ministry of Education"
+    ],
+    "ontology_tags": [
+      {
+        "domain": "Interdisciplinary & Emerging Technologies",
+        "thematic_thrust": "Direct Financial Support to Meritorious College & University Students",
+        "target_beneficiary": "UG / PG Students",
+        "confidence": 0.98
+      }
+    ],
+    "eligibility": {
+      "target_beneficiaries": [
+        "UG / PG Students"
+      ],
+      "min_qualification": "Passed Class 12th with above 80th percentile in respective State/CBSE/ICSE Board",
+      "max_age_limit": 25,
+      "eligible_institutions": [
+        "Recognized Universities, Colleges, IITs, NITs, Medical & Arts Colleges"
+      ],
+      "requires_industry_partner": false,
+      "raw_eligibility_text": "Students who are above 80th percentile of successful candidates in the relevant stream from the respective Board in Class XII. Family income from all sources must not exceed Rs. 4.5 Lakhs per annum. Must pursue regular graduation/postgraduation."
+    },
+    "deadlines": {
+      "open_date": "2026-07-15",
+      "closing_date": "2026-11-15",
+      "extended_closing_date": "2026-11-30",
+      "is_rolling": false,
+      "raw_deadline_text": "Closing: 2026-11-15"
+    },
+    "financials": {
+      "max_amount_inr": 76000.0,
+      "stipend_monthly_inr": null,
+      "institutional_overhead_pct": 0.0,
+      "raw_budget_text": "Rs. 12,000 per annum for 1st, 2nd, and 3rd year of graduation; Rs. 20,000 per annum for postgraduate studies or 4th/5th year of professional courses."
+    },
+    "full_text_content": "MINISTRY OF EDUCATION \u2014 DEPARTMENT OF HIGHER EDUCATION\nCENTRAL SECTOR SCHEME OF SCHOLARSHIP FOR COLLEGE AND UNIVERSITY STUDENTS (PM-USP)\n1. Total Slots: 82,000 fresh scholarships every year (50% reserved for girls).\n2. Rate of Scholarship: Rs. 12,000/year for Graduation; Rs. 20,000/year for Post-Graduation.\n3. Eligibility: Above 80th percentile in Class 12 board, family income <= Rs. 4,50,000 per annum, pursuing regular recognized degree.\n4. Mandatory: Bank account seeded with Aadhaar and NPCI mapping for DBT transfer.",
+    "is_ocr_extracted": false,
+    "ingested_at": "2026-09-01T05:48:31.991107Z"
+  },
+  {
     "foa_id": "DST-WISE-2026-08",
     "title": "DST WISE-KIRAN Postdoctoral Fellowship for Women in Science",
     "agency": "DST",

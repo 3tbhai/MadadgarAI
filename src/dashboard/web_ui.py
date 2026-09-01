@@ -1,4 +1,4 @@
-"""Modern Interactive Dashboard UI for MadadgaarAI."""
+"""Modern Interactive Dashboard UI for MadadgaarAI with Student Scholarship Hub (Vidyarthi AI)."""
 
 
 def render_dashboard_html() -> str:
@@ -7,7 +7,7 @@ def render_dashboard_html() -> str:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MadadgaarAI — AI-Powered Funding Intelligence Platform</title>
+  <title>MadadgaarAI — Indian Student Scholarships & Research Funding Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -15,8 +15,8 @@ def render_dashboard_html() -> str:
     :root {
       --bg-base: #0a0f1d;
       --bg-surface: #111827;
-      --bg-card: rgba(17, 24, 39, 0.75);
-      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --bg-card: rgba(17, 24, 39, 0.78);
+      --bg-card-hover: rgba(30, 41, 59, 0.9);
       --border-subtle: rgba(255, 255, 255, 0.08);
       --border-focus: #6366f1;
       --text-primary: #f8fafc;
@@ -28,6 +28,7 @@ def render_dashboard_html() -> str:
       --accent-emerald: #10b981;
       --accent-amber: #f59e0b;
       --accent-rose: #f43f5e;
+      --accent-orange: #fb923c;
       --font-sans: 'Outfit', -apple-system, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -41,17 +42,17 @@ def render_dashboard_html() -> str:
     body {
       background-color: var(--bg-base);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.18) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
       color: var(--text-primary);
       font-family: var(--font-sans);
       min-height: 100vh;
       line-height: 1.5;
     }
 
-    /* Layout Containers */
     .app-container {
-      max-width: 1380px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 24px;
     }
@@ -65,8 +66,8 @@ def render_dashboard_html() -> str:
       background: var(--bg-card);
       backdrop-filter: blur(16px);
       border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      margin-bottom: 28px;
+      border-radius: 18px;
+      margin-bottom: 24px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     }
 
@@ -77,14 +78,14 @@ def render_dashboard_html() -> str:
     }
 
     .brand-logo {
-      width: 44px;
-      height: 44px;
+      width: 46px;
+      height: 46px;
       background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 800;
       box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
     }
@@ -101,7 +102,7 @@ def render_dashboard_html() -> str:
     .brand-subtitle {
       font-size: 12px;
       color: var(--text-muted);
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: 0.5px;
     }
 
@@ -138,49 +139,70 @@ def render_dashboard_html() -> str:
       50% { opacity: 0.4; }
     }
 
+    /* Scam Shield Banner */
+    .scam-shield-banner {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 14px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .scam-shield-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13.5px;
+      color: #e2e8f0;
+    }
+
+    .scam-shield-badge {
+      background: var(--accent-emerald);
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     /* Hero Banner */
     .hero-banner {
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
       gap: 24px;
-      padding: 32px;
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85));
+      padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.9));
       border: 1px solid var(--border-subtle);
       border-radius: 20px;
-      margin-bottom: 32px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-banner::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -10%;
-      width: 350px;
-      height: 350px;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.18), transparent 70%);
-      pointer-events: none;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .hero-title {
-      font-size: 32px;
+      font-size: 26px;
       font-weight: 800;
-      letter-spacing: -0.8px;
       margin-bottom: 8px;
+      letter-spacing: -0.5px;
     }
 
     .hero-title span {
-      background: linear-gradient(135deg, #818cf8, #c084fc, #38bdf8);
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .hero-desc {
       color: var(--text-secondary);
-      font-size: 15px;
-      max-width: 680px;
+      font-size: 14.5px;
+      max-width: 720px;
+      line-height: 1.6;
     }
 
     .stats-grid {
@@ -192,25 +214,26 @@ def render_dashboard_html() -> str:
     .stat-card {
       background: rgba(15, 23, 42, 0.6);
       border: 1px solid var(--border-subtle);
-      padding: 16px 20px;
       border-radius: 14px;
+      padding: 16px 20px;
       text-align: center;
-      min-width: 120px;
+      min-width: 110px;
     }
 
     .stat-num {
-      font-size: 24px;
-      font-weight: 700;
-      color: #ffffff;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-primary);
       font-family: var(--font-mono);
     }
 
     .stat-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
+      font-size: 11.5px;
       color: var(--text-muted);
       margin-top: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     /* Tabs Bar */
@@ -220,21 +243,23 @@ def render_dashboard_html() -> str:
       margin-bottom: 24px;
       border-bottom: 1px solid var(--border-subtle);
       padding-bottom: 12px;
+      overflow-x: auto;
     }
 
     .tab-btn {
       background: transparent;
-      border: none;
+      border: 1px solid transparent;
       color: var(--text-secondary);
-      font-size: 15px;
-      font-weight: 600;
       padding: 10px 20px;
       border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-sans);
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
 
     .tab-btn:hover {
@@ -246,45 +271,22 @@ def render_dashboard_html() -> str:
       color: #ffffff;
       background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.25));
       border: 1px solid rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
     }
 
-    /* Search and Filter Panel */
-    .search-filter-card {
+    /* Panels & Cards */
+    .panel-card {
       background: var(--bg-card);
       backdrop-filter: blur(12px);
       border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 18px;
+      padding: 24px;
       margin-bottom: 28px;
     }
 
-    .search-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .input-box {
+    .input-box, .select-box {
       width: 100%;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      padding: 12px 18px;
-      color: #ffffff;
-      font-size: 14px;
-      font-family: var(--font-sans);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .input-box:focus {
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-    }
-
-    .select-box {
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.85);
       border: 1px solid var(--border-subtle);
       border-radius: 10px;
       padding: 12px 16px;
@@ -292,7 +294,12 @@ def render_dashboard_html() -> str:
       font-size: 14px;
       font-family: var(--font-sans);
       outline: none;
-      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-box:focus, .select-box:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
     }
 
     .primary-btn {
@@ -303,6 +310,7 @@ def render_dashboard_html() -> str:
       padding: 12px 24px;
       font-size: 14px;
       font-weight: 600;
+      font-family: var(--font-sans);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -316,28 +324,52 @@ def render_dashboard_html() -> str:
     }
 
     .secondary-btn {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.07);
       color: var(--text-primary);
       border: 1px solid var(--border-subtle);
       border-radius: 8px;
       padding: 8px 14px;
       font-size: 13px;
       font-weight: 500;
+      font-family: var(--font-sans);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       transition: all 0.2s;
+      text-decoration: none;
     }
 
     .secondary-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
     }
 
-    /* Opportunities Cards Grid */
+    .whatsapp-btn {
+      background: rgba(37, 211, 102, 0.15);
+      color: #25d366;
+      border: 1px solid rgba(37, 211, 102, 0.35);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .whatsapp-btn:hover {
+      background: rgba(37, 211, 102, 0.25);
+    }
+
+    /* Scholarship & Grant Cards */
     .opportunities-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
       gap: 20px;
     }
 
@@ -350,124 +382,151 @@ def render_dashboard_html() -> str:
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: all 0.25s ease;
-      position: relative;
+      transition: transform 0.2s, border-color 0.2s;
     }
 
     .foa-card:hover {
-      background: var(--bg-card-hover);
-      border-color: rgba(99, 102, 241, 0.4);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.35);
     }
 
     .foa-card-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       margin-bottom: 12px;
     }
 
     .agency-tag {
+      font-size: 11px;
+      font-weight: 700;
       padding: 4px 10px;
       border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .agency-DST { background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
-    .agency-ANRF { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
-    .agency-CSIR { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .agency-AICTE { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .agency-NSP { background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
-    .agency-DBT { background: rgba(244, 63, 94, 0.2); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
-
-    .foa-id-badge {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      background: rgba(0, 0, 0, 0.3);
-      padding: 3px 8px;
-      border-radius: 4px;
-    }
+    .agency-DST { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+    .agency-ANRF { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .agency-CSIR { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .agency-AICTE { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .agency-NSP { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .agency-DBT { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+    .agency-UGC { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .agency-STATE_GOVT { background: rgba(251, 146, 60, 0.15); color: #fdba74; border: 1px solid rgba(251, 146, 60, 0.3); }
+    .agency-CSR_FOUNDATION { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
 
     .foa-title {
       font-size: 17px;
-      font-weight: 600;
+      font-weight: 700;
+      line-height: 1.4;
       margin-bottom: 8px;
       color: #ffffff;
-      line-height: 1.4;
     }
 
     .foa-summary {
       font-size: 13.5px;
       color: var(--text-secondary);
-      margin-bottom: 16px;
-      line-height: 1.5;
+      line-height: 1.55;
+      margin-bottom: 14px;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
-    .thematic-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    .thematic-pill {
-      font-size: 11px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-secondary);
-      padding: 3px 8px;
-      border-radius: 999px;
-    }
-
-    .foa-meta-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 12px;
-      background: rgba(0, 0, 0, 0.25);
+    .benefit-highlight-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.08));
+      border: 1px solid rgba(16, 185, 129, 0.25);
       border-radius: 10px;
-      margin-bottom: 16px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
     }
 
-    .meta-item-label {
+    .benefit-amount-title {
       font-size: 11px;
-      color: var(--text-muted);
+      color: var(--accent-emerald);
       text-transform: uppercase;
+      font-weight: 700;
       letter-spacing: 0.5px;
     }
 
-    .meta-item-value {
-      font-size: 13.5px;
-      font-weight: 600;
+    .benefit-amount-val {
+      font-size: 14.5px;
+      font-weight: 700;
       color: #ffffff;
       margin-top: 2px;
     }
 
-    .card-actions {
+    .thematic-pills {
       display: flex;
-      gap: 8px;
-      margin-top: auto;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
     }
 
-    /* Modal / Drawer */
+    .thematic-pill {
+      font-size: 11.5px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: var(--text-secondary);
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* Badges */
+    .badge-eligible {
+      color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-warning {
+      color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-ineligible {
+      color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Modals */
     .modal-overlay {
-      display: none;
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(8px);
-      z-index: 999;
+      display: none;
       align-items: center;
       justify-content: center;
+      z-index: 1000;
       padding: 20px;
     }
 
@@ -475,25 +534,37 @@ def render_dashboard_html() -> str:
       display: flex;
     }
 
-    .modal-dialog {
+    .modal-content {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: 20px;
-      max-width: 800px;
+      max-width: 840px;
       width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 32px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
     }
 
     .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 16px;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.6;
     }
 
     .close-btn {
@@ -502,77 +573,34 @@ def render_dashboard_html() -> str:
       color: var(--text-secondary);
       font-size: 24px;
       cursor: pointer;
-      padding: 4px;
     }
 
-    .close-btn:hover {
-      color: #ffffff;
-    }
+    .close-btn:hover { color: #ffffff; }
 
-    /* Proposal & Matcher Output */
-    .match-item {
+    /* Checklist Card */
+    .checklist-item {
       background: rgba(15, 23, 42, 0.6);
       border: 1px solid var(--border-subtle);
       border-radius: 12px;
       padding: 16px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
-    .match-score-bar-bg {
-      background: rgba(255, 255, 255, 0.1);
-      height: 6px;
-      border-radius: 3px;
-      margin: 8px 0;
-      overflow: hidden;
-    }
-
-    .match-score-bar-fill {
-      height: 100%;
-      background: linear-gradient(to right, var(--accent-indigo), var(--accent-emerald));
-      border-radius: 3px;
-    }
-
-    .badge-eligible {
-      color: var(--accent-emerald);
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
+    .checklist-item-title {
+      font-size: 15px;
       font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
     }
 
-    .badge-warning {
-      color: var(--accent-amber);
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 700;
+    .checklist-meta {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin-top: 4px;
     }
 
-    .badge-ineligible {
-      color: var(--accent-rose);
-      background: rgba(244, 63, 94, 0.15);
-      border: 1px solid rgba(244, 63, 94, 0.3);
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    pre code {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: #e2e8f0;
-      background: #0f172a;
-      padding: 16px;
-      border-radius: 10px;
-      display: block;
-      overflow-x: auto;
-      border: 1px solid var(--border-subtle);
-      white-space: pre-wrap;
+    .checklist-meta strong {
+      color: var(--accent-cyan);
     }
   </style>
 </head>
@@ -581,77 +609,194 @@ def render_dashboard_html() -> str:
     <!-- Header -->
     <header>
       <div class="brand-group">
-        <div class="brand-logo">M</div>
+        <div class="brand-logo">🎓</div>
         <div>
           <h1 class="brand-title">MadadgaarAI</h1>
-          <div class="brand-subtitle">AI-POWERED FUNDING INTELLIGENCE & GRANT MATCHING</div>
+          <div class="brand-subtitle">INDIAN STUDENT SCHOLARSHIP & RESEARCH GRANT INTELLIGENCE</div>
         </div>
       </div>
       <div class="header-actions">
         <div class="status-pill">
           <span class="status-dot"></span>
-          <span id="headerStatusText">Live Pipeline Online</span>
+          <span id="headerStatusText">Live National Pipeline Online</span>
         </div>
         <button class="secondary-btn" onclick="triggerIngestion()">
-          🔄 Ingest & Crawl
+          🔄 Refresh Schemas
         </button>
       </div>
     </header>
 
+    <!-- Scam Shield Banner -->
+    <div class="scam-shield-banner">
+      <div class="scam-shield-content">
+        <span class="scam-shield-badge">🛡️ Scam Shield</span>
+        <span>
+          <strong>100% Free Government Application Guarantee:</strong> All central (NSP), state (MahaDBT, UP), AICTE, and UGC scholarships are completely free to apply. Never pay any registration fees to unauthorized agents.
+        </span>
+      </div>
+    </div>
+
     <!-- Hero Banner -->
     <div class="hero-banner">
       <div>
-        <h2 class="hero-title">Automated Grant Discovery & <span>Semantic Matching</span></h2>
+        <h2 class="hero-title">Zero-Knowledge <span>Scholarship & Grant Discovery</span></h2>
         <p class="hero-desc">
-          Unified intelligence platform ingesting and normalizing public circulars across 
-          DST, ANRF/SERB, CSIR, AICTE, NSP, and DBT with OCR fallback and Reciprocal Rank Fusion.
+          Empowering Indian students & researchers to find guaranteed financial aid across Central NSP, AICTE, UGC, State Portals, DST, and CSR Trusts with automated document checklists and plain-language Hindi/Hinglish guides.
         </p>
       </div>
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-num" id="statTotal">8</div>
+          <div class="stat-num" id="statTotal">21</div>
           <div class="stat-label">Total Schemes</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num" id="statAgencies">6</div>
-          <div class="stat-label">Statutory Portals</div>
+          <div class="stat-num" id="statAgencies">8+</div>
+          <div class="stat-label">Portals & Trusts</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num" id="statMaxGrant">₹ 60L</div>
-          <div class="stat-label">Max Grant Cap</div>
+          <div class="stat-num">₹ 50K-60L</div>
+          <div class="stat-label">Financial Aid</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num" id="statAvgDensity">100%</div>
-          <div class="stat-label">Schema Validated</div>
+          <div class="stat-num" style="color: var(--accent-emerald);">100%</div>
+          <div class="stat-label">Free & Verified</div>
         </div>
       </div>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="tabs-bar">
-      <button class="tab-btn active" onclick="switchTab('explore')">
-        🔍 Explore Opportunities
+      <button class="tab-btn active" onclick="switchTab('student-hub')">
+        🎓 Vidyarthi Scholarship Hub (विद्यार्थी छात्रवृत्ति)
       </button>
-      <button class="tab-btn" onclick="switchTab('matcher')">
-        🎯 Faculty & Student Matcher
+      <button class="tab-btn" onclick="switchTab('explore-grants')">
+        🔍 All Schemes & Research Grants (सभी योजनाएं)
       </button>
-      <button class="tab-btn" onclick="switchTab('analytics')">
-        📊 Academic Taxonomy & Analytics
+      <button class="tab-btn" onclick="switchTab('faculty-matcher')">
+        🎯 Faculty & Researcher Matcher
       </button>
     </div>
 
-    <!-- TAB 1: Explore Opportunities -->
-    <div id="tab-explore">
-      <div class="search-filter-card">
-        <div class="search-row">
-          <input type="text" id="searchInput" class="input-box" placeholder="Semantic search e.g. 'clean energy quantum computing fellowship' or 'women scientists biotech'..." onkeyup="if(event.key === 'Enter') runSearch()">
+    <!-- TAB 1: Vidyarthi Scholarship Hub -->
+    <div id="tab-student-hub">
+      <div class="panel-card">
+        <h3 style="font-size: 19px; font-weight: 700; margin-bottom: 6px; color: #ffffff;">
+          🎯 "Am I Eligible?" Student Scholarship Wizard (पात्रता जांचें)
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+          Select your state, education level, category, and family income to instantly discover all 100% eligible Central & State scholarships with required document checklists.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">State of Domicile (मूल निवास)</label>
+            <select id="stuState" class="select-box" style="margin-top: 6px;">
+              <option value="All India">All India / Any State</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="West Bengal">West Bengal</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Assam / North Eastern States">Assam / North Eastern States (NER)</option>
+              <option value="Delhi NCR">Delhi NCR</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">Current Education Level (कक्षा / डिग्री)</label>
+            <select id="stuLevel" class="select-box" style="margin-top: 6px;">
+              <option value="UG - Engineering / Technology (B.Tech/B.E.)">UG - Engineering / Technology (B.Tech/B.E.)</option>
+              <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
+              <option value="UG - Medical / Paramedical (MBBS/BDS/B.Pharm/Nursing)">UG - Medical / Paramedical</option>
+              <option value="UG - General (B.Sc / B.Com / B.A. / BBA / BCA)">UG - General (B.Sc/B.Com/B.A.)</option>
+              <option value="Class 11-12 (Higher Secondary)">Class 11-12 (Higher Secondary)</option>
+              <option value="Class 9-10 (Pre-Matric)">Class 9-10 (Pre-Matric)</option>
+              <option value="Postgraduate (M.Tech / M.Sc / M.Com / M.A. / MBA / MCA)">Postgraduate (Master's Degree)</option>
+              <option value="PhD / Doctoral Research">PhD / Doctoral Research</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">Social Category (जाति / वर्ग)</label>
+            <select id="stuCategory" class="select-box" style="margin-top: 6px;">
+              <option value="General / Open">General / Open</option>
+              <option value="OBC (Non-Creamy Layer)">OBC (Non-Creamy Layer)</option>
+              <option value="SC (Scheduled Caste)">SC (Scheduled Caste)</option>
+              <option value="ST (Scheduled Tribe)">ST (Scheduled Tribe)</option>
+              <option value="EWS (Economically Weaker Section)">EWS (Economically Weaker)</option>
+              <option value="Minority (Muslim/Christian/Sikh/Buddhist/Jain/Parsi)">Minority (Muslim/Sikh/Christian/Jain)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">Gender (लिंग)</label>
+            <select id="stuGender" class="select-box" style="margin-top: 6px;">
+              <option value="Female">Female (छात्रा)</option>
+              <option value="Male">Male (छात्र)</option>
+              <option value="Transgender">Transgender</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+          <div>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">Annual Family Income (वार्षिक पारिवारिक आय)</label>
+            <input type="number" id="stuIncome" class="input-box" style="margin-top: 6px;" value="200000" step="25000">
+            <div style="display: flex; gap: 6px; margin-top: 6px;">
+              <button class="secondary-btn" style="padding: 3px 8px; font-size: 11px;" onclick="setIncome(150000)">₹1.5L</button>
+              <button class="secondary-btn" style="padding: 3px 8px; font-size: 11px;" onclick="setIncome(250000)">₹2.5L</button>
+              <button class="secondary-btn" style="padding: 3px 8px; font-size: 11px;" onclick="setIncome(450000)">₹4.5L</button>
+              <button class="secondary-btn" style="padding: 3px 8px; font-size: 11px;" onclick="setIncome(800000)">₹8.0L</button>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">10th / 12th Marks (अंक %)</label>
+            <input type="number" id="stuMarks" class="input-box" style="margin-top: 6px;" value="86" min="35" max="100">
+          </div>
+
+          <div style="display: flex; flex-direction: column; justify-content: center; gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" id="stuSingleGirl">
+              <span>Single Girl Child in Family (एकल पुत्री)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" id="stuPwd">
+              <span>Differently Abled / PwD >=40% (दिव्यांग)</span>
+            </label>
+          </div>
+
+          <div style="display: flex; align-items: flex-end;">
+            <button class="primary-btn" style="width: 100%; height: 45px; justify-content: center;" onclick="runStudentMatch()">
+              ⚡ Find My Scholarships (खोजें)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="studentResultsContainer">
+        <!-- Results rendered here -->
+      </div>
+    </div>
+
+    <!-- TAB 2: Explore All Grants & Opportunities -->
+    <div id="tab-explore-grants" style="display: none;">
+      <div class="panel-card">
+        <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 12px;">
+          <input type="text" id="searchInput" class="input-box" placeholder="Search by scheme name or keywords (e.g. 'Pragati scholarship', 'AI research grant', 'women')..." onkeyup="if(event.key === 'Enter') runSearch()">
           <select id="agencyFilter" class="select-box" onchange="runSearch()">
-            <option value="">All Agencies</option>
+            <option value="">All Portals & Agencies</option>
+            <option value="NSP">NSP (National Scholarship)</option>
+            <option value="AICTE">AICTE</option>
+            <option value="UGC">UGC</option>
+            <option value="State Govt">State Govt Portals</option>
+            <option value="CSR / Foundation">CSR Foundations</option>
             <option value="DST">DST</option>
             <option value="ANRF/SERB">ANRF / SERB</option>
             <option value="CSIR">CSIR</option>
-            <option value="AICTE">AICTE</option>
-            <option value="NSP">NSP</option>
             <option value="DBT">DBT</option>
           </select>
           <button class="primary-btn" onclick="runSearch()">
@@ -665,94 +810,66 @@ def render_dashboard_html() -> str:
       </div>
     </div>
 
-    <!-- TAB 2: Profile Matcher -->
-    <div id="tab-matcher" style="display: none;">
-      <div class="search-filter-card">
-        <h3 style="margin-bottom: 8px; font-size: 18px;">Profile-to-Grant Semantic Alignment Engine</h3>
+    <!-- TAB 3: Faculty Matcher -->
+    <div id="tab-faculty-matcher" style="display: none;">
+      <div class="panel-card">
+        <h3 style="font-size: 18px; margin-bottom: 6px;">Researcher & Faculty Project Alignment</h3>
         <p style="color: var(--text-secondary); font-size: 13.5px; margin-bottom: 20px;">
-          Paste your research abstract, project proposal idea, or CV summary. MadadgaarAI computes dense 384-d vector embeddings and validates eligibility constraints.
+          Paste your research abstract, grant proposal idea, or CV excerpt to match against DST, ANRF/SERB, CSIR, and DBT calls.
         </p>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
           <div>
-            <label class="meta-item-label">Applicant Role</label>
-            <select id="matchRole" class="select-box" style="width: 100%; margin-top: 4px;">
+            <label style="font-size: 12px; color: var(--text-secondary);">Applicant Role</label>
+            <select id="matchRole" class="select-box" style="margin-top: 4px;">
               <option value="Faculty / Principal Investigator">Faculty / Principal Investigator</option>
               <option value="Early Career Researcher">Early Career Researcher</option>
               <option value="Women Scientists">Women Scientists</option>
               <option value="PhD Scholars & Postdoctoral Fellows">PhD Scholars & Postdocs</option>
-              <option value="UG / PG Students">UG / PG Students</option>
-              <option value="Startups & Industry Partners">Startups & Industry</option>
             </select>
           </div>
           <div>
-            <label class="meta-item-label">Applicant Age (Years)</label>
-            <input type="number" id="matchAge" class="input-box" style="margin-top: 4px;" value="38" min="18" max="75">
+            <label style="font-size: 12px; color: var(--text-secondary);">Age (Years)</label>
+            <input type="number" id="matchAge" class="input-box" style="margin-top: 4px;" value="38">
           </div>
           <div>
-            <label class="meta-item-label">Highest Qualification</label>
+            <label style="font-size: 12px; color: var(--text-secondary);">Highest Degree</label>
             <input type="text" id="matchDegree" class="input-box" style="margin-top: 4px;" value="Ph.D. in Computer Science">
           </div>
         </div>
 
         <div style="margin-bottom: 16px;">
-          <label class="meta-item-label">Research Abstract / Statement</label>
-          <textarea id="matchAbstract" class="input-box" rows="4" style="margin-top: 4px;" placeholder="Describe your research project, key aims, domain thrust, and technological application..."></textarea>
+          <label style="font-size: 12px; color: var(--text-secondary);">Research Proposal / Abstract</label>
+          <textarea id="matchAbstract" class="input-box" rows="4" style="margin-top: 4px;" placeholder="Describe your scientific objectives, domain thrust, and methodologies..."></textarea>
         </div>
 
-        <button class="primary-btn" onclick="runProfileMatch()">
-          🚀 Run Profile Match & Compliance Check
-        </button>
+        <button class="primary-btn" onclick="runProfileMatch()">⚡ Align & Check Compliance</button>
       </div>
 
-      <div id="matchResultsContainer">
-        <!-- Rendered Results -->
-      </div>
+      <div id="matchResultsContainer"></div>
     </div>
-
-    <!-- TAB 3: Analytics & Benchmark -->
-    <div id="tab-analytics" style="display: none;">
-      <div class="search-filter-card">
-        <h3 style="margin-bottom: 14px; font-size: 18px;">Indian Funding Intelligence Architecture</h3>
-        <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-          MadadgaarAI establishes an end-to-end reproducible pipeline featuring:
-          <strong>Asynchronous Crawling</strong> (DST, ANRF, CSIR, AICTE, NSP), <strong>OCR Layout Recovery</strong> via Tesseract, <strong>Pydantic Schema Validation</strong>, <strong>Sentence-Transformers (384-d)</strong>, and <strong>BM25 + Dense RRF Hybrid Search</strong>.
-        </p>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--border-subtle);">
-            <div style="color: var(--accent-indigo); font-weight: 700; margin-bottom: 6px;">Hybrid Search (RRF)</div>
-            <div style="font-size: 13px; color: var(--text-secondary);">Combines Lexical BM25 keyword matching with Dense Vector Cosine Similarity using Reciprocal Rank Fusion (k=60).</div>
-          </div>
-          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--border-subtle);">
-            <div style="color: var(--accent-emerald); font-weight: 700; margin-bottom: 6px;">Fault-Tolerant OCR</div>
-            <div style="font-size: 13px; color: var(--text-secondary);">Evaluates character density per page. Low density triggers automated raster OCR extraction fallback.</div>
-          </div>
-          <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--border-subtle);">
-            <div style="color: var(--accent-purple); font-weight: 700; margin-bottom: 6px;">Downstream Proposal Drafter</div>
-            <div style="font-size: 13px; color: var(--text-secondary);">Instant generation of tailored proposal skeletons with MoF OM compliant budget allocations and Gantt milestones.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- Modal Dialog for Proposal Skeleton / Details -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-dialog">
+  <!-- Universal Modal for Document Checklist / Hinglish Guide / Proposal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target === this) closeModal()">
+    <div class="modal-content">
       <div class="modal-header">
-        <h3 id="modalTitle" style="font-size: 20px; color: #ffffff;">Proposal Skeleton</h3>
+        <div class="modal-title" id="modalTitle">Scheme Information</div>
         <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
-      <div id="modalBody">
-        <!-- Injected dynamically -->
+      <div class="modal-body" id="modalBody">
+        <!-- Injected via JS -->
       </div>
     </div>
   </div>
 
   <script>
     let allFOAs = [];
+
+    async function initApp() {
+      await loadOpportunities();
+      runStudentMatch(); // Auto-run initial student search
+    }
 
     async function loadOpportunities() {
       try {
@@ -765,64 +882,232 @@ def render_dashboard_html() -> str:
       }
     }
 
+    function setIncome(val) {
+      document.getElementById('stuIncome').value = val;
+    }
+
+    function updateStats(items) {
+      document.getElementById('statTotal').innerText = items.length;
+    }
+
     function renderFOAGrid(items) {
       const grid = document.getElementById('foaGrid');
       if (!items || items.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">No funding opportunities found matching criteria.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">No opportunities found matching criteria.</div>';
         return;
       }
 
       grid.innerHTML = items.map(foa => {
-        const agencyClass = 'agency-' + (foa.agency.replace('/', '_').replace('ANRF_SERB', 'ANRF'));
-        const budgetStr = foa.financials.max_amount_inr 
-          ? '₹ ' + (foa.financials.max_amount_inr / 100000).toFixed(1) + ' Lakhs'
-          : (foa.financials.stipend_monthly_inr ? '₹ ' + foa.financials.stipend_monthly_inr.toLocaleString() + '/mo' : 'As per norms');
-        
-        const deadlineStr = foa.deadlines.extended_closing_date || foa.deadlines.closing_date || (foa.deadlines.is_rolling ? 'Rolling' : 'N/A');
+        const agencyClean = foa.agency.replace('/', '_').replace(' ', '_');
+        const budgetStr = foa.financials.raw_budget_text || (foa.financials.max_amount_inr ? '₹ ' + (foa.financials.max_amount_inr).toLocaleString() : 'As per norms');
+        const deadlineStr = foa.deadlines.extended_closing_date || foa.deadlines.closing_date || (foa.deadlines.is_rolling ? 'Rolling Call' : 'Open');
 
         return `
           <div class="foa-card">
             <div>
               <div class="foa-card-header">
-                <span class="agency-tag ${agencyClass}">${foa.agency}</span>
-                <span class="foa-id-badge">${foa.foa_id}</span>
+                <span class="agency-tag agency-${agencyClean}">${foa.agency}</span>
+                <span style="font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono);">${foa.foa_id}</span>
               </div>
               <h3 class="foa-title">${foa.title}</h3>
               <p class="foa-summary">${foa.brief_summary}</p>
+              
+              <div class="benefit-highlight-box">
+                <div class="benefit-amount-title">Financial Assistance</div>
+                <div class="benefit-amount-val">${budgetStr}</div>
+              </div>
+
               <div class="thematic-pills">
                 ${(foa.thematic_areas || []).map(t => `<span class="thematic-pill">${t}</span>`).join('')}
               </div>
-              <div class="foa-meta-row">
-                <div>
-                  <div class="meta-item-label">Max Grant Ceiling</div>
-                  <div class="meta-item-value">${budgetStr}</div>
-                </div>
-                <div>
-                  <div class="meta-item-label">Closing Deadline</div>
-                  <div class="meta-item-value">${deadlineStr}</div>
-                </div>
-              </div>
             </div>
+
             <div class="card-actions">
-              <button class="secondary-btn" onclick="draftProposal('${foa.foa_id}')">
-                📝 Draft Proposal
-              </button>
-              <button class="secondary-btn" onclick="downloadCalendar('${foa.foa_id}')">
-                📅 .ICS
-              </button>
-              <a href="${foa.source_url}" target="_blank" class="secondary-btn" style="text-decoration: none;">
-                🔗 Portal
-              </a>
+              <button class="secondary-btn" onclick="openDocChecklist('${foa.foa_id}')">📄 Documents</button>
+              <button class="secondary-btn" onclick="openHinglishGuide('${foa.foa_id}')">🇮🇳 सरल गाइड</button>
+              <button class="secondary-btn" onclick="downloadCalendar('${foa.foa_id}')">📅 .ICS</button>
+              <a href="${foa.source_url}" target="_blank" class="secondary-btn">🌐 Official Portal ↗</a>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    function updateStats(items) {
-      document.getElementById('statTotal').innerText = items.length;
-      const agencies = new Set(items.map(i => i.agency));
-      document.getElementById('statAgencies').innerText = agencies.size;
+    async function runStudentMatch() {
+      const container = document.getElementById('studentResultsContainer');
+      container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-secondary);">⚡ Checking eligibility rules across Central, State & CSR schemes...</div>';
+
+      const payload = {
+        state_domicile: document.getElementById('stuState').value,
+        education_level: document.getElementById('stuLevel').value,
+        social_category: document.getElementById('stuCategory').value,
+        gender: document.getElementById('stuGender').value,
+        family_annual_income_inr: parseFloat(document.getElementById('stuIncome').value) || 200000,
+        academic_percentage: parseFloat(document.getElementById('stuMarks').value) || 85,
+        is_single_girl_child: document.getElementById('stuSingleGirl').checked,
+        is_differently_abled_pwd: document.getElementById('stuPwd').checked,
+        top_k: 15
+      };
+
+      try {
+        const res = await fetch('/api/student/match', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const results = await res.json();
+        renderStudentResults(results);
+      } catch (err) {
+        container.innerHTML = '<div style="color: var(--accent-rose); text-align: center;">Error evaluating scholarships.</div>';
+      }
+    }
+
+    function renderStudentResults(results) {
+      const container = document.getElementById('studentResultsContainer');
+      if (!results || results.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No student scholarships found.</div>';
+        return;
+      }
+
+      const eligibleCount = results.filter(r => r.eligibility_status === 'ELIGIBLE' || r.eligibility_status === 'HIGH_PROBABILITY').length;
+
+      let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+          <h4 style="font-size: 17px; font-weight: 700; color: #ffffff;">
+            🎯 Recommended Scholarships for Your Profile (${eligibleCount} Eligible Schemes Found)
+          </h4>
+        </div>
+        <div class="opportunities-grid">
+      `;
+
+      html += results.map(res => {
+        const foa = res.foa;
+        const agencyClean = foa.agency.replace('/', '_').replace(' ', '_');
+        const badgeClass = res.eligibility_status === 'ELIGIBLE' ? 'badge-eligible' : (res.eligibility_status === 'HIGH_PROBABILITY' ? 'badge-eligible' : (res.eligibility_status === 'WARNING' ? 'badge-warning' : 'badge-ineligible'));
+        const badgeText = res.eligibility_status === 'ELIGIBLE' ? '100% ELIGIBLE' : (res.eligibility_status === 'HIGH_PROBABILITY' ? 'HIGH PROBABILITY' : res.eligibility_status);
+
+        const whatsappText = encodeURIComponent(`🎓 *Scholarship Alert: ${foa.title}*\n💰 Benefit: ${res.estimated_financial_benefit}\n🏛️ Portal: ${res.portal_url}\nCheck your eligibility on MadadgaarAI!`);
+
+        return `
+          <div class="foa-card">
+            <div>
+              <div class="foa-card-header">
+                <span class="agency-tag agency-${agencyClean}">${foa.agency}</span>
+                <span class="${badgeClass}">${badgeText} (${res.match_percentage}%)</span>
+              </div>
+
+              <h3 class="foa-title">${foa.title}</h3>
+              <p class="foa-summary">${foa.brief_summary}</p>
+
+              <div class="benefit-highlight-box">
+                <div class="benefit-amount-title">Scholarship Benefit</div>
+                <div class="benefit-amount-val">${res.estimated_financial_benefit}</div>
+              </div>
+
+              <div style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 12px; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px;">
+                ${res.match_reasons.map(r => `<div style="color: #cbd5e1; margin-bottom: 3px;">${r}</div>`).join('')}
+                ${res.warning_reasons.map(w => `<div style="color: var(--accent-rose); margin-bottom: 3px;">${w}</div>`).join('')}
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button class="secondary-btn" onclick="openDocChecklist('${foa.foa_id}')">📄 Document Checklist</button>
+              <button class="secondary-btn" onclick="openHinglishGuide('${foa.foa_id}')">🇮🇳 सरल गाइड</button>
+              <a href="https://api.whatsapp.com/send?text=${whatsappText}" target="_blank" class="whatsapp-btn">📲 Share</a>
+              <a href="${res.portal_url}" target="_blank" class="secondary-btn">🌐 Apply Official ↗</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    async function openDocChecklist(foaId) {
+      const modal = document.getElementById('modalOverlay');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+
+      title.innerText = "📄 Mandatory Document Checklist & Guidance";
+      body.innerHTML = '<div style="text-align: center; padding: 20px;">Loading requirements...</div>';
+      modal.classList.add('active');
+
+      try {
+        const res = await fetch(`/api/student/scholarships/${foaId}/checklist`);
+        const docs = await res.json();
+
+        let html = `
+          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 12px; border-radius: 10px; margin-bottom: 18px; font-size: 13px; color: #a7f3d0;">
+            ⚠️ <strong>Pro-Tip:</strong> Keep scanned copies of all these documents in PDF format under 200 KB before starting the online application.
+          </div>
+        `;
+
+        html += docs.map((d, idx) => `
+          <div class="checklist-item">
+            <div class="checklist-item-title">${idx + 1}. ${d.document_name}</div>
+            <div class="checklist-meta">🏛️ <strong>Issuing Authority:</strong> ${d.issuing_authority}</div>
+            <div class="checklist-meta">📋 <strong>Validity & Rules:</strong> ${d.validity_and_rules}</div>
+            <div class="checklist-meta">📍 <strong>How to Obtain:</strong> ${d.how_to_obtain}</div>
+          </div>
+        `).join('');
+
+        body.innerHTML = html;
+      } catch (err) {
+        body.innerHTML = '<div style="color: var(--accent-rose);">Failed to load document checklist.</div>';
+      }
+    }
+
+    async function openHinglishGuide(foaId) {
+      const modal = document.getElementById('modalOverlay');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+
+      title.innerText = "🇮🇳 Saral Samjhauti (सरल भाषा में समझें)";
+      body.innerHTML = '<div style="text-align: center; padding: 20px;">Loading guide...</div>';
+      modal.classList.add('active');
+
+      try {
+        const res = await fetch(`/api/student/scholarships/${foaId}/hinglish`);
+        const guide = await res.json();
+
+        let html = `
+          <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15)); border: 1px solid rgba(99, 102, 241, 0.3); padding: 16px; border-radius: 12px; margin-bottom: 18px;">
+            <h4 style="color: #ffffff; margin-bottom: 6px; font-size: 16px;">👥 कौन-कौन अप्लाई कर सकता है? (Eligibility)</h4>
+            <p style="color: #cbd5e1; font-size: 13.5px;">${guide.kaun_apply_kar_sakta_hai}</p>
+          </div>
+
+          <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); padding: 16px; border-radius: 12px; margin-bottom: 18px;">
+            <h4 style="color: var(--accent-emerald); margin-bottom: 6px; font-size: 16px;">💰 कितने पैसे मिलेंगे? (Financial Support)</h4>
+            <p style="color: #ffffff; font-size: 14px; font-weight: 600;">${guide.kitne_paise_milenge}</p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); padding: 16px; border-radius: 12px; margin-bottom: 18px;">
+            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 15px;">📑 क्या-क्या जरूरी डॉक्यूमेंट्स चाहिए?</h4>
+            <ul style="list-style: none; padding-left: 0;">
+              ${guide.zaruri_documents.map(d => `<li style="padding: 4px 0; color: #cbd5e1; font-size: 13px;">${d}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); padding: 14px; border-radius: 10px; margin-bottom: 16px; font-size: 13px; color: #fde68a;">
+            ${guide.aadhaar_seeding_warning}
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted);">आधिकारिक पोर्टल:</div>
+              <strong style="color: #ffffff;">${guide.official_portal_name}</strong>
+            </div>
+            <a href="${guide.official_portal_url}" target="_blank" class="primary-btn">
+              पोर्टल पर जाएं ↗
+            </a>
+          </div>
+        `;
+
+        body.innerHTML = html;
+      } catch (err) {
+        body.innerHTML = '<div style="color: var(--accent-rose);">Failed to load guide.</div>';
+      }
     }
 
     async function runSearch() {
@@ -838,9 +1123,9 @@ def render_dashboard_html() -> str:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          query: q || "research funding grants",
+          query: q || "scholarship and grants",
           agency_filter: agency || null,
-          top_k: 10
+          top_k: 15
         })
       });
       const data = await res.json();
@@ -855,7 +1140,7 @@ def render_dashboard_html() -> str:
       }
 
       const role = document.getElementById('matchRole').value;
-      const age = parseInt(document.getElementById('matchAge').value) || 35;
+      const age = parseInt(document.getElementById('matchAge').value) || 38;
       const degree = document.getElementById('matchDegree').value;
 
       const container = document.getElementById('matchResultsContainer');
@@ -874,38 +1159,38 @@ def render_dashboard_html() -> str:
       });
 
       const results = await res.json();
-      container.innerHTML = results.map(m => {
-        const badgeClass = m.compliance.status === 'ELIGIBLE' ? 'badge-eligible' : (m.compliance.status === 'WARNING' ? 'badge-warning' : 'badge-ineligible');
-        return `
-          <div class="match-item">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+      container.innerHTML = `
+        <div class="opportunities-grid" style="margin-top: 20px;">
+          ${results.map(m => `
+            <div class="foa-card">
               <div>
-                <span class="agency-tag agency-${m.foa.agency.replace('/', '_')}">${m.foa.agency}</span>
-                <strong style="margin-left: 8px; font-size: 16px;">${m.foa.title}</strong>
+                <div class="foa-card-header">
+                  <span class="agency-tag agency-${m.foa.agency.replace('/', '_').replace(' ', '_')}">${m.foa.agency}</span>
+                  <span class="badge-eligible">${(m.relevance_score * 100).toFixed(1)}% Match</span>
+                </div>
+                <h3 class="foa-title">${m.foa.title}</h3>
+                <p class="foa-summary">${m.foa.brief_summary}</p>
+                <div style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 10px;">
+                  <strong>Compliance:</strong> ${m.compliance.reasons.join(' ')}
+                </div>
               </div>
-              <span class="${badgeClass}">${m.compliance.status}</span>
+              <div class="card-actions">
+                <button class="secondary-btn" onclick="draftProposal('${m.foa.foa_id}')">📝 Draft Proposal</button>
+                <button class="secondary-btn" onclick="downloadCalendar('${m.foa.foa_id}')">📅 .ICS</button>
+                <a href="${m.foa.source_url}" target="_blank" class="secondary-btn">🌐 Portal ↗</a>
+              </div>
             </div>
-            <div style="font-size: 12px; color: var(--text-secondary);">
-              Hybrid Match Score: <strong>${(m.relevance_score * 100).toFixed(1)}%</strong> | BM25: ${m.bm25_score} | Dense Sim: ${m.dense_score}
-            </div>
-            <div class="match-score-bar-bg">
-              <div class="match-score-bar-fill" style="width: ${Math.min(100, m.relevance_score * 100)}%;"></div>
-            </div>
-            <div style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">
-              <strong>Eligibility Evaluation:</strong> ${m.compliance.reasons.join(' ')}
-            </div>
-            <div style="margin-top: 12px; display: flex; gap: 8px;">
-              <button class="secondary-btn" onclick="draftProposal('${m.foa.foa_id}')">📝 Draft Proposal</button>
-              <button class="secondary-btn" onclick="downloadCalendar('${m.foa.foa_id}')">📅 .ICS Deadline</button>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `).join('')}
+        </div>
+      `;
     }
 
     async function draftProposal(foaId) {
       const modal = document.getElementById('modalOverlay');
+      const title = document.getElementById('modalTitle');
       const body = document.getElementById('modalBody');
+
+      title.innerText = "📝 Proposal Skeleton & Budget Drafter";
       body.innerHTML = 'Generating tailored proposal skeleton...';
       modal.classList.add('active');
 
@@ -914,7 +1199,7 @@ def render_dashboard_html() -> str:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pi_name: "Dr. Faculty Researcher",
-          institution_name: "JK Lakshmipat University, Jaipur"
+          institution_name: "Indian Academic Institution"
         })
       });
       const data = await res.json();
@@ -928,12 +1213,12 @@ def render_dashboard_html() -> str:
           </div>
         </div>
         <div>
-          <h5 style="color: #ffffff; margin-bottom: 8px;">Proposal Sections & Drafted Content</h5>
+          <h5 style="color: #ffffff; margin-bottom: 8px;">Proposal Sections</h5>
           ${data.sections.map(sec => `
             <div style="margin-bottom: 16px;">
               <div style="font-weight: 600; color: #cbd5e1;">${sec.section_title}</div>
               <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${sec.section_description}</div>
-              <pre><code>${sec.drafted_content}</code></pre>
+              <pre style="background: #0f172a; padding: 12px; border-radius: 8px; font-size: 12.5px; overflow-x: auto; color: #e2e8f0;"><code>${sec.drafted_content}</code></pre>
             </div>
           `).join('')}
         </div>
@@ -947,17 +1232,18 @@ def render_dashboard_html() -> str:
 
     async function triggerIngestion() {
       const statusText = document.getElementById('headerStatusText');
-      statusText.innerText = 'Ingesting circulars...';
+      statusText.innerText = 'Refreshing all schemas & pipelines...';
       const res = await fetch('/api/ingest/trigger', { method: 'POST' });
       const report = await res.json();
       statusText.innerText = `Ingested: ${report.new_opportunities_indexed} new`;
       await loadOpportunities();
+      runStudentMatch();
     }
 
     function switchTab(tabId) {
-      document.getElementById('tab-explore').style.display = tabId === 'explore' ? 'block' : 'none';
-      document.getElementById('tab-matcher').style.display = tabId === 'matcher' ? 'block' : 'none';
-      document.getElementById('tab-analytics').style.display = tabId === 'analytics' ? 'block' : 'none';
+      document.getElementById('tab-student-hub').style.display = tabId === 'student-hub' ? 'block' : 'none';
+      document.getElementById('tab-explore-grants').style.display = tabId === 'explore-grants' ? 'block' : 'none';
+      document.getElementById('tab-faculty-matcher').style.display = tabId === 'faculty-matcher' ? 'block' : 'none';
 
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       event.currentTarget.classList.add('active');
@@ -967,8 +1253,8 @@ def render_dashboard_html() -> str:
       document.getElementById('modalOverlay').classList.remove('active');
     }
 
-    // Initialize on load
-    loadOpportunities();
+    // Initialize application
+    initApp();
   </script>
 </body>
 </html>

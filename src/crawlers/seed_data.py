@@ -256,4 +256,12 @@ def get_seed_foa_dataset() -> List[FundingOpportunity]:
         )
         opportunities.append(foa)
 
+    # Append rich Indian student scholarships dataset
+    try:
+        from src.crawlers.scholarship_seed_data import get_seed_student_scholarships
+        student_scholarships = get_seed_student_scholarships()
+        opportunities.extend(student_scholarships)
+    except Exception:
+        pass
+
     return opportunities
