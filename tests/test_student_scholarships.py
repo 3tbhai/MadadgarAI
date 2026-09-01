@@ -143,3 +143,26 @@ def test_api_student_metadata_endpoint(client):
     assert "education_levels" in meta
     assert "social_categories" in meta
     assert "All India" in meta["states"]
+
+
+def test_direct_apply_and_navigation_steps(student_matcher):
+    """Verify that scholarships have deep direct apply URLs and step-by-step click guidance."""
+    scholarships = student_matcher.get_all_student_scholarships()
+    pragati = next(s for s in scholarships if s.foa_id == "SCHOLARSHIP-AICTE-PRAGATI-2026")
+    assert pragati.direct_apply_url is not None
+    assert "scholarship" in pragati.direct_apply_url
+    assert len(pragati.portal_navigation_steps) >= 3
+
+    req = StudentProfileRequest(
+        student_name="Pooja Sharma",
+        state_domicile="Uttar Pradesh",
+        education_level=EducationLevel.UG_ENGINEERING,
+        social_category=SocialCategory.GENERAL,
+        gender="Female",
+        family_annual_income_inr=200000.0,
+    )
+    results = student_matcher.match_student(req)
+    res = results[0]
+    assert res.direct_apply_url is not None
+    assert len(res.portal_navigation_steps) >= 3
+

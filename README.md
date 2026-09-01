@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python: 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111%2B-green.svg)](https://fastapi.tiangolo.com)
-[![Tests: Passing](https://img.shields.io/badge/Tests-27%2F27%20Passed-brightgreen.svg)]()
+[![Tests: Passing](https://img.shields.io/badge/Tests-28%2F28%20Passed-brightgreen.svg)]()
 
 MadadgaarAI is an end-to-end funding and scholarship intelligence platform engineered to ingest, parse, semantically tag, and match **Student Scholarships & Funding Opportunity Announcements (FOAs)** across Indian statutory portals (**NSP, AICTE, UGC, State Portals like MahaDBT & UP Scholarship, CSR Trusts, DST, ANRF/SERB, CSIR, DBT**).
 
@@ -14,6 +14,8 @@ MadadgaarAI is an end-to-end funding and scholarship intelligence platform engin
 
 ### 🎓 1. "Vidyarthi AI" — Zero-Knowledge Student Scholarship Matcher
 * **One-Click Eligibility Wizard**: Students input basic details (State of Domicile, Social Category, Gender, Annual Income, Course/Degree) and instantly discover **100% Guaranteed & High-Probability Scholarships**.
+* **🚀 Direct Application Deep-Links**: Bypasses confusing portal homepages to send students directly to the active Online Registration / Application form (e.g. NSP OTR, UP Dashmottar Registration, MahaDBT Applicant Form, Kotak Kanya Apply).
+* **🗺️ Step-by-Step Portal Navigation Guides**: Provides clear, numbered click-through instructions on which ministry, scheme category, and documents to select on complex government portals.
 * **Comprehensive Indian Coverage**:
   * **Central (NSP)**: *PM-USP Central Sector Scheme*, *PM YASASVI (OBC/EBC/DNT)*, *Post-Matric for SC/ST*, *Ishan Uday (NER)*.
   * **AICTE & UGC**: *AICTE Pragati (₹50,000/yr for Girls in Tech)*, *AICTE Saksham (Specially-Abled)*, *UGC Single Girl Child PG Fellowship*.
@@ -107,7 +109,7 @@ Open your browser at: **[http://localhost:8000](http://localhost:8000)** (or Swa
 
 ## 🧪 Running Tests and Evaluation Benchmark
 
-### Run Automated Unit Tests (27/27 Passed)
+### Run Automated Unit Tests (28/28 Passed)
 ```bash
 python -m pytest tests/ -v
 ```

@@ -29,6 +29,8 @@ class DatasetNormalizer:
                     agency TEXT NOT NULL,
                     scheme_name TEXT,
                     source_url TEXT,
+                    direct_apply_url TEXT,
+                    portal_navigation_steps_json TEXT,
                     pdf_download_url TEXT,
                     raw_document_hash TEXT UNIQUE,
                     brief_summary TEXT,
@@ -43,6 +45,16 @@ class DatasetNormalizer:
                 )
                 """
             )
+            # Automatic schema migration for existing databases
+            try:
+                cursor.execute("ALTER TABLE funding_opportunities ADD COLUMN direct_apply_url TEXT")
+            except Exception:
+                pass
+            try:
+                cursor.execute("ALTER TABLE funding_opportunities ADD COLUMN portal_navigation_steps_json TEXT")
+            except Exception:
+                pass
+
             cursor.execute(
                 """
                 CREATE INDEX IF NOT EXISTS idx_agency ON funding_opportunities(agency);
@@ -63,14 +75,17 @@ class DatasetNormalizer:
                 cursor.execute(
                     """
                     INSERT INTO funding_opportunities (
-                        foa_id, title, agency, scheme_name, source_url, pdf_download_url,
-                        raw_document_hash, brief_summary, thematic_areas_json, ontology_tags_json,
-                        eligibility_json, deadlines_json, financials_json, full_text_content,
-                        is_ocr_extracted, ingested_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        foa_id, title, agency, scheme_name, source_url, direct_apply_url,
+                        portal_navigation_steps_json, pdf_download_url, raw_document_hash,
+                        brief_summary, thematic_areas_json, ontology_tags_json, eligibility_json,
+                        deadlines_json, financials_json, full_text_content, is_ocr_extracted, ingested_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(foa_id) DO UPDATE SET
                         title = excluded.title,
                         brief_summary = excluded.brief_summary,
+                        source_url = excluded.source_url,
+                        direct_apply_url = excluded.direct_apply_url,
+                        portal_navigation_steps_json = excluded.portal_navigation_steps_json,
                         deadlines_json = excluded.deadlines_json,
                         financials_json = excluded.financials_json,
                         eligibility_json = excluded.eligibility_json,
@@ -82,6 +97,8 @@ class DatasetNormalizer:
                         foa.agency.value,
                         foa.scheme_name,
                         foa.source_url,
+                        foa.direct_apply_url or foa.source_url,
+                        json.dumps(foa.portal_navigation_steps),
                         foa.pdf_download_url,
                         foa.raw_document_hash,
                         foa.brief_summary,
@@ -111,12 +128,18 @@ class DatasetNormalizer:
                 cursor.execute("SELECT * FROM funding_opportunities ORDER BY ingested_at DESC")
                 rows = cursor.fetchall()
                 for r in rows:
+                    keys = r.keys()
+                    direct_apply = r["direct_apply_url"] if "direct_apply_url" in keys else r["source_url"]
+                    nav_steps = json.loads(r["portal_navigation_steps_json"] or "[]") if "portal_navigation_steps_json" in keys and r["portal_navigation_steps_json"] else []
+
                     foa_dict = {
                         "foa_id": r["foa_id"],
                         "title": r["title"],
                         "agency": r["agency"],
                         "scheme_name": r["scheme_name"],
                         "source_url": r["source_url"],
+                        "direct_apply_url": direct_apply or r["source_url"],
+                        "portal_navigation_steps": nav_steps,
                         "pdf_download_url": r["pdf_download_url"],
                         "raw_document_hash": r["raw_document_hash"],
                         "brief_summary": r["brief_summary"],

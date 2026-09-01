@@ -139,6 +139,12 @@ class FundingOpportunity(BaseModel):
         default=None, description="Specific scheme under the agency"
     )
     source_url: str = Field(..., description="Direct link or portal URL")
+    direct_apply_url: Optional[str] = Field(
+        default=None, description="Direct URL to registration or online application form"
+    )
+    portal_navigation_steps: List[str] = Field(
+        default_factory=list, description="Step-by-step click path to find the scheme on the portal"
+    )
     pdf_download_url: Optional[str] = Field(
         default=None, description="Direct download link to PDF circular"
     )
@@ -295,6 +301,8 @@ class StudentScholarshipMatchResult(BaseModel):
     estimated_financial_benefit: str
     portal_name: str
     portal_url: str
+    direct_apply_url: Optional[str] = None
+    portal_navigation_steps: List[str] = Field(default_factory=list)
     is_govt_verified: bool = True
     document_checklist: List[DocumentCheckItem] = Field(default_factory=list)
     hinglish_guide: Optional[HinglishExplainer] = None

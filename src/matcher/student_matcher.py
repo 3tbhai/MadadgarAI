@@ -239,6 +239,15 @@ class StudentScholarshipMatcher:
         # Hinglish Explainer Guide
         hinglish = self.generate_hinglish_guide(foa)
 
+        direct_apply_link = foa.direct_apply_url or portal_url
+        navigation_steps = foa.portal_navigation_steps or [
+            f"1. Open the direct portal link ({portal_url}).",
+            "2. Complete student registration with your Aadhaar and email/mobile OTP.",
+            f"3. Search or navigate to scheme: '{foa.title}'.",
+            "4. Upload required documents and verify active Aadhaar-NPCI bank seeding.",
+            "5. Submit before the closing date."
+        ]
+
         return StudentScholarshipMatchResult(
             foa=foa,
             eligibility_status=final_status,
@@ -248,6 +257,8 @@ class StudentScholarshipMatcher:
             estimated_financial_benefit=benefit_desc,
             portal_name=portal_name,
             portal_url=portal_url,
+            direct_apply_url=direct_apply_link,
+            portal_navigation_steps=navigation_steps,
             is_govt_verified=True,
             document_checklist=docs,
             hinglish_guide=hinglish,
