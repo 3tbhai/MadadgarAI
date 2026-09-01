@@ -16,21 +16,21 @@ from src.schemas.foa import (
 
 
 def get_seed_student_scholarships() -> List[FundingOpportunity]:
-    """Returns curated, realistic, high-impact Indian Student Scholarships with direct application deep-links and navigation guides."""
+    """Returns curated, realistic, high-impact Indian Student Scholarships with canonical portal links and navigation guides."""
     raw_scholarships = [
         {
             "foa_id": "SCHOLARSHIP-AICTE-PRAGATI-2026",
             "title": "AICTE Pragati Scholarship Scheme for Girl Students (Technical Degree & Diploma)",
             "agency": AgencyType.AICTE,
             "scheme_name": "Pragati Scholarship Scheme for Girls",
-            "source_url": "https://www.aicte-india.org/schemes/students-development-schemes/pragati",
-            "direct_apply_url": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+            "source_url": "https://www.aicte-india.org",
+            "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
-                "1. Click the Direct Apply link to open the NSP One Time Registration (OTR) portal.",
-                "2. Complete Aadhaar e-KYC & Mobile OTP verification to get your OTR ID.",
-                "3. Log in -> Under 'AICTE Schemes', select 'Pragati Scholarship Scheme for Girl Students'.",
-                "4. Upload 10th/12th marksheets, family income certificate (<= 8 Lakhs), and college admission letter.",
-                "5. Ensure your bank account has active Aadhaar-NPCI DBT mapping before final submission."
+                "1. Open the National Scholarship Portal (scholarships.gov.in).",
+                "2. Click on 'Applicant Corner' -> 'New Registration (OTR)' to create your student profile with Aadhaar.",
+                "3. Log in with your OTR credentials and click 'Apply for Scholarship'.",
+                "4. Under 'AICTE Schemes' tab, select 'Pragati Scholarship Scheme for Girl Students (Degree/Diploma)'.",
+                "5. Enter Class 10th/12th marks, upload family income certificate (<= 8 Lakhs), and submit for college verification."
             ],
             "brief_summary": "Empowers young women to pursue technical and engineering education. Provides ₹50,000 per annum for tuition, equipment, books, and software. Open to female students admitted to 1st year Degree/Diploma in AICTE-approved institutions with annual family income up to ₹8 Lakhs.",
             "thematic_areas": ["Girl Students", "Women in Engineering", "Technical Education", "Tuition Support", "AICTE"],
@@ -54,14 +54,14 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "AICTE Saksham Scholarship Scheme for Specially-Abled Students",
             "agency": AgencyType.AICTE,
             "scheme_name": "Saksham Scholarship Scheme for Differently Abled",
-            "source_url": "https://www.aicte-india.org/schemes/students-development-schemes/saksham",
-            "direct_apply_url": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+            "source_url": "https://www.aicte-india.org",
+            "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
-                "1. Click the Direct Apply link to start NSP OTR Registration.",
-                "2. Complete student verification with Aadhaar & Mobile OTP.",
-                "3. Log in to Student Dashboard -> Go to 'AICTE Schemes' tab.",
+                "1. Open National Scholarship Portal (scholarships.gov.in).",
+                "2. Click 'Applicant Corner' -> Complete One Time Registration (OTR) with Aadhaar FaceAuth or Mobile OTP.",
+                "3. Log in to Student Dashboard -> Navigate to 'AICTE Schemes'.",
                 "4. Select 'Saksham Scholarship Scheme for Specially-Abled Students (Degree/Diploma)'.",
-                "5. Upload UDID Disability Certificate (>= 40% disability) and Tehsildar Income Certificate (<= 8 Lakhs)."
+                "5. Upload UDID Disability Certificate (>= 40% disability) and Income Certificate (<= 8 Lakhs)."
             ],
             "brief_summary": "Dedicated financial assistance to differently-abled students with disability not less than 40% pursuing technical degree or diploma courses. Provides ₹50,000 per annum for educational and assistive technology expenses.",
             "thematic_areas": ["Differently Abled", "PwD Students", "Technical Education", "Assistive Tech Support"],
@@ -85,15 +85,15 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.NSP,
             "scheme_name": "PM-USP Central Sector Scholarship",
             "source_url": "https://scholarships.gov.in",
-            "direct_apply_url": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+            "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
-                "1. Open the NSP Direct Registration link above.",
-                "2. Generate your OTR (One Time Registration) ID using FaceAuth or Aadhaar OTP.",
-                "3. Log in to Student Dashboard -> Under 'Department of Higher Education (Ministry of Education)', select 'Central Sector Scheme of Scholarship'.",
-                "4. Enter your Class 12 Board Roll Number and Year to auto-verify your board percentile merit.",
-                "5. Upload family income certificate (<= 4.5 Lakhs) and submit."
+                "1. Open National Scholarship Portal (scholarships.gov.in).",
+                "2. Click 'New Registration / OTR' -> Authenticate using Aadhaar or DigiLocker.",
+                "3. Log in to Applicant Portal -> Under 'Department of Higher Education (Ministry of Education)', select 'Central Sector Scheme of Scholarship'.",
+                "4. Enter Class 12 Board Roll Number and Passing Year (System will auto-validate Board Top 20th Percentile Cutoff).",
+                "5. Upload Tehsildar Income Certificate (<= 4.5 Lakhs) and Bonafide College Admission receipt."
             ],
-            "brief_summary": "Flagship Ministry of Education scheme providing financial support to meritorious students from low-income families. ₹12,000/year for undergraduate years and ₹20,000/year for postgraduate studies. Requires >80th percentile in relevant 12th Board examination and income <= ₹4.5 Lakhs.",
+            "brief_summary": "Flagship Ministry of Education scheme providing financial support to meritorious students from low-income families. ₹12,00,0/year for undergraduate years and ₹20,000/year for postgraduate studies. Requires >80th percentile in relevant 12th Board examination and income <= ₹4.5 Lakhs.",
             "thematic_areas": ["Merit-cum-Means", "Higher Education", "UG/PG College Students", "Board Toppers", "Ministry of Education"],
             "domain": ResearchDomain.INTERDISCIPLINARY,
             "thematic_thrust": "Direct Financial Support to Meritorious College & University Students",
@@ -115,13 +115,13 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.NSP,
             "scheme_name": "Centrally Sponsored Post-Matric Scholarship for SCs",
             "source_url": "https://scholarships.gov.in",
-            "direct_apply_url": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+            "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
-                "1. Click Direct Apply link to access NSP OTR creation.",
-                "2. Verify student identity with Aadhaar.",
-                "3. Under 'Ministry of Social Justice & Empowerment', select 'Post Matric Scholarship for SC Students'.",
-                "4. Enter digital Caste Certificate number & Tehsildar Income Certificate number (<= 2.5 Lakhs).",
-                "5. Upload fee receipt and submit online."
+                "1. Open National Scholarship Portal (scholarships.gov.in).",
+                "2. Click 'Applicant Corner' -> Complete Aadhaar e-KYC OTR registration.",
+                "3. Log in -> Under 'Ministry of Social Justice & Empowerment', click 'Centrally Sponsored Post-Matric Scholarship for SC Students'.",
+                "4. Enter digital Caste Certificate number & Tehsildar Income Certificate (<= 2.5 Lakhs).",
+                "5. Submit form online and ensure bank account has active DBT/NPCI mapping."
             ],
             "brief_summary": "Comprehensive financial support for SC students studying from Class 11 up to Post-Doctoral degrees. Covers 100% compulsory non-refundable college tuition fees plus a monthly maintenance allowance up to ₹1,200/month. Annual family income ceiling: ₹2.5 Lakhs.",
             "thematic_areas": ["SC Students", "Tuition Fee Reimbursement", "Maintenance Allowance", "Higher Education", "Social Justice"],
@@ -145,13 +145,13 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.NSP,
             "scheme_name": "Post-Matric Scholarship for STs",
             "source_url": "https://scholarships.gov.in",
-            "direct_apply_url": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+            "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
-                "1. Open NSP Direct Registration form.",
-                "2. Authenticate with Aadhaar to generate OTR.",
-                "3. Navigate to 'Ministry of Tribal Affairs' section.",
-                "4. Select 'Post-Matric Scholarships for ST Students'.",
-                "5. Upload ST Caste Certificate and family income certificate (<= 2.5 Lakhs)."
+                "1. Open National Scholarship Portal (scholarships.gov.in).",
+                "2. Complete student verification with Aadhaar to generate OTR.",
+                "3. In the scholarship application menu, select 'Ministry of Tribal Affairs' -> 'Post-Matric Scholarship for ST Students'.",
+                "4. Upload ST Caste Certificate and Tehsildar Income Certificate (<= 2.5 Lakhs).",
+                "5. Final submit and deliver physical document copy to your College Nodal Officer."
             ],
             "brief_summary": "Universal educational grant covering full tuition fees, book grants, and maintenance allowances for ST students pursuing Class 11, 12, Diploma, Professional Degrees (Engineering/MBBS), and PG/PhD courses. Family income <= ₹2.5 Lakhs.",
             "thematic_areas": ["ST Students", "Tribal Affairs", "Tuition Waiver", "Hostel Allowance", "Higher Education"],
@@ -175,13 +175,13 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.NSP,
             "scheme_name": "PM Young Achievers Scholarship (PM YASASVI)",
             "source_url": "https://scholarships.gov.in",
-            "direct_apply_url": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+            "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
-                "1. Click Direct Apply link to start NSP OTR process.",
-                "2. Log in with your OTR credentials.",
-                "3. Under 'Ministry of Social Justice', click 'PM-YASASVI Post-Matric Scholarship for OBC, EBC & DNT Students'.",
-                "4. Upload valid OBC-NCL / EBC / DNT certificate and family income proof (<= 2.5 Lakhs).",
-                "5. Review and submit."
+                "1. Open National Scholarship Portal (scholarships.gov.in).",
+                "2. Create your OTR credentials via Aadhaar e-KYC.",
+                "3. Log in -> Under 'Ministry of Social Justice & Empowerment', choose 'PM-YASASVI Post-Matric Scholarship for OBC, EBC & DNT Students'.",
+                "4. Upload OBC-NCL / EBC / DNT certificate and family income proof (<= 2.5 Lakhs).",
+                "5. Review details and submit online."
             ],
             "brief_summary": "Flagship central scheme for Other Backward Classes (OBC), Economically Backward Classes (EBC), and De-Notified Nomadic Tribes (DNT). Provides tuition fee assistance and maintenance allowance up to ₹45,000/year for higher studies.",
             "thematic_areas": ["OBC Students", "EBC Category", "DNT Communities", "Higher Education", "Financial Assistance"],
@@ -205,12 +205,12 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.UGC,
             "scheme_name": "Ishan Uday Scholarship for North East",
             "source_url": "https://scholarships.gov.in",
-            "direct_apply_url": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+            "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
-                "1. Open NSP OTR Registration link.",
-                "2. Complete student verification with your North East state address.",
+                "1. Open National Scholarship Portal (scholarships.gov.in).",
+                "2. Complete student verification with your North East state permanent address.",
                 "3. In the application list, click 'University Grants Commission (UGC)' -> 'Ishan Uday Special Scholarship for NER'.",
-                "4. Upload North-Eastern Domicile / PRC, Class 12 marksheet, and College Bonafide letter.",
+                "4. Upload North-Eastern State Domicile / Permanent Residence Certificate (PRC) & Class 12 marksheet.",
                 "5. Submit form before closing date."
             ],
             "brief_summary": "10,000 dedicated scholarships per year for students with domicile in the North Eastern states (Assam, Arunachal Pradesh, Meghalaya, Manipur, Mizoram, Nagaland, Tripura, Sikkim). Provides ₹5,400/month for General Degree and ₹7,800/month for Technical, Medical, and Professional courses.",
@@ -235,11 +235,11 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "UGC Post Graduate Indira Gandhi Scholarship for Single Girl Child",
             "agency": AgencyType.UGC,
             "scheme_name": "PG Indira Gandhi Scholarship for Single Girl Child",
-            "source_url": "https://www.ugc.gov.in/page/scholarships-and-fellowships.aspx",
-            "direct_apply_url": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+            "source_url": "https://www.ugc.gov.in",
+            "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
-                "1. Click Direct Apply to open the NSP UGC application portal.",
-                "2. Complete student OTR registration.",
+                "1. Open National Scholarship Portal (scholarships.gov.in).",
+                "2. Complete student One Time Registration (OTR).",
                 "3. Under 'University Grants Commission (UGC)', select 'PG Indira Gandhi Scholarship for Single Girl Child'.",
                 "4. Upload Single Girl Child Affidavit on ₹50/100 Stamp Paper sworn before First Class Magistrate / SDM.",
                 "5. Upload 1st year PG Master's course admission receipt and submit."
@@ -266,13 +266,13 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.STATE_GOVT,
             "scheme_name": "UP Dashmottar Scholarship (Class 11, 12, UG, PG, Diploma)",
             "source_url": "https://scholarship.up.gov.in",
-            "direct_apply_url": "https://scholarship.up.gov.in/RegistrationNew.aspx",
+            "direct_apply_url": "https://scholarship.up.gov.in",
             "portal_navigation_steps": [
-                "1. Click Direct Apply link to open the official UP Scholarship Student Registration Portal.",
-                "2. Choose your category (General / OBC / SC / ST / Minority) -> Select 'Postmatric Other than Inter (Fresh)'.",
-                "3. Enter High School Board Roll Number, Name, DOB, and create student password.",
+                "1. Open official UP Scholarship portal (scholarship.up.gov.in).",
+                "2. Click 'Student' tab -> Select 'Registration' -> Choose your category (General / OBC / SC / ST / Minority) -> 'Postmatric Other than Inter (Fresh)'.",
+                "3. Enter High School Board Roll Number, Name, DOB, and mobile linked with Aadhaar.",
                 "4. Log in with Registration ID -> Fill Income Certificate (आय प्रमाण पत्र) Application Number and Token.",
-                "5. Complete Aadhaar e-Authentication, print draft application, and submit signed copy with documents to your College Nodal Officer within 3 days."
+                "5. Complete Aadhaar e-KYC authentication, print final application, and submit signed physical copy to your College Nodal Officer within 3 days."
             ],
             "brief_summary": "Comprehensive state scholarship for Uttar Pradesh resident students. Covers 100% fee reimbursement (up to ₹50,000+) plus non-refundable fees and maintenance allowance for students studying in UP colleges or national institutes.",
             "thematic_areas": ["Uttar Pradesh Domicile", "Fee Refund", "State Scholarship", "SC/ST/OBC/General/Minority", "College Students"],
@@ -296,12 +296,12 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.STATE_GOVT,
             "scheme_name": "MahaDBT EBC Tuition Fee Reimbursement",
             "source_url": "https://mahadbt.maharashtra.gov.in",
-            "direct_apply_url": "https://mahadbt.maharashtra.gov.in/Registration/ApplicantRegistration/CreateApplicantRegistration",
+            "direct_apply_url": "https://mahadbt.maharashtra.gov.in",
             "portal_navigation_steps": [
-                "1. Click the Direct Apply link to open MahaDBT New Applicant Registration.",
-                "2. Register with Aadhaar number and verify via OTP.",
+                "1. Open MahaDBT Portal (mahadbt.maharashtra.gov.in).",
+                "2. Click 'Post Matric Scholarship' -> 'New Applicant Registration' with Aadhaar.",
                 "3. Log in -> Under 'Directorate of Higher & Technical Education (DTE)', select 'Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulkh Shishyavrutti Yojna (EBC)'.",
-                "4. Enter CAP Admission ID and college fee payment receipt.",
+                "4. Enter Centralized Admission Process (CAP) Application ID and college fee payment receipt.",
                 "5. Upload Tahsildar Income Certificate (<= 8 Lakhs) & Maharashtra Domicile Certificate."
             ],
             "brief_summary": "Provides 50% tuition fee and examination fee reimbursement for economically weaker students in Maharashtra pursuing professional courses (Engineering, Medical, Pharmacy, MBA, Architecture, Polytechnic). Family income ceiling up to ₹8 Lakhs.",
@@ -326,11 +326,11 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.CSR_FOUNDATION,
             "scheme_name": "Kotak Kanya Scholarship Programme",
             "source_url": "https://kotakeducation.org/kotak-kanya-scholarship",
-            "direct_apply_url": "https://kotakeducation.org/kotak-kanya-scholarship/",
+            "direct_apply_url": "https://kotakeducation.org/kotak-kanya-scholarship",
             "portal_navigation_steps": [
-                "1. Click Direct Apply link to open the Kotak Kanya online registration form.",
-                "2. Sign up with email and mobile OTP.",
-                "3. Fill in 12th Board score (>= 85%) and 1st year professional degree admission details (B.Tech / MBBS / Law / Design).",
+                "1. Open Kotak Education Foundation Portal (kotakeducation.org/kotak-kanya-scholarship).",
+                "2. Click 'Apply Now' and register with student email and mobile OTP.",
+                "3. Fill in Class 12 Board score (>= 85%) and 1st year professional degree admission details (B.Tech / MBBS / Law / Design).",
                 "4. Upload family income proof (<= 6 Lakhs/year) and college fee structure.",
                 "5. Submit form directly online."
             ],
@@ -356,13 +356,13 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "agency": AgencyType.CSR_FOUNDATION,
             "scheme_name": "Reliance Foundation UG Scholarship",
             "source_url": "https://www.scholarships.reliancefoundation.org",
-            "direct_apply_url": "https://www.scholarships.reliancefoundation.org/Application_Process.aspx",
+            "direct_apply_url": "https://www.scholarships.reliancefoundation.org",
             "portal_navigation_steps": [
-                "1. Click Direct Apply link to access the Reliance Foundation Scholarship Application portal.",
-                "2. Complete the eligibility questionnaire (1st year UG, >=60% in 12th).",
+                "1. Open Reliance Foundation Scholarship Portal (scholarships.reliancefoundation.org).",
+                "2. Click 'Undergraduate Scholarships' -> Complete eligibility eligibility questionnaire (1st year UG, >=60% in 12th).",
                 "3. Fill in academic details and household income (<= 15 Lakhs).",
-                "4. Complete the online aptitude test on the scheduled date.",
-                "5. Upload documents upon shortlisting."
+                "4. Take the mandatory online aptitude test on the scheduled date.",
+                "5. Upload verified documents upon shortlisting."
             ],
             "brief_summary": "5,000 undergraduate scholarships awarded annually. Provides up to ₹2,00,000 grant over the degree duration to enable scholars to excel in their academic and leadership journey. Open to 1st-year UG students in all streams with family income up to ₹15 Lakhs (priority to <= ₹2.5 Lakhs).",
             "thematic_areas": ["Merit-cum-Means", "Undergraduate Degree", "All Streams", "CSR Initiative", "Reliance Foundation"],
@@ -385,14 +385,14 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "HDFC Bank Parivartan's Educational Crisis Support Scholarship (ECSS)",
             "agency": AgencyType.CSR_FOUNDATION,
             "scheme_name": "HDFC Parivartan ECSS Programme",
-            "source_url": "https://www.hdfcbank.com/personal/about-us/corporate-social-responsibility",
-            "direct_apply_url": "https://www.hdfcbank.com/personal/about-us/corporate-social-responsibility/parivartan-ecss-scholarship",
+            "source_url": "https://www.hdfcbank.com",
+            "direct_apply_url": "https://www.hdfcbank.com",
             "portal_navigation_steps": [
-                "1. Click Direct Apply to open the HDFC Parivartan online form.",
-                "2. Choose your course level: School / Diploma / Graduation / Post-Graduation.",
+                "1. Open HDFC Bank Parivartan CSR Portal (hdfcbank.com).",
+                "2. Choose course level: School / Diploma / Graduation / Post-Graduation.",
                 "3. Fill personal information, family financial crisis explanation, and income proof (<= 2.5 Lakhs).",
                 "4. Upload previous academic marksheet (>=55%) and college bonafide certificate.",
-                "5. Submit online."
+                "5. Submit form online."
             ],
             "brief_summary": "Financial support for school, diploma, undergraduate, and postgraduate students from underprivileged backgrounds who are at risk of dropping out due to personal/economic crises. Provides up to ₹75,000/year.",
             "thematic_areas": ["Crisis Support", "School & College Students", "Need-Based Aid", "CSR", "HDFC Bank"],

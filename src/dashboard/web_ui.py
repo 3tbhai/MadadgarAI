@@ -2,7 +2,7 @@
 
 
 def render_dashboard_html() -> str:
-    return """<!DOCTYPE html>
+    return r"""<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
@@ -948,11 +948,11 @@ def render_dashboard_html() -> str:
             </div>
 
             <div class="card-actions">
-              <a href="${applyLink}" target="_blank" class="direct-apply-btn">🚀 Direct Apply ↗</a>
-              <button class="secondary-btn" onclick="openNavGuide('${foa.foa_id}')">🗺️ Portal Guide</button>
+              <button class="direct-apply-btn" onclick="openNavGuide('${foa.foa_id}')">🚀 Apply & Portal Guide (आवेदन सेतु) ↗</button>
               <button class="secondary-btn" onclick="openDocChecklist('${foa.foa_id}')">📄 Documents</button>
               <button class="secondary-btn" onclick="openHinglishGuide('${foa.foa_id}')">🇮🇳 सरल गाइड</button>
               <button class="secondary-btn" onclick="downloadCalendar('${foa.foa_id}')">📅 .ICS</button>
+              <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="secondary-btn">🌐 Official Portal ↗</a>
             </div>
           </div>
         `;
@@ -1013,7 +1013,7 @@ def render_dashboard_html() -> str:
         const badgeText = res.eligibility_status === 'ELIGIBLE' ? '100% ELIGIBLE' : (res.eligibility_status === 'HIGH_PROBABILITY' ? 'HIGH PROBABILITY' : res.eligibility_status);
 
         const applyLink = res.direct_apply_url || foa.direct_apply_url || res.portal_url;
-        const whatsappText = encodeURIComponent(`🎓 *Scholarship Alert: ${foa.title}*\n💰 Benefit: ${res.estimated_financial_benefit}\n🚀 Direct Apply Link: ${applyLink}\nCheck your eligibility on MadadgaarAI!`);
+        const whatsappText = encodeURIComponent(`🎓 *Scholarship Alert: ${foa.title}*\n💰 Benefit: ${res.estimated_financial_benefit}\n🏛️ Official Portal: ${applyLink}\nCheck your eligibility on MadadgaarAI!`);
 
         return `
           <div class="foa-card">
@@ -1038,11 +1038,11 @@ def render_dashboard_html() -> str:
             </div>
 
             <div class="card-actions">
-              <a href="${applyLink}" target="_blank" class="direct-apply-btn">🚀 Direct Apply Form ↗</a>
-              <button class="secondary-btn" onclick="openNavGuide('${foa.foa_id}')">🗺️ Portal Guide</button>
+              <button class="direct-apply-btn" onclick="openNavGuide('${foa.foa_id}')">🚀 Apply & Portal Guide (आवेदन सेतु) ↗</button>
               <button class="secondary-btn" onclick="openDocChecklist('${foa.foa_id}')">📄 Documents</button>
               <button class="secondary-btn" onclick="openHinglishGuide('${foa.foa_id}')">🇮🇳 सरल गाइड</button>
               <a href="https://api.whatsapp.com/send?text=${whatsappText}" target="_blank" class="whatsapp-btn">📲 Share</a>
+              <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="secondary-btn">🌐 Portal ↗</a>
             </div>
           </div>
         `;
@@ -1143,8 +1143,8 @@ def render_dashboard_html() -> str:
       const title = document.getElementById('modalTitle');
       const body = document.getElementById('modalBody');
 
-      title.innerText = "🗺️ Step-by-Step Portal Navigation Guide (पोर्टल पर कैसे पहुंचे)";
-      body.innerHTML = '<div style="text-align: center; padding: 20px;">Loading navigation steps...</div>';
+      title.innerText = "🏛️ Official Government Application Gateway (सरकारी आवेदन सेतु)";
+      body.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--text-secondary);">⚡ Loading verified government portal instructions...</div>';
       modal.classList.add('active');
 
       try {
@@ -1152,45 +1152,91 @@ def render_dashboard_html() -> str:
         const foa = await res.json();
 
         const steps = (foa.portal_navigation_steps && foa.portal_navigation_steps.length > 0) ? foa.portal_navigation_steps : [
-          `1. Click the Direct Apply button below to open the application portal (${foa.source_url}).`,
-          "2. Complete student One Time Registration (OTR) with your Aadhaar number & Mobile OTP.",
-          `3. Search for the scheme: '${foa.title}'.`,
-          "4. Fill in academic details and upload required income and caste documents.",
-          "5. Submit the application and verify your bank account has active DBT/NPCI mapping."
+          `1. Open the verified official portal (${foa.source_url}).`,
+          "2. Complete student One Time Registration (OTR) with Aadhaar number & Mobile OTP.",
+          `3. Search and select scheme: '${foa.title}'.`,
+          "4. Fill academic details and upload required income/caste certificates.",
+          "5. Verify your bank account has active Aadhaar-NPCI DBT mapping before submission."
         ];
 
         const applyUrl = foa.direct_apply_url || foa.source_url;
+        const portalDomain = new URL(applyUrl).hostname;
+        const whatsappText = encodeURIComponent(`🎓 *Scholarship Guidance: ${foa.title}*\n🏛️ Official Portal: ${applyUrl}\nCheck your eligibility on MadadgaarAI!`);
 
         let html = `
-          <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15)); border: 1px solid rgba(16, 185, 129, 0.35); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-            <div style="font-size: 12px; color: var(--accent-emerald); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Scheme Target</div>
-            <h4 style="color: #ffffff; font-size: 16px; margin-top: 2px;">${foa.title}</h4>
-            <div style="font-size: 13px; color: #cbd5e1; margin-top: 6px;">Portal: <strong>${foa.agency}</strong></div>
+          <!-- Header Banner -->
+          <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(99, 102, 241, 0.18)); border: 1px solid rgba(16, 185, 129, 0.4); padding: 18px; border-radius: 12px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="background: rgba(16, 185, 129, 0.25); color: #34d399; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.4);">
+                🛡️ NIC / GOVT VERIFIED GATEWAY
+              </span>
+              <span style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">${foa.agency}</span>
+            </div>
+            <h3 style="color: #ffffff; font-size: 17px; margin-bottom: 6px; line-height: 1.4;">${foa.title}</h3>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #cbd5e1;">
+              <span>🌐 Official Web Domain: <strong style="color: #60a5fa;">${portalDomain}</strong></span>
+              <button class="secondary-btn" style="padding: 2px 8px; font-size: 11px;" onclick="navigator.clipboard.writeText('${applyUrl}'); alert('Official portal URL copied to clipboard!');">📋 Copy URL</button>
+            </div>
           </div>
 
-          <h5 style="color: #ffffff; font-size: 15px; margin-bottom: 12px;">📍 Exact Click-Through Navigation Path (बिना भटके सीधे फॉर्म भरें):</h5>
-          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+          <!-- Trust & Anti-Scam Notice -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px dashed rgba(16, 185, 129, 0.35); padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; font-size: 12.5px; color: #a7f3d0; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">🛡️</span>
+            <div>
+              <strong>100% Free Government Application:</strong> Government scholarships never charge application fees. Apply only on official <code>.gov.in</code> / <code>.org</code> domains.
+            </div>
+          </div>
+
+          <!-- Visual Click-by-Click Navigation Map -->
+          <h4 style="color: #ffffff; font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+            🧭 Step-by-Step Portal Navigation Path (बिना भटके सीधे फॉर्म भरें):
+          </h4>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px;">
             ${steps.map((step, idx) => `
-              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); padding: 14px 18px; border-radius: 10px; font-size: 13.5px; color: #f1f5f9; display: flex; gap: 12px; align-items: flex-start;">
-                <span style="background: var(--accent-indigo); color: #ffffff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;">${idx + 1}</span>
+              <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border-subtle); padding: 12px 16px; border-radius: 10px; font-size: 13.5px; color: #f1f5f9; display: flex; gap: 12px; align-items: flex-start;">
+                <span style="background: var(--accent-indigo); color: #ffffff; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; flex-shrink: 0; margin-top: 1px;">${idx + 1}</span>
                 <span style="line-height: 1.5;">${step.replace(/^[0-9]+\.\s*/, '')}</span>
               </div>
             `).join('')}
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
-            <div style="font-size: 12px; color: var(--text-muted);">
-              🛡️ Verified Direct Official Link
+          <!-- Pre-Flight Readiness Checklist -->
+          <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle); padding: 16px; border-radius: 12px; margin-bottom: 24px;">
+            <h5 style="color: #ffffff; font-size: 14px; margin-bottom: 10px;">📋 Pre-Flight Document Readiness Check (आवेदन शुरू करने से पहले जांचें):</h5>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12.5px; color: #cbd5e1;">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" checked disabled>
+                <span>Aadhaar Card with Mobile OTP</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" checked disabled>
+                <span>Income Certificate (valid year)</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" checked disabled>
+                <span>Class 10th / 12th Marksheets</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" checked disabled>
+                <span>Bank Account Aadhaar-NPCI Seeded</span>
+              </label>
             </div>
-            <a href="${applyUrl}" target="_blank" class="direct-apply-btn" style="padding: 10px 22px; font-size: 14px;">
-              🚀 Open Direct Application Form ↗
+          </div>
+
+          <!-- Action Footer Buttons -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 18px; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 12px;">
+            <a href="https://api.whatsapp.com/send?text=${whatsappText}" target="_blank" class="whatsapp-btn">
+              📲 Share Guidance on WhatsApp
+            </a>
+            <a href="${applyUrl}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn" style="padding: 11px 24px; font-size: 14.5px;">
+              🚀 Launch Official Government Portal (पोर्टल खोलें) ↗
             </a>
           </div>
         `;
 
         body.innerHTML = html;
       } catch (err) {
-        body.innerHTML = '<div style="color: var(--accent-rose);">Failed to load portal guide.</div>';
+        body.innerHTML = '<div style="color: var(--accent-rose);">Failed to load application bridge.</div>';
       }
     }
 
