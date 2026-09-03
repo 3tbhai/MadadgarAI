@@ -99,9 +99,14 @@ pip install -r requirements.txt
 
 ### 2. Launch Application & Web Dashboard
 
-```bash
-python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+**Option A (1-Click Launcher on Windows)**:
+* Simply double-click **`run.bat`** (or in PowerShell run `.\run.ps1`)
+
+**Option B (Command Line via Virtual Environment)**:
+```powershell
+.\venv\Scripts\python.exe run.py
 ```
+*(or `python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload` after activating `venv`)*
 
 Open your browser at: **[http://localhost:8000](http://localhost:8000)** (or Swagger API Docs at **[http://localhost:8000/docs](http://localhost:8000/docs)**).
 
