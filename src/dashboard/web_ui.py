@@ -21,6 +21,18 @@ def render_dashboard_html() -> str:
     ::-webkit-scrollbar-track { background: #0e1321; }
     ::-webkit-scrollbar-thumb { background: #252a39; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #4edea3; }
+    @keyframes ticker {
+      0% { transform: translateX(100vw); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-ticker {
+      display: inline-block;
+      white-space: nowrap;
+      animation: ticker 120s linear infinite;
+    }
+    .animate-ticker:hover {
+      animation-play-state: paused;
+    }
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="tailwind-config">
@@ -173,10 +185,15 @@ def render_dashboard_html() -> str:
         </div>
       </div>
     </div>
+    <div class="w-full bg-primary/10 border-b border-primary/20 h-8 flex items-center overflow-hidden">
+      <div class="animate-ticker text-primary font-label-mono-xs text-[11px] font-semibold uppercase tracking-wider" id="navTicker">
+        Loading latest active scholarships...
+      </div>
+    </div>
   </header>
 
   <!-- MAIN VIEWPORT CONTAINER -->
-  <main class="w-full pt-20 flex-1 bg-surface">
+  <main class="w-full pt-28 flex-1 bg-surface">
 
     <!-- ========================================================= -->
     <!-- TAB 1: VIDYARTHI SCHOLARSHIP HUB (DEFAULT)                -->
@@ -852,6 +869,14 @@ def render_dashboard_html() -> str:
         renderExploreGrid(allOpportunities);
         document.getElementById('statTotalCounter').innerText = `${allOpportunities.length} SCHEMES ACTIVE`;
         document.getElementById('statExploreBadge').innerText = `${allOpportunities.length} ACTIVE`;
+        
+        // Populate scrolling ticker
+        if (allOpportunities.length > 0) {
+          const tickerContent = allOpportunities.map(foa => `🚀 <strong>${foa.title}</strong> (${foa.agency})`).join(' &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; ');
+          document.getElementById('navTicker').innerHTML = tickerContent;
+        } else {
+          document.getElementById('navTicker').innerHTML = 'No active scholarships found.';
+        }
       } catch (err) {
         console.error('Failed to load opportunities:', err);
       }
