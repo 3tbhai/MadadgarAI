@@ -963,20 +963,27 @@ def render_dashboard_html() -> str:
         const whatsappText = encodeURIComponent(`🎓 *Scholarship Alert: ${foa.title}*\n💰 Grant: ${res.estimated_financial_benefit}\n🏛️ Official Portal: ${res.direct_apply_url || res.portal_url}\nCheck your eligibility on MadadgaarAI!`);
 
         return `
-          <div class="bg-surface-container-low/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/30 shadow-xl flex flex-col justify-between hover:border-primary/40 transition-all">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2 py-0.5 bg-surface-container-highest text-tertiary font-label-mono-xs text-xs uppercase tracking-wider rounded font-semibold">${foa.agency}</span>
-                <span class="px-2.5 py-0.5 ${badgeBg} font-label-mono-xs text-xs uppercase font-bold rounded border flex items-center gap-1">
-                  ${isEligible ? '<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>' : ''}
-                  ${badgeLabel}
-                </span>
+          <div class="bg-surface-container-low/90 backdrop-blur-xl rounded-2xl border border-outline-variant/30 shadow-xl flex flex-col justify-between hover:border-primary/40 transition-all overflow-hidden">
+            <!-- Collapsible Header -->
+            <div class="p-5 cursor-pointer flex justify-between items-center bg-surface-container-highest/20 hover:bg-surface-container-highest/40 transition-colors" onclick="const d = document.getElementById('details-${foa.foa_id}'); d.classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')">
+              <div class="flex-1 pr-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="px-2 py-0.5 bg-surface-container-highest text-tertiary font-label-mono-xs text-xs uppercase tracking-wider rounded font-semibold">${foa.agency}</span>
+                  <span class="px-2.5 py-0.5 ${badgeBg} font-label-mono-xs text-xs uppercase font-bold rounded border flex items-center gap-1">
+                    ${isEligible ? '<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>' : ''}
+                    ${badgeLabel}
+                  </span>
+                </div>
+                <h3 class="font-headline-md text-base sm:text-lg text-on-surface font-semibold tracking-tight mt-1 transition-colors">
+                  ${foa.title}
+                </h3>
               </div>
+              <span class="material-symbols-outlined text-[24px] text-on-surface-variant transition-transform duration-300 chevron">expand_more</span>
+            </div>
 
-              <h3 class="font-headline-md text-base sm:text-lg text-on-surface font-semibold tracking-tight mt-1 hover:text-primary transition-colors cursor-pointer" onclick="openApplyModal('${foa.foa_id}')">
-                ${foa.title}
-              </h3>
-              <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-1.5 line-clamp-2">
+            <!-- Collapsible Body -->
+            <div id="details-${foa.foa_id}" class="hidden px-5 pb-5 pt-3 border-t border-outline-variant/20 bg-surface-container-low/40">
+              <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant line-clamp-3">
                 ${foa.brief_summary}
               </p>
 
@@ -991,7 +998,7 @@ def render_dashboard_html() -> str:
                 </div>
               </div>
 
-              <div class="bg-surface-container/60 p-3 rounded-xl space-y-1 mb-3 border border-outline-variant/10 text-xs">
+              <div class="bg-surface-container/60 p-3 rounded-xl space-y-1 mb-4 border border-outline-variant/10 text-xs">
                 ${res.match_reasons.map(r => `
                   <div class="flex items-center gap-1.5 text-on-surface">
                     <span class="material-symbols-outlined text-[15px] text-primary shrink-0">check_circle</span>
@@ -1005,19 +1012,17 @@ def render_dashboard_html() -> str:
                   </div>
                 `).join('')}
               </div>
-            </div>
 
-            <div>
               <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-outline-variant/20">
                 <button class="px-4 py-2 bg-primary text-on-primary hover:bg-primary-fixed font-label-mono-sm text-xs uppercase font-bold tracking-wider rounded-lg transition-all flex items-center gap-1.5 shadow-[0_0_12px_rgba(78,222,163,0.2)]" onclick="openApplyModal('${foa.foa_id}')">
-                  <span>🚀 Apply & Portal Guide (आवेदन सेतु)</span>
+                  <span>🚀 Apply & Portal Guide</span>
                   <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </button>
                 <button class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-mono-xs text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center gap-1 border border-outline-variant/20" onclick="openDocChecklistModal('${foa.foa_id}')">
                   <span class="material-symbols-outlined text-[14px]">checklist</span> Docs
                 </button>
                 <button class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-variant text-secondary font-label-mono-xs text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center gap-1 border border-outline-variant/20" onclick="openHinglishModal('${foa.foa_id}')">
-                  <span class="material-symbols-outlined text-[14px]">translate</span> सरल गाइड
+                  <span class="material-symbols-outlined text-[14px]">translate</span> गाइड
                 </button>
                 <a class="px-3 py-1.5 bg-[#138808]/20 hover:bg-[#138808]/30 text-primary font-label-mono-xs text-xs uppercase rounded-lg transition-colors flex items-center gap-1 border border-[#138808]/40 ml-auto" href="https://api.whatsapp.com/send?text=${whatsappText}" target="_blank" rel="noopener noreferrer">
                   <span class="material-symbols-outlined text-[14px]">share</span> WhatsApp
@@ -1042,16 +1047,26 @@ def render_dashboard_html() -> str:
       grid.innerHTML = items.map(foa => {
         const budgetStr = foa.financials.raw_budget_text || (foa.financials.max_amount_inr ? '₹ ' + (foa.financials.max_amount_inr).toLocaleString('en-IN') : 'As per norms');
         return `
-          <div class="bg-surface-container-low/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/30 shadow-xl flex flex-col justify-between hover:border-primary/40 transition-all">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2 py-0.5 bg-surface-container-highest text-tertiary font-label-mono-xs text-xs uppercase tracking-wider rounded font-semibold">${foa.agency}</span>
-                <span class="font-label-mono-xs text-xs text-on-surface-variant">${foa.foa_id}</span>
+          <div class="bg-surface-container-low/90 backdrop-blur-xl rounded-2xl border border-outline-variant/30 shadow-xl flex flex-col justify-between hover:border-primary/40 transition-all overflow-hidden">
+            <!-- Collapsible Header -->
+            <div class="p-5 cursor-pointer flex justify-between items-center bg-surface-container-highest/20 hover:bg-surface-container-highest/40 transition-colors" onclick="const d = document.getElementById('explore-details-${foa.foa_id}'); d.classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')">
+              <div class="flex-1 pr-4">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <span class="px-2 py-0.5 bg-surface-container-highest text-tertiary font-label-mono-xs text-xs uppercase tracking-wider rounded font-semibold">${foa.agency}</span>
+                  <span class="font-label-mono-xs text-xs text-on-surface-variant">${foa.foa_id}</span>
+                </div>
+                <h3 class="font-headline-md text-base sm:text-lg text-on-surface font-semibold tracking-tight mt-1 transition-colors">
+                  ${foa.title}
+                </h3>
               </div>
-              <h3 class="font-headline-md text-base sm:text-lg text-on-surface font-semibold tracking-tight mt-1 hover:text-primary transition-colors cursor-pointer" onclick="openApplyModal('${foa.foa_id}')">${foa.title}</h3>
-              <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-1.5 line-clamp-2">${foa.brief_summary}</p>
+              <span class="material-symbols-outlined text-[24px] text-on-surface-variant transition-transform duration-300 chevron">expand_more</span>
+            </div>
+
+            <!-- Collapsible Body -->
+            <div id="explore-details-${foa.foa_id}" class="hidden px-5 pb-5 pt-3 border-t border-outline-variant/20 bg-surface-container-low/40">
+              <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant line-clamp-3">${foa.brief_summary}</p>
               
-              <div class="bg-surface-container-lowest p-3 rounded-xl my-3 flex items-center justify-between gap-2 border border-outline-variant/20">
+              <div class="bg-surface-container-lowest p-3 rounded-xl my-4 flex items-center justify-between gap-2 border border-outline-variant/20">
                 <div>
                   <span class="font-label-mono-xs text-[10px] text-tertiary uppercase tracking-wider block font-semibold">Financial Assistance:</span>
                   <span class="font-headline-md text-sm sm:text-base text-primary font-bold">${budgetStr}</span>
@@ -1061,21 +1076,21 @@ def render_dashboard_html() -> str:
                   <span class="font-label-mono-sm text-xs text-on-surface font-semibold">${(foa.thematic_areas || []).slice(0, 2).join(', ')}</span>
                 </div>
               </div>
-            </div>
 
-            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-outline-variant/20">
-              <button class="px-4 py-2 bg-primary text-on-primary hover:bg-primary-fixed font-label-mono-sm text-xs uppercase font-bold rounded-lg transition-all flex items-center gap-1.5" onclick="openApplyModal('${foa.foa_id}')">
-                <span>🚀 Apply & Portal Guide</span>
-              </button>
-              <button class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-mono-xs text-xs uppercase rounded-lg transition-colors flex items-center gap-1" onclick="openDocChecklistModal('${foa.foa_id}')">
-                <span class="material-symbols-outlined text-[14px]">checklist</span> Docs
-              </button>
-              <button class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-variant text-secondary font-label-mono-xs text-xs uppercase rounded-lg transition-colors flex items-center gap-1" onclick="openHinglishModal('${foa.foa_id}')">
-                <span class="material-symbols-outlined text-[14px]">translate</span> सरल गाइड
-              </button>
-              <button class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-mono-xs text-xs uppercase rounded-lg transition-colors flex items-center gap-1 ml-auto" onclick="downloadCalendar('${foa.foa_id}')">
-                <span class="material-symbols-outlined text-[14px]">event</span> .ICS
-              </button>
+              <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-outline-variant/20">
+                <button class="px-4 py-2 bg-primary text-on-primary hover:bg-primary-fixed font-label-mono-sm text-xs uppercase font-bold rounded-lg transition-all flex items-center gap-1.5" onclick="openApplyModal('${foa.foa_id}')">
+                  <span>🚀 Apply & Portal Guide</span>
+                </button>
+                <button class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-mono-xs text-xs uppercase rounded-lg transition-colors flex items-center gap-1" onclick="openDocChecklistModal('${foa.foa_id}')">
+                  <span class="material-symbols-outlined text-[14px]">checklist</span> Docs
+                </button>
+                <button class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-variant text-secondary font-label-mono-xs text-xs uppercase rounded-lg transition-colors flex items-center gap-1" onclick="openHinglishModal('${foa.foa_id}')">
+                  <span class="material-symbols-outlined text-[14px]">translate</span> सरल गाइड
+                </button>
+                <button class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-mono-xs text-xs uppercase rounded-lg transition-colors flex items-center gap-1 ml-auto" onclick="downloadCalendar('${foa.foa_id}')">
+                  <span class="material-symbols-outlined text-[14px]">event</span> .ICS
+                </button>
+              </div>
             </div>
           </div>
         `;
