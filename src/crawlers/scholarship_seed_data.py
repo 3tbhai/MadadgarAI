@@ -325,14 +325,14 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "Kotak Kanya Scholarship for Meritorious Girls in Professional Graduation",
             "agency": AgencyType.CSR_FOUNDATION,
             "scheme_name": "Kotak Kanya Scholarship Programme",
-            "source_url": "https://kotakeducation.org/kotak-kanya-scholarship",
-            "direct_apply_url": "https://kotakeducation.org/kotak-kanya-scholarship",
+            "source_url": "https://kotakeducationfoundation.org/our-programs/kotak-kanya-scholarship/",
+            "direct_apply_url": "https://www.buddy4study.com/page/kotak-kanya-scholarship",
             "portal_navigation_steps": [
-                "1. Open Kotak Education Foundation Portal (kotakeducation.org/kotak-kanya-scholarship).",
-                "2. Click 'Apply Now' and register with student email and mobile OTP.",
-                "3. Fill in Class 12 Board score (>= 85%) and 1st year professional degree admission details (B.Tech / MBBS / Law / Design).",
-                "4. Upload family income proof (<= 6 Lakhs/year) and college fee structure.",
-                "5. Submit form directly online."
+                "1. Open the official Kotak Kanya application portal on Buddy4Study (buddy4study.com/page/kotak-kanya-scholarship).",
+                "2. Log in using your email / Google account or register as a new student applicant.",
+                "3. Verify Class 12 Board score (>= 85%) and 1st year professional degree admission details (B.Tech / MBBS / Law / Architecture / Design).",
+                "4. Upload Tehsildar / SDM family income certificate (<= 6 Lakhs/year) and college fee structure.",
+                "5. Submit the application and track verification status online."
             ],
             "brief_summary": "High-value CSR initiative providing ₹1,50,000 per year until completion of professional graduation (Engineering, MBBS, Architecture, Design, 5-Year Integrated LLB) for female students securing >= 85% in Class 12 with family income <= ₹6 Lakhs.",
             "thematic_areas": ["Merit-cum-Means", "Girl Students", "Engineering & MBBS", "CSR Grant", "Kotak Education Foundation"],
@@ -385,14 +385,14 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "HDFC Bank Parivartan's Educational Crisis Support Scholarship (ECSS)",
             "agency": AgencyType.CSR_FOUNDATION,
             "scheme_name": "HDFC Parivartan ECSS Programme",
-            "source_url": "https://www.hdfcbank.com",
-            "direct_apply_url": "https://www.hdfcbank.com",
+            "source_url": "https://www.hdfcbank.com/personal/about-us/corporate-social-responsibility/educational-crisis-support",
+            "direct_apply_url": "https://www.buddy4study.com/page/hdfc-bank-parivartans-ecss-programme",
             "portal_navigation_steps": [
-                "1. Open HDFC Bank Parivartan CSR Portal (hdfcbank.com).",
-                "2. Choose course level: School / Diploma / Graduation / Post-Graduation.",
-                "3. Fill personal information, family financial crisis explanation, and income proof (<= 2.5 Lakhs).",
-                "4. Upload previous academic marksheet (>=55%) and college bonafide certificate.",
-                "5. Submit form online."
+                "1. Open the HDFC Bank Parivartan ECSS portal on Buddy4Study (buddy4study.com/page/hdfc-bank-parivartans-ecss-programme).",
+                "2. Choose your current educational level: School / Diploma / Graduation / Professional Degree / Post-Graduation.",
+                "3. Fill in applicant personal details, family annual income proof (<= 2.5 Lakhs), and explain family crisis circumstances.",
+                "4. Upload previous academic marksheet (>=55%) and college bonafide / fee structure.",
+                "5. Submit online form directly and track application progress."
             ],
             "brief_summary": "Financial support for school, diploma, undergraduate, and postgraduate students from underprivileged backgrounds who are at risk of dropping out due to personal/economic crises. Provides up to ₹75,000/year.",
             "thematic_areas": ["Crisis Support", "School & College Students", "Need-Based Aid", "CSR", "HDFC Bank"],
