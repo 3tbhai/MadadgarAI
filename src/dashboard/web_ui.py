@@ -3,7 +3,7 @@
 
 def render_dashboard_html() -> str:
     return r"""<!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -18,9 +18,9 @@ def render_dashboard_html() -> str:
       main > :last-child { margin-bottom: 0 !important; }
     }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0e1321; }
-    ::-webkit-scrollbar-thumb { background: #252a39; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #4edea3; }
+    ::-webkit-scrollbar-track { background: #fdf8f8; }
+    ::-webkit-scrollbar-thumb { background: #d8c2bf; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #d32f2f; }
     @keyframes ticker {
       0% { transform: translateX(100vw); }
       100% { transform: translateX(-100%); }
@@ -41,53 +41,53 @@ def render_dashboard_html() -> str:
       theme: {
         extend: {
           colors: {
-            "tertiary-fixed": "#acedff",
-            "secondary": "#c0c1ff",
-            "tertiary-fixed-dim": "#4cd7f6",
-            "on-secondary": "#1000a9",
-            "surface-tint": "#4edea3",
-            "surface-container": "#1a1f2e",
-            "secondary-fixed-dim": "#c0c1ff",
-            "primary": "#4edea3",
-            "surface": "#0e1321",
-            "surface-variant": "#303444",
-            "on-primary": "#003824",
-            "on-secondary-container": "#b0b2ff",
-            "background": "#0e1321",
-            "on-secondary-fixed": "#07006c",
-            "outline": "#86948a",
-            "on-primary-fixed-variant": "#005236",
-            "tertiary": "#4cd7f6",
-            "surface-container-low": "#161b2a",
-            "primary-fixed": "#6ffbbe",
-            "error": "#ffb4ab",
-            "primary-fixed-dim": "#4edea3",
-            "on-tertiary-container": "#003f4b",
-            "inverse-primary": "#006c49",
-            "error-container": "#93000a",
-            "surface-container-highest": "#303444",
-            "on-tertiary-fixed-variant": "#004e5c",
-            "on-surface": "#dee2f6",
-            "outline-variant": "#3c4a42",
-            "surface-bright": "#343948",
-            "on-primary-container": "#00422b",
-            "surface-container-lowest": "#090e1c",
-            "inverse-surface": "#dee2f6",
-            "on-secondary-fixed-variant": "#2f2ebe",
-            "secondary-container": "#3131c0",
-            "on-surface-variant": "#bbcabf",
-            "surface-dim": "#0e1321",
-            "primary-container": "#10b981",
-            "surface-container-high": "#252a39",
-            "on-primary-fixed": "#002113",
-            "tertiary-container": "#00b2d0",
-            "on-tertiary": "#003640",
-            "on-error": "#690005",
-            "on-error-container": "#ffdad6",
-            "on-background": "#dee2f6",
-            "secondary-fixed": "#e1e0ff",
-            "inverse-on-surface": "#2b303f",
-            "on-tertiary-fixed": "#001f26"
+            "surface": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#faf8f7",
+            "surface-container": "#f5f2f1",
+            "surface-container-high": "#ebe6e5",
+            "surface-container-highest": "#e3dcdb",
+            "surface-variant": "#e6dedd",
+            "background": "#ffffff",
+            "on-surface": "#231a18",
+            "on-surface-variant": "#544340",
+            "on-background": "#231a18",
+            "primary": "#b04a33",
+            "on-primary": "#ffffff",
+            "primary-container": "#ffdbd1",
+            "on-primary-container": "#400d02",
+            "primary-fixed": "#ffdbd1",
+            "primary-fixed-dim": "#b04a33",
+            "on-primary-fixed": "#400d02",
+            "on-primary-fixed-variant": "#8c311e",
+            "secondary": "#77574e",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#ffdbd1",
+            "on-secondary-container": "#2c150f",
+            "secondary-fixed": "#ffdbd1",
+            "secondary-fixed-dim": "#e7bdb2",
+            "on-secondary-fixed": "#2c150f",
+            "on-secondary-fixed-variant": "#5d3f37",
+            "tertiary": "#6c5d2f",
+            "on-tertiary": "#ffffff",
+            "tertiary-container": "#f5e1a7",
+            "on-tertiary-container": "#231b00",
+            "tertiary-fixed": "#f5e1a7",
+            "tertiary-fixed-dim": "#d8c58d",
+            "on-tertiary-fixed": "#231b00",
+            "on-tertiary-fixed-variant": "#53461a",
+            "error": "#ba1a1a",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-error-container": "#410002",
+            "outline": "#85736f",
+            "outline-variant": "#d8c2bd",
+            "surface-dim": "#d8d1cf",
+            "surface-bright": "#faf8f7",
+            "inverse-surface": "#382e2c",
+            "inverse-on-surface": "#ffede9",
+            "inverse-primary": "#ffb49e",
+            "surface-tint": "#b04a33"
           },
           borderRadius: {
             "DEFAULT": "0.25rem",
@@ -656,7 +656,7 @@ def render_dashboard_html() -> str:
   <!-- UNIVERSAL MODAL 1: APPLICATION GATEWAY (आवेदन सेतु)       -->
   <!-- ========================================================= -->
   <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-surface-container-lowest/85 backdrop-blur-xl overflow-y-auto hidden" id="applyModalOverlay" onclick="if(event.target === this) closeApplyModal()">
-    <div class="relative w-full max-w-5xl max-h-[92vh] my-auto bg-slate-900/95 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-2xl">
+    <div class="relative w-full max-w-5xl max-h-[92vh] my-auto bg-surface-container-lowest/95 border border-outline-variant/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-2xl">
       <!-- Modal Header -->
       <div class="relative z-10 px-5 py-4 sm:px-6 sm:py-5 bg-surface-container shrink-0 border-b border-outline-variant/30">
         <div class="flex flex-wrap items-center justify-between gap-y-2 pb-2 mb-2 border-b border-outline-variant/20">
@@ -813,7 +813,7 @@ def render_dashboard_html() -> str:
 
   <!-- UNIVERSAL MODAL 2: DOCUMENT CHECKLIST / SARAL GUIDE / PROPOSAL DRAFTER -->
   <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-surface-container-lowest/85 backdrop-blur-xl overflow-y-auto hidden" id="genericModalOverlay" onclick="if(event.target === this) closeGenericModal()">
-    <div class="relative w-full max-w-3xl max-h-[90vh] my-auto bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <div class="relative w-full max-w-3xl max-h-[90vh] my-auto bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-2xl overflow-hidden flex flex-col">
       <div class="px-5 py-4 bg-surface-container flex items-center justify-between border-b border-outline-variant/30">
         <h3 class="font-headline-md text-base sm:text-lg text-on-surface font-bold" id="genericModalTitle">Scheme Details</h3>
         <button class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-error-container hover:text-on-error-container text-on-surface flex items-center justify-center transition-all" onclick="closeGenericModal()">
