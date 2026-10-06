@@ -273,11 +273,11 @@ class StudentScholarshipMatcher:
 
     def _get_portal_info(self, foa: FundingOpportunity) -> (str, str):
         if foa.agency == AgencyType.NSP:
-            return "National Scholarship Portal (NSP)", "https://scholarships.gov.in"
+            return "National Scholarship Portal (NSP)", foa.direct_apply_url or "https://scholarships.gov.in"
         elif foa.agency == AgencyType.AICTE:
-            return "AICTE Official Portal", "https://www.aicte-india.org"
+            return "National Scholarship Portal (AICTE Schemes)", foa.direct_apply_url or "https://scholarships.gov.in"
         elif foa.agency == AgencyType.UGC:
-            return "UGC Official Scholarship Portal", "https://www.ugc.gov.in"
+            return "UGC / National Scholarship Portal", foa.direct_apply_url or "https://scholarships.gov.in"
         elif "up.gov.in" in foa.source_url:
             return "UP Scholarship Portal (Dashmottar)", "https://scholarship.up.gov.in"
         elif "mahadbt" in foa.source_url:
@@ -285,10 +285,10 @@ class StudentScholarshipMatcher:
         elif "reliance" in foa.source_url:
             return "Reliance Foundation Portal", "https://www.scholarships.reliancefoundation.org"
         elif "kotak" in foa.source_url:
-            return "Kotak Education Foundation", "https://kotakeducation.org/kotak-kanya-scholarship"
+            return "Kotak Education (Buddy4Study Gateway)", "https://www.buddy4study.com/page/kotak-kanya-scholarship"
         elif "hdfc" in foa.source_url:
-            return "HDFC Parivartan Portal", "https://www.hdfcbank.com"
-        return "Official Government / Statutory Portal", foa.source_url
+            return "HDFC Parivartan (Buddy4Study Gateway)", "https://www.buddy4study.com/page/hdfc-bank-parivartans-ecss-programme"
+        return "Official Government / Statutory Portal", foa.direct_apply_url or foa.source_url
 
     def generate_document_checklist(
         self, foa: FundingOpportunity, req: Optional[StudentProfileRequest] = None
