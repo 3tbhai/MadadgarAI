@@ -205,24 +205,12 @@ def render_dashboard_html() -> str:
   <!-- MAIN VIEWPORT CONTAINER -->
   <main class="w-full pt-28 flex-1 bg-surface">
 
-    <!-- LATEST SCHOLARSHIPS (SARKARI RESULT STYLE) -->
-    <div class="w-full bg-white px-4 py-8 border-b-4 border-primary">
-      <div class="max-w-6xl mx-auto text-center font-serif">
-        <h1 class="text-xl md:text-3xl text-blue-800 font-bold mb-4">MadadgaarAI Result 2026 – Official Portal</h1>
-        <h2 class="text-red-600 font-bold text-sm md:text-base mb-4">Welcome to No. 1 Education Portal Official MadadgaarAI.Com | Trusted by Millions</h2>
-        <div class="text-blue-800 font-bold text-xs md:text-sm mb-6">
-          <a href="#" class="hover:underline">Madadgaar Android Apps</a> <span class="text-red-500 mx-1">||</span>
-          <a href="#" class="hover:underline">Madadgaar Youtube Channel</a> <span class="text-red-500 mx-1">||</span>
-          <a href="#" class="hover:underline">Madadgaar Apple / IOS Apps</a> <span class="text-red-500 mx-1">||</span>
-          <a href="#" class="hover:underline">Follow Instagram</a>
-        </div>
-        <div class="overflow-hidden">
-          <div id="sarkariLatestContainer" class="animate-bounce-lr text-blue-800 font-bold text-sm md:text-lg leading-loose">
-            Loading latest updates...
-          </div>
-        </div>
-      </div>
+    <!-- PORTAL HEADING -->
+    <div class="w-full bg-white border-b-4 border-primary py-4 text-center">
+      <h1 class="text-xl md:text-3xl text-blue-800 font-bold font-serif mb-1">MadadgaarAI Result 2026 – Official Portal</h1>
+      <h2 class="text-red-600 font-bold text-sm md:text-base font-serif">Welcome to No. 1 Education Portal Official MadadgaarAI.Com | Trusted by Millions</h2>
     </div>
+
 
     <!-- ========================================================= -->
     <!-- TAB 1: VIDYARTHI SCHOLARSHIP HUB (DEFAULT)                -->
