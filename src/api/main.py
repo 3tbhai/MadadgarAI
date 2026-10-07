@@ -107,6 +107,18 @@ class ProposalDraftRequest(BaseModel):
     custom_abstract: Optional[str] = None
 
 
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Serves an inline SVG favicon to prevent 404 logs."""
+    svg_icon = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <rect width="100" height="100" rx="20" fill="#0f172a"/>
+        <path d="M50 20 L85 38 L50 56 L15 38 Z" fill="#6366f1"/>
+        <path d="M25 45 L25 65 Q50 82 75 65 L75 45" fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="50" cy="56" r="4" fill="#38bdf8"/>
+    </svg>"""
+    return Response(content=svg_icon, media_type="image/svg+xml")
+
+
 @app.get("/", response_class=HTMLResponse)
 async def get_dashboard():
     """Renders the interactive web dashboard."""
