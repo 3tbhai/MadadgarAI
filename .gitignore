@@ -24,3 +24,31 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Major Project Report & LaTeX Artifacts
+*.tex
+*.tex.bak
+major_template.*
+MadadgaarAI_Major_Project_MidSem_Report.pdf
+*.pdf
+generate_diagrams.py
+logo.jpg
+architecture_diagram.png
+pipeline_flow.png
+gantt_chart.png
+report/
+reports/
+
+# LaTeX Build Files
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex
