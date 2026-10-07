@@ -1,6 +1,7 @@
 """Vector Database & Semantic Index Store."""
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -14,7 +15,7 @@ logger = logging.getLogger("MadadgaarAI.Embeddings.VectorStore")
 
 class VectorStore:
     def __init__(self, index_path: Path = VECTOR_INDEX_PATH):
-        self.index_path = index_path
+        self.index_path = Path(index_path).resolve()
         self.embedder = TextEmbedder()
         self.doc_ids: List[str] = []
         self.embeddings: np.ndarray = np.empty((0, self.embedder.dimension), dtype=np.float32)
@@ -61,22 +62,31 @@ class VectorStore:
         return results
 
     def save_index(self):
-        """Persists the vector index and metadata to disk."""
-        self.index_path.parent.mkdir(parents=True, exist_ok=True)
-        payload = {
-            "doc_ids": self.doc_ids,
-            "embeddings": self.embeddings.tolist(),
-            "metadata_map": self.metadata_map,
-        }
-        with open(self.index_path, "w", encoding="utf-8") as f:
-            json.dump(payload, f)
-        logger.info(f"Saved {len(self.doc_ids)} vector embeddings to {self.index_path}")
+        """Persists the vector index and metadata to disk safely and atomically."""
+        try:
+            target_path = Path(self.index_path).resolve()
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            payload = {
+                "doc_ids": self.doc_ids,
+                "embeddings": self.embeddings.tolist() if hasattr(self.embeddings, "tolist") else self.embeddings,
+                "metadata_map": self.metadata_map,
+            }
+            temp_path = target_path.with_suffix(".tmp")
+            with open(str(temp_path), "w", encoding="utf-8") as f:
+                json.dump(payload, f)
+
+            if temp_path.exists():
+                os.replace(str(temp_path), str(target_path))
+            logger.info(f"Saved {len(self.doc_ids)} vector embeddings to {target_path}")
+        except Exception as e:
+            logger.error(f"Failed to save vector index to {self.index_path}: {e}")
 
     def load_index(self):
         """Loads index from disk if present."""
-        if self.index_path.exists():
-            try:
-                with open(self.index_path, "r", encoding="utf-8") as f:
+        try:
+            target_path = Path(self.index_path).resolve()
+            if target_path.exists():
+                with open(str(target_path), "r", encoding="utf-8") as f:
                     payload = json.load(f)
                 self.doc_ids = payload.get("doc_ids", [])
                 embs = payload.get("embeddings", [])
@@ -85,5 +95,5 @@ class VectorStore:
                 else:
                     self.embeddings = np.empty((0, self.embedder.dimension), dtype=np.float32)
                 self.metadata_map = payload.get("metadata_map", {})
-            except Exception as e:
-                logger.error(f"Failed to load vector index: {e}")
+        except Exception as e:
+            logger.error(f"Failed to load vector index: {e}")

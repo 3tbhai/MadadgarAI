@@ -174,42 +174,51 @@ class DatasetNormalizer:
         if opportunities is None:
             opportunities = self.load_all_opportunities()
 
-        # Export JSON
-        json_data = [foa.model_dump(mode="json") for foa in opportunities]
-        with open(json_path, "w", encoding="utf-8") as jf:
-            json.dump(json_data, jf, indent=2, default=str)
+        target_json = Path(json_path).resolve()
+        target_csv = Path(csv_path).resolve()
+        target_json.parent.mkdir(parents=True, exist_ok=True)
+        target_csv.parent.mkdir(parents=True, exist_ok=True)
 
-        # Export CSV
-        with open(csv_path, "w", newline="", encoding="utf-8") as cf:
-            writer = csv.writer(cf)
-            writer.writerow([
-                "FOA ID",
-                "Title",
-                "Agency",
-                "Scheme Name",
-                "Closing Date",
-                "Extended Date",
-                "Max Budget INR",
-                "Min Qualification",
-                "Max Age",
-                "Target Beneficiary",
-                "Source URL",
-            ])
-            for foa in opportunities:
-                ben = foa.eligibility.target_beneficiaries[0].value if foa.eligibility.target_beneficiaries else ""
+        try:
+            # Export JSON
+            json_data = [foa.model_dump(mode="json") for foa in opportunities]
+            with open(str(target_json), "w", encoding="utf-8") as jf:
+                json.dump(json_data, jf, indent=2, default=str)
+
+            # Export CSV
+            with open(str(target_csv), "w", newline="", encoding="utf-8") as cf:
+                writer = csv.writer(cf)
                 writer.writerow([
-                    foa.foa_id,
-                    foa.title,
-                    foa.agency.value,
-                    foa.scheme_name or "",
-                    foa.deadlines.closing_date.isoformat() if foa.deadlines.closing_date else "",
-                    foa.deadlines.extended_closing_date.isoformat() if foa.deadlines.extended_closing_date else "",
-                    foa.financials.max_amount_inr or "",
-                    foa.eligibility.min_qualification or "",
-                    foa.eligibility.max_age_limit or "",
-                    ben,
-                    foa.source_url,
+                    "FOA ID",
+                    "Title",
+                    "Agency",
+                    "Scheme Name",
+                    "Closing Date",
+                    "Extended Date",
+                    "Max Budget INR",
+                    "Min Qualification",
+                    "Max Age",
+                    "Target Beneficiary",
+                    "Source URL",
                 ])
+                for foa in opportunities:
+                    ben = foa.eligibility.target_beneficiaries[0].value if foa.eligibility.target_beneficiaries else ""
+                    writer.writerow([
+                        foa.foa_id,
+                        foa.title,
+                        foa.agency.value,
+                        foa.scheme_name or "",
+                        foa.deadlines.closing_date.isoformat() if foa.deadlines.closing_date else "",
+                        foa.deadlines.extended_closing_date.isoformat() if foa.deadlines.extended_closing_date else "",
+                        foa.financials.max_amount_inr or "",
+                        foa.eligibility.min_qualification or "",
+                        foa.eligibility.max_age_limit or "",
+                        ben,
+                        foa.source_url,
+                    ])
 
-        logger.info(f"Exported {len(opportunities)} FOAs to {json_path} and {csv_path}")
-        return {"json": str(json_path), "csv": str(csv_path)}
+            logger.info(f"Exported {len(opportunities)} FOAs to {target_json} and {target_csv}")
+        except Exception as e:
+            logger.error(f"Failed to export opportunities to JSON/CSV: {e}")
+
+        return {"json": str(target_json), "csv": str(target_csv)}
