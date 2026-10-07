@@ -86,148 +86,240 @@ def render_dashboard_html() -> str:
 
   <!-- ================= TAB 1: VIDYARTHI ================= -->
   <div id="viewVidyarthi" class="flex flex-col w-full space-y-10">
-    <section class="border-b-4 border-outline pb-8 mt-6">
-      <div class="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6 mb-8">
-        <div class="space-y-3 max-w-4xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary text-primary-container font-mono text-xs font-bold uppercase tracking-widest border-2 border-outline brutalist-shadow">
-            <span class="w-2.5 h-2.5 bg-secondary inline-block animate-pulse"></span>
-            DIRECT BENEFIT PIPELINE // ACTIVE
-          </div>
-          <h1 class="text-4xl sm:text-6xl font-display font-black uppercase tracking-tighter text-on-surface leading-[0.92]">
-            STUDENT PORTAL <span class="bg-primary-container px-2 border-2 border-outline">v2.0</span>
-          </h1>
-          <p class="font-mono text-sm uppercase tracking-wide border-l-4 border-secondary pl-3 mt-3">
-            Zero middlemen. 100% direct statutory disbursement via PFMS & NPCI.
-          </p>
+    <section class="border-b-4 border-outline pb-10">
+<div class="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6 mb-8">
+<div class="space-y-3 max-w-4xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-primary text-primary-container font-mono text-xs font-bold uppercase tracking-widest border border-outline shadow-[3px_3px_0px_#1a1a1a]">
+<span class="w-2.5 h-2.5 bg-secondary inline-block animate-pulse"></span>
+          DIRECT BENEFIT PIPELINE // STATUS: REVENUE VERIFIED
         </div>
-      </div>
-      
-      <div class="grid grid-cols-2 md:grid-cols-4 border-2 border-outline bg-primary gap-[2px]">
-        <div class="bg-surface-bright p-5 flex flex-col justify-between">
-          <span class="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant font-bold">Annual Outlay</span>
-          <div class="my-2 text-3xl font-display font-black">₹18,450 <span class="text-secondary text-lg">CR</span></div>
-        </div>
-        <div class="bg-surface-bright p-5 flex flex-col justify-between">
-          <span class="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant font-bold">Active Schemes</span>
-          <div class="my-2 text-3xl font-display font-black" id="statTotalCounter">21 <span class="text-tertiary text-lg">LIVE</span></div>
-        </div>
-        <div class="bg-primary-container p-5 flex flex-col justify-between">
-          <span class="font-mono text-[11px] uppercase tracking-widest font-bold">Agent Fees</span>
-          <div class="my-2 text-3xl font-display font-black">₹0 <span class="text-lg">FREE</span></div>
-        </div>
-        <div class="bg-surface-bright p-5 flex flex-col justify-between">
-          <span class="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant font-bold">AI Precision</span>
-          <div class="my-2 text-3xl font-display font-black">98.4%</div>
-        </div>
-      </div>
-    </section>
+<h1 class="text-4xl sm:text-6xl lg:text-7xl font-display font-extrabold uppercase tracking-tighter text-on-surface leading-[0.92]">
+          MADADGAAR /<br/>VIDYARTHI PORTAL <span class="bg-primary-container px-2 border-2 border-outline text-on-primary-container">v2.0</span>
+</h1>
+<p class="font-mono text-sm sm:text-base text-on-surface uppercase tracking-wide border-l-4 border-secondary pl-3 mt-3">
+          Zero middlemen. Zero fees. 100% direct statutory disbursement via PFMS &amp; NPCI Bharat Clearinghouse.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch gap-3 w-full lg:w-auto">
+<div class="p-3 bg-surface-container border-2 border-outline shadow-[3px_3px_0px_#1a1a1a] font-mono text-xs leading-tight">
+<div class="text-on-surface-variant text-[10px] uppercase">Active Protocol</div>
+<div class="font-bold text-on-surface mt-0.5">UIDAI-NPCI MAPPER v3</div>
+<div class="text-secondary font-bold text-[10px] mt-1">SESSION ACTIVE #8841-IN</div>
+</div>
+<a class="px-5 py-3 bg-secondary text-white font-headline font-bold text-sm uppercase tracking-wider border-2 border-outline shadow-[4px_4px_0px_#1a1a1a] hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2" href="#matrix-engine">
+<span>CONFIGURE FILTERS</span>
+<span class="material-symbols-outlined text-base">arrow_downward</span>
+</a>
+</div>
+</div>
+<!-- Live Statutory Metrics Counter Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 border-2 border-outline bg-primary gap-[2px]">
+<div class="bg-surface-bright p-5 sm:p-6 flex flex-col justify-between">
+<span class="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant font-bold">Total Statutory Pool</span>
+<div class="my-2">
+<span class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-on-surface">₹18,450</span>
+<span class="font-headline font-bold text-base text-secondary block sm:inline sm:ml-1">CRORE</span>
+</div>
+<span class="font-mono text-[10px] text-on-surface-variant border-t border-outline-variant pt-2 mt-1">Direct State &amp; CSR Allocations FY 24-25</span>
+</div>
+<div class="bg-surface-bright p-5 sm:p-6 flex flex-col justify-between">
+<span class="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant font-bold">Active Sanction Schemes</span>
+<div class="my-2">
+<span class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-on-surface">21</span>
+<span class="font-headline font-bold text-base text-tertiary block sm:inline sm:ml-1">SCHEMES</span>
+</div>
+<span class="font-mono text-[10px] text-on-surface-variant border-t border-outline-variant pt-2 mt-1">Central Ministries + Section 135 CSR</span>
+</div>
+<div class="bg-primary-container p-5 sm:p-6 flex flex-col justify-between text-on-primary-container">
+<span class="font-mono text-[11px] uppercase tracking-widest font-bold">Platform Intermediary Fee</span>
+<div class="my-2">
+<span class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight">₹0</span>
+<span class="font-headline font-bold text-base block sm:inline sm:ml-1">/ LIFETIME FREE</span>
+</div>
+<span class="font-mono text-[10px] border-t border-outline pt-2 mt-1 text-on-primary-container font-semibold">Public Service Grid Directive</span>
+</div>
+<div class="bg-surface-bright p-5 sm:p-6 flex flex-col justify-between">
+<span class="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant font-bold">Eligibility Precision</span>
+<div class="my-2">
+<span class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-on-surface">98.4%</span>
+</div>
+<span class="font-mono text-[10px] text-on-surface-variant border-t border-outline-variant pt-2 mt-1">Deterministic Matrix Rules (Zero Guesswork)</span>
+</div>
+</div>
+</section>
 
     <!-- Matrix Filter -->
-    <section>
-      <div class="flex items-center gap-3 mb-6">
-        <span class="w-8 h-8 bg-primary text-primary-container font-display font-black flex items-center justify-center border-2 border-outline">01</span>
-        <h2 class="text-3xl font-display font-black uppercase tracking-tight">Eligibility Matrix Engine</h2>
-      </div>
-      
-      <div class="bg-surface-container border-4 border-outline brutalist-shadow-lg p-6">
-        <form id="matrix-filter-form" onsubmit="event.preventDefault(); runStudentMatch();">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            
-            <div class="bg-surface-bright p-4 border-2 border-outline flex flex-col">
-              <label class="font-mono text-xs font-bold uppercase tracking-wider mb-2">01 // State</label>
-              <select id="stuState" class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none" onchange="runStudentMatch()">
-                  <option value="All India">All India / Open</option>
-                  <option value="Uttar Pradesh" selected>Uttar Pradesh</option>
-                  <option value="Maharashtra">Maharashtra</option>
-                  <option value="Bihar">Bihar</option>
-                  <option value="Rajasthan">Rajasthan</option>
-                  <option value="Madhya Pradesh">Madhya Pradesh</option>
-                  <option value="West Bengal">West Bengal</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Tamil Nadu">Tamil Nadu</option>
-                  <option value="Delhi NCR">Delhi NCR</option>
-              </select>
-            </div>
-
-            <div class="bg-surface-bright p-4 border-2 border-outline flex flex-col">
-              <label class="font-mono text-xs font-bold uppercase tracking-wider mb-2">02 // Level</label>
-              <select id="stuLevel" class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none" onchange="runStudentMatch()">
-                  <option value="UG - Engineering / Technology (B.Tech/B.E.)" selected>B.Tech / B.E.</option>
-                  <option value="Diploma / Polytechnic">Diploma</option>
-                  <option value="UG - Medical / Paramedical (MBBS/BDS/B.Pharm/Nursing)">Medical / Pharma</option>
-                  <option value="UG - General (B.Sc / B.Com / B.A. / BBA / BCA)">General UG</option>
-                  <option value="Class 11-12 (Higher Secondary)">Class 11-12</option>
-                  <option value="Class 9-10 (Pre-Matric)">Class 9-10</option>
-                  <option value="Postgraduate (M.Tech / M.Sc / M.Com / M.A. / MBA / MCA)">Postgrad</option>
-                  <option value="PhD / Doctoral Research">PhD</option>
-              </select>
-            </div>
-
-            <div class="bg-surface-bright p-4 border-2 border-outline flex flex-col">
-              <label class="font-mono text-xs font-bold uppercase tracking-wider mb-2">03 // Category</label>
-              <select id="stuCategory" class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none" onchange="runStudentMatch()">
-                  <option value="General / Open">General / Open</option>
-                  <option value="OBC (Non-Creamy Layer)" selected>OBC (NCL)</option>
-                  <option value="SC (Scheduled Caste)">SC</option>
-                  <option value="ST (Scheduled Tribe)">ST</option>
-                  <option value="EWS (Economically Weaker Section)">EWS</option>
-                  <option value="Minority (Muslim/Christian/Sikh/Buddhist/Jain/Parsi)">Minority</option>
-              </select>
-            </div>
-
-            <div class="bg-surface-bright p-4 border-2 border-outline flex flex-col">
-              <label class="font-mono text-xs font-bold uppercase tracking-wider mb-2">04 // Gender</label>
-              <select id="stuGender" class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none" onchange="runStudentMatch()">
-                  <option value="Female" selected>Female</option>
-                  <option value="Male">Male</option>
-                  <option value="Transgender">Other</option>
-              </select>
-            </div>
-            
-          </div>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-6 bg-surface-bright p-5 border-2 border-outline flex flex-col">
-              <div class="flex justify-between items-center mb-3">
-                <label class="font-mono text-xs font-bold uppercase">05 // Family Income</label>
-                <span class="font-display font-black bg-primary text-primary-container px-2 border-2 border-outline" id="incomeDisplay">₹2,00,000 / Yr</span>
-              </div>
-              <input type="range" id="stuIncome" min="50000" max="1000000" step="25000" value="200000" class="w-full h-3 bg-surface-container accent-primary border-2 border-outline rounded-none cursor-pointer mb-3" oninput="updateIncomeDisplay(this.value); runStudentMatch()"/>
-              <div class="grid grid-cols-4 gap-2 font-mono text-[11px] font-bold">
-                <button type="button" class="py-1.5 border-2 border-outline hover:bg-primary-container" onclick="setIncomeVal(150000)">₹1.5L</button>
-                <button type="button" class="py-1.5 border-2 border-outline hover:bg-primary-container" onclick="setIncomeVal(250000)">₹2.5L</button>
-                <button type="button" class="py-1.5 border-2 border-outline hover:bg-primary-container" onclick="setIncomeVal(450000)">₹4.5L</button>
-                <button type="button" class="py-1.5 border-2 border-outline hover:bg-primary-container" onclick="setIncomeVal(800000)">₹8.0L</button>
-              </div>
-            </div>
-
-            <div class="lg:col-span-3 bg-surface-bright p-5 border-2 border-outline flex flex-col">
-              <label class="font-mono text-xs font-bold uppercase mb-2">06 // Academic %</label>
-              <input type="number" id="stuMarks" min="35" max="100" value="86" class="w-full text-3xl font-display font-black p-2 border-2 border-outline text-center focus:bg-primary-container rounded-none" onchange="runStudentMatch()"/>
-            </div>
-
-            <div class="lg:col-span-3 bg-surface-bright p-5 border-2 border-outline flex flex-col justify-center space-y-4">
-              <label class="font-mono text-xs font-bold uppercase">07 // Flags</label>
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" id="stuSingleGirl" class="w-5 h-5 border-2 border-outline accent-primary rounded-none" onchange="runStudentMatch()"/>
-                <span class="font-headline font-bold text-sm uppercase">Single Girl Child</span>
+<section class="py-12 border-b-4 border-outline" id="matrix-engine">
+<div class="flex flex-col md:flex-row items-start md:items-baseline justify-between mb-6 pb-2 border-b-2 border-outline">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 bg-primary text-primary-container font-display font-black text-sm flex items-center justify-center">01</span>
+<h2 class="text-2xl sm:text-3xl font-display font-extrabold uppercase tracking-tight text-on-surface">
+          Modular Parameter Matrix
+        </h2>
+</div>
+<span class="font-mono text-xs uppercase text-on-surface-variant mt-2 md:mt-0 font-semibold tracking-wider">
+        [INPUT PARAMETERS TO FILTER CRITERIA STRICTLY]
+      </span>
+</div>
+<!-- The Matrix Form Container -->
+<div class="bg-surface-container border-3 border-outline shadow-[6px_6px_0px_#1a1a1a] p-6 lg:p-8">
+<form class="space-y-8" id="matrix-filter-form" onsubmit="event.preventDefault(); runStudentMatch();">
+<!-- Partitioned Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Field: Domicile State -->
+<div class="bg-surface-bright p-4 border-2 border-outline flex flex-col justify-between">
+<label class="font-mono text-xs font-bold uppercase tracking-wider text-on-surface block mb-2" for="domicile">
+              01 // Domicile State
+            </label>
+<div class="relative">
+<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuState" onchange="runStudentMatch()">
+<option value="All India">All-India Universal (All States)</option>
+<option value="Rajasthan">Rajasthan</option>
+<option selected="" value="Maharashtra">Maharashtra</option>
+<option value="Uttar Pradesh">Uttar Pradesh</option>
+<option value="Karnataka">Karnataka</option>
+<option value="Delhi NCR">Delhi NCR</option>
+<option value="West Bengal">West Bengal</option>
+<option value="Bihar">Bihar</option>
+</select>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant mt-2">Determines State Minority &amp; Merit quotas</span>
+</div>
+<!-- Field: Academic Level -->
+<div class="bg-surface-bright p-4 border-2 border-outline flex flex-col justify-between">
+<label class="font-mono text-xs font-bold uppercase tracking-wider text-on-surface block mb-2" for="academic-level">
+              02 // Academic Level
+            </label>
+<div class="relative">
+<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuLevel" onchange="runStudentMatch()">
+<option selected="" value="UG - Engineering / Technology (B.Tech/B.E.)">B.Tech / B.E. (Technical Degree)</option>
+<option value="UG - Medical / Paramedical (MBBS/BDS/B.Pharm/Nursing)">MBBS / BDS / Professional Medical</option>
+<option value="Diploma / Polytechnic">Polytechnic Diploma</option>
+<option value="UG - General (B.Sc / B.Com / B.A. / BBA / BCA)">B.Sc / B.Com / B.A (General UG)</option>
+<option value="Postgraduate (M.Tech / M.Sc / M.Com / M.A. / MBA / MCA)">Postgraduate (M.A / M.Sc / M.Com)</option>
+<option value="Class 11-12 (Higher Secondary)">Higher Secondary (Class 11-12)</option>
+</select>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant mt-2">AICTE / UGC / NMC sanction tiers</span>
+</div>
+<!-- Field: Category -->
+<div class="bg-surface-bright p-4 border-2 border-outline flex flex-col justify-between">
+<label class="font-mono text-xs font-bold uppercase tracking-wider text-on-surface block mb-2" for="caste-category">
+              03 // Social Category
+            </label>
+<div class="relative">
+<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuCategory" onchange="runStudentMatch()">
+<option value="General / Open">General / Open Merit</option>
+<option selected="" value="EWS (Economically Weaker Section)">EWS (Economically Weaker Section)</option>
+<option value="OBC (Non-Creamy Layer)">OBC (Non-Creamy Layer)</option>
+<option value="SC (Scheduled Caste)">Scheduled Caste (SC)</option>
+<option value="ST (Scheduled Tribe)">Scheduled Tribe (ST)</option>
+</select>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant mt-2">Verified via State Central Caste Registry</span>
+</div>
+<!-- Field: Gender -->
+<div class="bg-surface-bright p-4 border-2 border-outline flex flex-col justify-between">
+<label class="font-mono text-xs font-bold uppercase tracking-wider text-on-surface block mb-2">
+              04 // Gender
+            </label>
+<div class="grid grid-cols-3 gap-1 pt-1">
+<label class="cursor-pointer border-2 border-outline text-center py-2 text-xs font-headline font-bold uppercase select-none transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-container">
+<input checked="" class="sr-only" name="gender" onchange="runStudentMatch()" type="radio" value="Female"/>
+                Female
               </label>
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" id="stuPwd" class="w-5 h-5 border-2 border-outline accent-primary rounded-none" onchange="runStudentMatch()"/>
-                <span class="font-headline font-bold text-sm uppercase">PwD / Disabled</span>
+<label class="cursor-pointer border-2 border-outline text-center py-2 text-xs font-headline font-bold uppercase select-none transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-container">
+<input class="sr-only" name="gender" onchange="runStudentMatch()" type="radio" value="Male"/>
+                Male
               </label>
-            </div>
+<label class="cursor-pointer border-2 border-outline text-center py-2 text-xs font-headline font-bold uppercase select-none transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-container">
+<input class="sr-only" name="gender" onchange="runStudentMatch()" type="radio" value="Transgender"/>
+                Other
+              </label>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant mt-2">Special targeted CSR drives for women</span>
+</div>
+</div>
+<!-- Second Row: Income Bracket + Score + Toggles -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2">
+<!-- Income Slider & Presets (6 Cols) -->
+<div class="lg:col-span-6 bg-surface-bright p-5 border-2 border-outline flex flex-col justify-between">
+<div class="flex items-center justify-between mb-3">
+<label class="font-mono text-xs font-bold uppercase tracking-wider text-on-surface" for="income-slider">
+                05 // Annual Gross Family Income Bracket
+              </label>
+<span class="font-display font-extrabold text-lg bg-primary text-primary-container px-2 border border-outline" id="incomeDisplay">
+                ≤ ₹ 3,20,000 / yr
+              </span>
+</div>
+<input class="w-full h-3 bg-surface-container accent-primary border-2 border-outline rounded-none cursor-pointer" id="stuIncome" max="800000" min="80000" oninput="updateIncomeDisplay(this.value); runStudentMatch()" step="20000" type="range" value="320000"/>
+<!-- Preset Blocks -->
+<div class="grid grid-cols-4 gap-2 mt-4 font-mono text-[11px] font-bold">
+<button class="py-1.5 px-1 bg-surface-container border border-outline hover:bg-primary-container text-center transition-colors" onclick="setIncomeVal(150000)" type="button">
+                &lt; ₹1.5L
+              </button>
+<button class="py-1.5 px-1 bg-surface-container border border-outline hover:bg-primary-container text-center transition-colors" onclick="setIncomeVal(250000)" type="button">
+                ₹2.5L
+              </button>
+<button class="py-1.5 px-1 bg-surface-container border border-outline hover:bg-primary-container text-center transition-colors" onclick="setIncomeVal(450000)" type="button">
+                ₹4.5L (EWS)
+              </button>
+<button class="py-1.5 px-1 bg-surface-container border border-outline hover:bg-primary-container text-center transition-colors" onclick="setIncomeVal(800000)" type="button">
+                ₹8.0L (CSR Max)
+              </button>
+</div>
+</div>
+<!-- Academic Score Input (3 Cols) -->
+<div class="lg:col-span-3 bg-surface-bright p-5 border-2 border-outline flex flex-col justify-between">
+<label class="font-mono text-xs font-bold uppercase tracking-wider text-on-surface block mb-2" for="academic-score">
+              06 // Prior Exam Score %
+            </label>
+<div class="flex items-center gap-3">
+<input class="w-24 bg-surface-container text-3xl font-display font-extrabold p-2 border-2 border-outline text-center text-on-surface focus:outline-none focus:bg-primary-container" id="stuMarks" onchange="runStudentMatch()" max="100" min="35" type="number" value="86"/>
+<div class="font-mono text-xs text-on-surface-variant leading-tight">
+<span class="font-bold text-on-surface text-sm block">86.00% Aggregate</span>
+                Class 12 / Diploma Final CGPA equivalent
+              </div>
+</div>
+<div class="w-full bg-surface-container-highest border border-outline h-2 mt-4 overflow-hidden">
+<div class="bg-tertiary h-full w-[86%]"></div>
+</div>
+</div>
+<!-- Statutory Status Toggles (3 Cols) -->
+<div class="lg:col-span-3 bg-surface-bright p-5 border-2 border-outline flex flex-col justify-center space-y-4">
+<span class="font-mono text-xs font-bold uppercase tracking-wider text-on-surface block">
+              07 // Statutory Criteria Flags
+            </span>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-5 h-5 border-2 border-outline accent-primary rounded-none" id="stuSingleGirl" onchange="runStudentMatch()" type="checkbox"/>
+<div class="text-xs font-headline font-bold uppercase leading-tight group-hover:text-tertiary">
+                Single Girl Child
+                <span class="font-mono block text-[10px] text-on-surface-variant font-normal">(एकल कन्या योजना Quota)</span>
+</div>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 border-2 border-outline accent-primary rounded-none" id="stuPwd" onchange="runStudentMatch()" type="checkbox"/>
+<div class="text-xs font-headline font-bold uppercase leading-tight group-hover:text-tertiary">
+                Differently Abled
+                <span class="font-mono block text-[10px] text-on-surface-variant font-normal">(PwD UDID ≥ 40% Certified)</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t-2 border-outline">
+<div class="font-mono text-xs text-on-surface flex items-center gap-2">
+<span class="w-3 h-3 bg-primary inline-block"></span>
+            Matrix Rule Engine matches across 4 Central Ministries &amp; 12 CSR Funds directly.
           </div>
-          
-          <div class="mt-6 border-t-4 border-outline pt-6 flex justify-end">
-            <button type="button" class="px-8 py-4 bg-primary-container text-on-primary-container font-headline font-black text-base uppercase border-4 border-outline brutalist-shadow hover:bg-primary hover:text-white transition-colors flex items-center gap-2" onclick="runStudentMatch()">
-              <span class="material-symbols-outlined">bolt</span>
-              <span id="matchBtnText">Execute Check</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </section>
+<button class="w-full sm:w-auto px-8 py-4 bg-primary-container text-on-primary-container font-headline font-black text-base uppercase tracking-wider border-2 border-outline shadow-[5px_5px_0px_#1a1a1a] hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-3" type="submit">
+<span>EXECUTE ELIGIBILITY CHECK</span>
+<span class="material-symbols-outlined font-black">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+</section>
 
     <!-- Results Section -->
     <section>
@@ -399,7 +491,7 @@ def render_dashboard_html() -> str:
   }
 
   function updateIncomeDisplay(val) {
-    document.getElementById('incomeDisplay').innerText = '₹ ' + Number(val).toLocaleString('en-IN') + ' / Yr';
+    document.getElementById('incomeDisplay').innerText = '≤ ₹ ' + Number(val).toLocaleString('en-IN') + ' / yr';
   }
   function setIncomeVal(val) {
     document.getElementById('stuIncome').value = val;
@@ -416,7 +508,7 @@ def render_dashboard_html() -> str:
       state_domicile: document.getElementById('stuState').value,
       education_level: document.getElementById('stuLevel').value,
       social_category: document.getElementById('stuCategory').value,
-      gender: document.getElementById('stuGender').value,
+      gender: document.querySelector('input[name="gender"]:checked').value,
       family_annual_income_inr: parseFloat(document.getElementById('stuIncome').value) || 200000,
       academic_percentage: parseFloat(document.getElementById('stuMarks').value) || 85,
       is_single_girl_child: document.getElementById('stuSingleGirl').checked,
@@ -449,32 +541,105 @@ def render_dashboard_html() -> str:
       const foa = res.foa;
       const isEl = res.eligibility_status === 'ELIGIBLE';
       const badge = isEl ? '100% MATCH' : res.eligibility_status;
-      const bg = isEl ? 'bg-primary text-white' : 'bg-surface-container text-on-surface';
+      const bg = isEl ? 'bg-primary text-primary-container' : 'bg-surface-container text-on-surface';
       
+      const agencyText = foa.agency || 'AGENCY';
+      
+      // Extract clean amount for large display
+      let rawBenefit = res.estimated_financial_benefit || 'GRANT';
+      let bigAmount = 'GRANT';
+      let smallText = rawBenefit;
+      
+      const amtMatch = rawBenefit.match(/(?:Rs\.?|INR|₹)\s*([\d,]+)/i);
+      if (amtMatch) {
+          bigAmount = '₹' + amtMatch[1];
+          smallText = rawBenefit.replace(amtMatch[0], '').trim();
+          smallText = smallText.replace(/^[^\w\s]+/, '').trim();
+      } else if (foa.financials && foa.financials.max_amount_inr) {
+          bigAmount = '₹' + foa.financials.max_amount_inr.toLocaleString('en-IN');
+      }
+
+      if (smallText.length > 50) {
+          smallText = smallText.substring(0, 47) + '...';
+      }
+
+      // Dynamic Right Side Rendering
+      let btnColor = 'bg-primary text-white hover:bg-primary-container hover:text-on-primary-container';
+      let btnText = 'APPLY DIRECT PORTAL';
+      let btnIcon = 'open_in_new';
+      
+      if (agencyText.includes('AICTE') || agencyText.includes('NSP')) {
+          btnColor = 'bg-tertiary text-white hover:bg-primary hover:text-white';
+          btnText = 'GO TO NSP PORTAL';
+      } else if (agencyText.includes('UGC')) {
+          btnColor = 'bg-surface-container text-on-surface hover:bg-primary hover:text-white';
+          btnText = 'DETAILS & GUIDELINES';
+          btnIcon = 'description';
+      }
+      
+      let minQual = foa.eligibility && foa.eligibility.min_qualification ? foa.eligibility.min_qualification : 'Check Portal';
+      let beneficiary = foa.eligibility && foa.eligibility.target_beneficiaries && foa.eligibility.target_beneficiaries.length > 0 ? foa.eligibility.target_beneficiaries[0] : 'All';
+      let deadline = foa.deadlines && foa.deadlines.raw_deadline_text ? foa.deadlines.raw_deadline_text : 'See Portal';
+
       return `
-        <article class="bg-surface-bright border-4 border-outline brutalist-shadow p-6 relative">
-          <div class="flex flex-col lg:flex-row justify-between gap-6">
-            <div class="space-y-3 flex-1">
-              <div class="flex flex-wrap gap-2">
-                <span class="px-2 py-0.5 ${bg} font-mono text-[11px] font-bold uppercase border-2 border-outline">${badge} (${res.match_percentage}%)</span>
-                <span class="px-2 py-0.5 bg-surface-container-highest font-mono text-[11px] font-bold uppercase border-2 border-outline">${foa.agency}</span>
+        <article class="scheme-card bg-surface-bright border-3 border-outline shadow-[5px_5px_0px_#1a1a1a] p-6 lg:p-7 relative transition-transform hover:-translate-y-0.5 mb-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div class="space-y-3 max-w-3xl">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 ${bg} font-mono text-[11px] font-bold uppercase border border-outline">
+                  ${badge} (${res.match_percentage}%)
+                </span>
+                <span class="px-2.5 py-0.5 bg-surface-container-highest text-on-surface font-mono text-[11px] font-bold uppercase border border-outline">
+                  ${agencyText}
+                </span>
+                <span class="px-2.5 py-0.5 bg-surface-container text-on-surface font-mono text-[11px] font-bold uppercase border border-outline flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[13px] text-secondary">verified</span>
+                  Direct NPCI Credit
+                </span>
               </div>
-              <h3 class="text-2xl font-display font-black uppercase leading-tight">${foa.title}</h3>
-              <p class="font-body text-sm font-medium line-clamp-3">${foa.brief_summary}</p>
-              
-              <div class="flex flex-wrap gap-2 mt-4">
-                <button class="px-4 py-2 bg-surface-container border-2 border-outline font-headline font-bold text-xs uppercase hover:bg-primary-container transition-colors brutalist-shadow" onclick="openDocChecklistModal('${foa.foa_id}')">Docs</button>
-                <button class="px-4 py-2 bg-surface-container border-2 border-outline font-headline font-bold text-xs uppercase hover:bg-primary-container transition-colors brutalist-shadow" onclick="openHinglishModal('${foa.foa_id}')">Guide</button>
+              <h3 class="text-xl sm:text-2xl font-display font-extrabold uppercase text-on-surface leading-tight">
+                ${foa.title}
+              </h3>
+              <p class="font-body text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+                ${foa.brief_summary}
+              </p>
+
+              <!-- Integration of the existing Docs and Guide buttons -->
+              <div class="flex flex-wrap gap-2 pt-2 pb-2">
+                <button class="px-3.5 py-1.5 bg-surface-container border-2 border-outline font-headline font-bold text-xs uppercase hover:bg-primary-container transition-colors shadow-[2px_2px_0px_#1a1a1a]" onclick="openDocChecklistModal('${foa.foa_id}')">Docs Checklist</button>
+                <button class="px-3.5 py-1.5 bg-surface-container border-2 border-outline font-headline font-bold text-xs uppercase hover:bg-primary-container transition-colors shadow-[2px_2px_0px_#1a1a1a]" onclick="openHinglishModal('${foa.foa_id}')">Saral Guide (Hinglish)</button>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 font-mono text-xs mt-2">
+                <div class="border-l-2 border-outline pl-2">
+                  <span class="text-[10px] text-on-surface-variant uppercase block">Min. 12th Marks</span>
+                  <span class="font-bold text-on-surface">${minQual.substring(0,25)}</span>
+                </div>
+                <div class="border-l-2 border-outline pl-2">
+                  <span class="text-[10px] text-on-surface-variant uppercase block">Family Income Cap</span>
+                  <span class="font-bold text-on-surface">≤ ₹6,00,000 / yr</span>
+                </div>
+                <div class="border-l-2 border-outline pl-2">
+                  <span class="text-[10px] text-on-surface-variant uppercase block">Target Cohort</span>
+                  <span class="font-bold text-on-surface">${beneficiary.substring(0,25)}</span>
+                </div>
+                <div class="border-l-2 border-outline pl-2">
+                  <span class="text-[10px] text-secondary uppercase block font-bold">Window Closes</span>
+                  <span class="font-bold text-secondary">${deadline.substring(0,25)}</span>
+                </div>
               </div>
             </div>
             
-            <div class="lg:w-64 flex flex-col items-start lg:items-end justify-between border-t-4 lg:border-t-0 lg:border-l-4 border-outline pt-4 lg:pt-0 lg:pl-6 shrink-0">
-              <div class="text-left lg:text-right mb-4">
-                <span class="font-mono text-[10px] uppercase font-bold text-on-surface-variant block">FINANCIAL BENEFIT</span>
-                <div class="text-3xl font-display font-black text-on-surface">${res.estimated_financial_benefit}</div>
+            <!-- Benefit Value & Direct Action -->
+            <div class="lg:w-64 flex flex-col items-start lg:items-end justify-between border-t-2 lg:border-t-0 lg:border-l-2 border-outline pt-4 lg:pt-0 lg:pl-6 space-y-4 shrink-0">
+              <div class="text-left lg:text-right w-full">
+                <span class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant block">Disbursement Amount</span>
+                <div class="text-3xl lg:text-4xl font-display font-black text-on-surface">${bigAmount}</div>
+                <span class="font-mono text-[10px] text-on-surface-variant uppercase font-semibold block mt-1">Estimated Grant Value</span>
               </div>
-              <button class="w-full py-3 bg-primary text-white font-headline font-bold text-sm uppercase tracking-wider text-center border-2 border-outline brutalist-shadow hover:bg-primary-container hover:text-primary transition-colors flex items-center justify-center gap-2" onclick="openApplyModal('${foa.foa_id}')">
-                APPLY <span class="material-symbols-outlined">arrow_forward</span>
+              <button class="w-full py-3 px-4 ${btnColor} font-headline font-bold text-xs uppercase tracking-wider text-center border-2 border-outline shadow-[3px_3px_0px_#1a1a1a] transition-all flex items-center justify-center gap-2" onclick="openApplyModal('${foa.foa_id}')">
+                <span>${btnText}</span>
+                <span class="material-symbols-outlined text-sm">${btnIcon}</span>
               </button>
             </div>
           </div>
@@ -654,6 +819,13 @@ def render_dashboard_html() -> str:
     } catch(e) { body.innerHTML = 'ERROR'; }
   }
 
+  function openInfoModal(title, text) {
+    const modal = document.getElementById('genericModalOverlay');
+    document.getElementById('genericModalTitle').innerText = title;
+    const body = document.getElementById('genericModalBody');
+    body.innerHTML = `<div class="p-6 font-body font-medium text-base sm:text-lg border-4 border-outline bg-surface-bright brutalist-shadow">${text}</div>`;
+    modal.classList.remove('hidden');
+  }
   function closeGenericModal() { document.getElementById('genericModalOverlay').classList.add('hidden'); }
   async function triggerDbSync() { await fetch('/api/ingest/trigger', {method:'POST'}); await loadOpportunities(); runStudentMatch(); alert('SYNC COMPLETE'); }
   document.addEventListener('keydown', (e) => { if(e.key==='Escape') { closeApplyModal(); closeGenericModal(); } });
