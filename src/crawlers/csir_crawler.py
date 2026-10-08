@@ -35,7 +35,7 @@ class CSIRCrawler(BasePortalCrawler):
                 title = link.get_text(strip=True) if link else item.get_text(strip=True)[:120]
                 href = link.get("href") if link else self.portal_url
                 if href and not href.startswith("http"):
-                    href = f"https://csir.res.in/{href.lstrip('/')}"
+                    href = f"https://www.csir.res.in/{href.lstrip('/')}"
 
                 notice_id = f"CSIR-EMR-2026-{idx:02d}"
                 raw_text = item.get_text(separator="\n", strip=True)
