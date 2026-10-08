@@ -15,31 +15,60 @@ venv.bak/
 .coverage
 htmlcov/
 
-# IDEs
+# IDEs & Editors
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# OS
+# OS & Temp
 .DS_Store
 Thumbs.db
+ehthumbs.db
+desktop.ini
+*.tmp
+*.bak
 
-# Major Project Report & LaTeX Artifacts
+# Environment & Secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Presentations & Slides (PPT / Canva exports)
+*.ppt
+*.pptx
+*.odp
+*.key
+ppt/
+ppts/
+presentation/
+presentations/
+slides/
+
+# Reports, Documents & Office Files
+*.pdf
+*.doc
+*.docx
+*.odt
+*.rtf
+report/
+reports/
+synopsis/
+docs/reports/
+docs/*.pdf
+docs/*.docx
+docs/*.pptx
+
+# LaTeX Source & Build Artifacts
 *.tex
 *.tex.bak
 major_template.*
 MadadgaarAI_Major_Project_MidSem_Report.pdf
-*.pdf
-generate_diagrams.py
-logo.jpg
-architecture_diagram.png
-pipeline_flow.png
-gantt_chart.png
-report/
-reports/
-
-# LaTeX Build Files
 *.aux
 *.log
 *.out
@@ -52,3 +81,20 @@ reports/
 *.fdb_latexmk
 *.synctex.gz
 *.synctex
+*.xdv
+
+# Generated Diagrams & Project Media
+generate_diagrams.py
+logo.jpg
+architecture_diagram.png
+pipeline_flow.png
+gantt_chart.png
+*.mp4
+*.mov
+*.avi
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
