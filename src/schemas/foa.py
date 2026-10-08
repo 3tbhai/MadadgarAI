@@ -1,7 +1,7 @@
 """Pydantic schemas for MadadgaarAI Funding Opportunity Announcements (FOAs)."""
 from datetime import date, datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 
@@ -199,6 +199,27 @@ class ProfileMatchRequest(BaseModel):
     institution_type: Optional[str] = None  # e.g., "CFTI", "Private", "State Govt"
     highest_degree: Optional[str] = None  # e.g., "Ph.D.", "M.Tech", "B.Tech"
     top_k: int = Field(default=5, ge=1, le=20)
+
+    @field_validator("user_role", mode="before")
+    @classmethod
+    def normalize_user_role(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            mapping = {
+                "Faculty / PI": BeneficiaryType.FACULTY,
+                "Faculty": BeneficiaryType.FACULTY,
+                "Early Career Researcher": BeneficiaryType.EARLY_CAREER,
+                "Early Career": BeneficiaryType.EARLY_CAREER,
+                "Women Scientists": BeneficiaryType.WOMEN_SCIENTIST,
+                "Women Scientist": BeneficiaryType.WOMEN_SCIENTIST,
+                "PhD / Postdocs": BeneficiaryType.PHD_POSTDOC,
+                "PhD / Postdoc": BeneficiaryType.PHD_POSTDOC,
+                "PhD Scholars & Postdoctoral Fellows": BeneficiaryType.PHD_POSTDOC,
+                "UG / PG Students": BeneficiaryType.UG_PG_STUDENT,
+                "Student": BeneficiaryType.UG_PG_STUDENT,
+            }
+            if v in mapping:
+                return mapping[v]
+        return v
 
 
 class ComplianceCheckResult(BaseModel):

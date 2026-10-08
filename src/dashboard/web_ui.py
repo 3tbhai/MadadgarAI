@@ -72,7 +72,7 @@ def render_dashboard_html() -> str:
     </nav>
     
     <div class="flex items-center gap-4">
-      <button class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-surface-container border-2 border-outline brutalist-shadow text-xs font-mono hover:bg-primary-container transition-colors font-bold" onclick="triggerDbSync()">
+      <button id="syncDbBtn" class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-surface-container border-2 border-outline brutalist-shadow text-xs font-mono hover:bg-primary-container transition-colors font-bold" onclick="triggerDbSync()">
         <span class="material-symbols-outlined text-[16px]">sync</span> SYNC DB
       </button>
       <div class="w-10 h-10 bg-primary flex items-center justify-center border-2 border-outline">
@@ -125,8 +125,7 @@ def render_dashboard_html() -> str:
 <div class="bg-surface-bright p-5 sm:p-6 flex flex-col justify-between">
 <span class="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant font-bold">Active Sanction Schemes</span>
 <div class="my-2">
-<span class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-on-surface">21</span>
-<span class="font-headline font-bold text-base text-tertiary block sm:inline sm:ml-1">SCHEMES</span>
+<span class="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-on-surface" id="statTotalCounter">21 <span class="text-tertiary text-lg">SCHEMES</span></span>
 </div>
 <span class="font-mono text-[10px] text-on-surface-variant border-t border-outline-variant pt-2 mt-1">Central Ministries + Section 135 CSR</span>
 </div>
@@ -313,7 +312,7 @@ def render_dashboard_html() -> str:
             Matrix Rule Engine matches across 4 Central Ministries &amp; 12 CSR Funds directly.
           </div>
 <button class="w-full sm:w-auto px-8 py-4 bg-primary-container text-on-primary-container font-headline font-black text-base uppercase tracking-wider border-2 border-outline shadow-[5px_5px_0px_#1a1a1a] hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-3" type="submit">
-<span>EXECUTE ELIGIBILITY CHECK</span>
+<span id="matchBtnText">EXECUTE ELIGIBILITY CHECK</span>
 <span class="material-symbols-outlined font-black">arrow_forward</span>
 </button>
 </div>
@@ -360,7 +359,7 @@ def render_dashboard_html() -> str:
       </div>
     </div>
     
-    <div id="exploreGrid" class="space-y-6"></div>
+    <div id="exploreGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
   <!-- ================= TAB 3: FACULTY ================= -->
@@ -374,10 +373,11 @@ def render_dashboard_html() -> str:
         <div class="bg-surface-bright p-4 border-2 border-outline flex flex-col">
           <label class="font-mono text-xs font-bold uppercase mb-2">Role</label>
           <select id="matchRole" class="w-full bg-surface-container-low font-headline font-bold px-3 py-2.5 border-b-2 border-outline rounded-none focus:bg-primary-container">
-            <option>Faculty / PI</option>
-            <option>Early Career Researcher</option>
-            <option>Women Scientists</option>
-            <option>PhD / Postdocs</option>
+            <option value="Faculty / Principal Investigator">Faculty / Principal Investigator</option>
+            <option value="Early Career Researcher">Early Career Researcher</option>
+            <option value="Women Scientists">Women Scientists</option>
+            <option value="PhD Scholars & Postdoctoral Fellows">PhD Scholars & Postdoctoral Fellows</option>
+            <option value="UG / PG Students">UG / PG Students</option>
           </select>
         </div>
         <div class="bg-surface-bright p-4 border-2 border-outline flex flex-col">
@@ -677,6 +677,11 @@ def render_dashboard_html() -> str:
     const q = document.getElementById('exploreSearchInput').value.trim();
     const agency = document.getElementById('exploreAgencyFilter').value;
     if(!q && !agency) { renderExploreGrid(allOpportunities); return; }
+    if(!q && agency) {
+      const filtered = allOpportunities.filter(o => o.agency === agency);
+      renderExploreGrid(filtered);
+      return;
+    }
     try {
       const res = await fetch('/api/search', {
         method: 'POST',
@@ -685,7 +690,9 @@ def render_dashboard_html() -> str:
       });
       const data = await res.json();
       renderExploreGrid(data.map(d => d.foa));
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async function runFacultyMatch() {
@@ -741,6 +748,9 @@ def render_dashboard_html() -> str:
       const budgetStr = foa.financials.raw_budget_text || (foa.financials.max_amount_inr ? '₹ ' + (foa.financials.max_amount_inr).toLocaleString('en-IN') : 'DIRECT GRANT');
       document.getElementById('modalGrantText').innerText = 'BENEFIT: ' + budgetStr;
       document.getElementById('modalApplyLink').href = applyUrl;
+      const shareMsg = encodeURIComponent(`Madadgaar Alert: Apply for ${foa.title} (${budgetStr}). Official Portal: ${applyUrl}`);
+      const waLink = document.getElementById('modalWhatsappLink');
+      if (waLink) waLink.href = `https://api.whatsapp.com/send?text=${shareMsg}`;
       const steps = foa.portal_navigation_steps && foa.portal_navigation_steps.length > 0 ? foa.portal_navigation_steps : ["1. Visit Portal", "2. Register with Aadhaar", "3. Submit forms"];
       document.getElementById('modalStepsTimeline').innerHTML = steps.map(s => `<div class="p-3 border-2 border-outline bg-surface-bright">${s}</div>`).join('');
     } catch(e) {}
@@ -827,7 +837,32 @@ def render_dashboard_html() -> str:
     modal.classList.remove('hidden');
   }
   function closeGenericModal() { document.getElementById('genericModalOverlay').classList.add('hidden'); }
-  async function triggerDbSync() { await fetch('/api/ingest/trigger', {method:'POST'}); await loadOpportunities(); runStudentMatch(); alert('SYNC COMPLETE'); }
+  async function triggerDbSync() {
+    const btn = document.getElementById('syncDbBtn');
+    if (btn) {
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> SYNCING...';
+      btn.disabled = true;
+    }
+    try {
+      await fetch('/api/ingest/trigger', {method:'POST'});
+      await loadOpportunities();
+      runStudentMatch();
+      if (btn) {
+        btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check_circle</span> SYNCED';
+      }
+    } catch(e) {
+      if (btn) {
+        btn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-secondary">error</span> FAILED';
+      }
+    } finally {
+      setTimeout(() => {
+        if (btn) {
+          btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">sync</span> SYNC DB';
+          btn.disabled = false;
+        }
+      }, 2500);
+    }
+  }
   document.addEventListener('keydown', (e) => { if(e.key==='Escape') { closeApplyModal(); closeGenericModal(); } });
   
   initPlatform();
