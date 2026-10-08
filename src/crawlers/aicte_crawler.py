@@ -33,7 +33,7 @@ class AICTECrawler(BasePortalCrawler):
                 title = link.get_text(strip=True) if link else r.get_text(strip=True)[:100]
                 href = link.get("href") if link else self.portal_url
                 if href and not href.startswith("http"):
-                    href = f"https://www.aicte-india.org{href}"
+                    href = f"https://www.aicte.gov.in{href}"
 
                 notice = CrawledNotice(
                     notice_id=f"AICTE-SCHEME-2026-{idx:02d}",

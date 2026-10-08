@@ -23,7 +23,7 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "AICTE Pragati Scholarship Scheme for Girl Students (Technical Degree & Diploma)",
             "agency": AgencyType.AICTE,
             "scheme_name": "Pragati Scholarship Scheme for Girls",
-            "source_url": "https://www.aicte-india.org",
+            "source_url": "https://www.aicte.gov.in",
             "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
                 "1. Open the National Scholarship Portal (scholarships.gov.in).",
@@ -54,7 +54,7 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "AICTE Saksham Scholarship Scheme for Specially-Abled Students",
             "agency": AgencyType.AICTE,
             "scheme_name": "Saksham Scholarship Scheme for Differently Abled",
-            "source_url": "https://www.aicte-india.org",
+            "source_url": "https://www.aicte.gov.in",
             "direct_apply_url": "https://scholarships.gov.in",
             "portal_navigation_steps": [
                 "1. Open National Scholarship Portal (scholarships.gov.in).",
@@ -325,7 +325,7 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "Kotak Kanya Scholarship for Meritorious Girls in Professional Graduation",
             "agency": AgencyType.CSR_FOUNDATION,
             "scheme_name": "Kotak Kanya Scholarship Programme",
-            "source_url": "https://kotakeducationfoundation.org/our-programs/kotak-kanya-scholarship/",
+            "source_url": "https://kotakeducation.org/kotak-kanya-scholarship/",
             "direct_apply_url": "https://www.buddy4study.com/page/kotak-kanya-scholarship",
             "portal_navigation_steps": [
                 "1. Open the official Kotak Kanya application portal on Buddy4Study (buddy4study.com/page/kotak-kanya-scholarship).",
@@ -385,7 +385,7 @@ def get_seed_student_scholarships() -> List[FundingOpportunity]:
             "title": "HDFC Bank Parivartan's Educational Crisis Support Scholarship (ECSS)",
             "agency": AgencyType.CSR_FOUNDATION,
             "scheme_name": "HDFC Parivartan ECSS Programme",
-            "source_url": "https://www.hdfcbank.com/personal/about-us/corporate-social-responsibility/educational-crisis-support",
+            "source_url": "https://www.buddy4study.com/page/hdfc-bank-parivartans-ecss-programme",
             "direct_apply_url": "https://www.buddy4study.com/page/hdfc-bank-parivartans-ecss-programme",
             "portal_navigation_steps": [
                 "1. Open the HDFC Bank Parivartan ECSS portal on Buddy4Study (buddy4study.com/page/hdfc-bank-parivartans-ecss-programme).",

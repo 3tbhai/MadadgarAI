@@ -207,6 +207,7 @@ class ProfileMatchRequest(BaseModel):
             mapping = {
                 "Faculty / PI": BeneficiaryType.FACULTY,
                 "Faculty": BeneficiaryType.FACULTY,
+                "Faculty / Principal Investigator": BeneficiaryType.FACULTY,
                 "Early Career Researcher": BeneficiaryType.EARLY_CAREER,
                 "Early Career": BeneficiaryType.EARLY_CAREER,
                 "Women Scientists": BeneficiaryType.WOMEN_SCIENTIST,
@@ -219,7 +220,9 @@ class ProfileMatchRequest(BaseModel):
             }
             if v in mapping:
                 return mapping[v]
-        return v
+            if not v.strip():
+                return BeneficiaryType.FACULTY
+        return v or BeneficiaryType.FACULTY
 
 
 class ComplianceCheckResult(BaseModel):
@@ -311,6 +314,40 @@ class StudentProfileRequest(BaseModel):
     is_orphan_or_ward_of_defense: bool = False
     institute_type: Optional[str] = "AICTE Approved / UGC Recognized"
     top_k: int = Field(default=10, ge=1, le=30)
+
+    @field_validator("social_category", mode="before")
+    @classmethod
+    def normalize_social_category(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            mapping = {
+                "General": SocialCategory.GENERAL,
+                "General / Open": SocialCategory.GENERAL,
+                "GEN": SocialCategory.GENERAL,
+                "OBC": SocialCategory.OBC_NCL,
+                "OBC-NCL": SocialCategory.OBC_NCL,
+                "OBC (Non-Creamy Layer)": SocialCategory.OBC_NCL,
+                "SC": SocialCategory.SC,
+                "SC (Scheduled Caste)": SocialCategory.SC,
+                "Scheduled Caste": SocialCategory.SC,
+                "ST": SocialCategory.ST,
+                "ST (Scheduled Tribe)": SocialCategory.ST,
+                "Scheduled Tribe": SocialCategory.ST,
+                "EWS": SocialCategory.EWS,
+                "EWS (Economically Weaker Section)": SocialCategory.EWS,
+                "Minority": SocialCategory.MINORITY,
+            }
+            if v in mapping:
+                return mapping[v]
+        return v
+
+    @field_validator("education_level", mode="before")
+    @classmethod
+    def normalize_education_level(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            for level in EducationLevel:
+                if v.lower() in level.value.lower() or level.value.lower() in v.lower():
+                    return level
+        return v
 
 
 class StudentScholarshipMatchResult(BaseModel):

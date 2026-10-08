@@ -35,7 +35,7 @@ class ANRFCrawler(BasePortalCrawler):
                 title = card.get_text(strip=True)[:120]
                 href = link.get("href") if link else self.portal_url
                 if href and not href.startswith("http"):
-                    href = f"https://anrfonline.in/{href.lstrip('/')}"
+                    href = f"https://anrf.gov.in/{href.lstrip('/')}"
 
                 notice_id = f"ANRF-SCHEME-2026-{idx:02d}"
                 raw_text = card.get_text(separator="\n", strip=True)

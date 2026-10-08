@@ -19,12 +19,12 @@ for directory in [DATA_DIR, RAW_DATA_DIR, PROCESSED_DATA_DIR, BENCHMARK_DATA_DIR
 
 # Agency Source Endpoints
 PORTAL_URLS = {
-    "DST": "https://dst.gov.in/call-for-proposals",
-    "ANRF": "https://anrfonline.in",
-    "CSIR": "https://csir.res.in/funding-schemes",
-    "AICTE": "https://www.aicte-india.org/schemes/research-innovations-development-schemes",
+    "DST": "https://dst.gov.in",
+    "ANRF": "https://anrf.gov.in",
+    "CSIR": "https://www.csir.res.in",
+    "AICTE": "https://www.aicte.gov.in/schemes",
     "NSP": "https://scholarships.gov.in",
-    "DBT": "https://dbtindia.gov.in/latest-announcements",
+    "DBT": "https://birac.nic.in",
 }
 
 # Parser & OCR Thresholds
