@@ -162,7 +162,7 @@ def render_dashboard_html() -> str:
 </div>
 <!-- The Matrix Form Container -->
 <div class="bg-surface-container border-3 border-outline shadow-[6px_6px_0px_#1a1a1a] p-6 lg:p-8">
-<form class="space-y-8" id="matrix-filter-form" onsubmit="event.preventDefault(); runStudentMatch();">
+<form class="space-y-8" id="matrix-filter-form" onsubmit="event.preventDefault(); runStudentMatch(true);">
 <!-- Partitioned Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 <!-- Field: Domicile State -->
@@ -171,7 +171,7 @@ def render_dashboard_html() -> str:
               01 // Domicile State
             </label>
 <div class="relative">
-<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuState" onchange="runStudentMatch()">
+<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuState">
 <option value="All India">All-India Universal (All States)</option>
 <option value="Rajasthan">Rajasthan</option>
 <option selected="" value="Maharashtra">Maharashtra</option>
@@ -190,7 +190,7 @@ def render_dashboard_html() -> str:
               02 // Academic Level
             </label>
 <div class="relative">
-<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuLevel" onchange="runStudentMatch()">
+<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuLevel">
 <option selected="" value="UG - Engineering / Technology (B.Tech/B.E.)">B.Tech / B.E. (Technical Degree)</option>
 <option value="UG - Medical / Paramedical (MBBS/BDS/B.Pharm/Nursing)">MBBS / BDS / Professional Medical</option>
 <option value="Diploma / Polytechnic">Polytechnic Diploma</option>
@@ -207,7 +207,7 @@ def render_dashboard_html() -> str:
               03 // Social Category
             </label>
 <div class="relative">
-<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuCategory" onchange="runStudentMatch()">
+<select class="w-full bg-surface-container-low font-headline font-bold text-sm px-3 py-2.5 border-b-2 border-outline focus:outline-none focus:bg-primary-container rounded-none text-on-surface" id="stuCategory">
 <option value="General / Open">General / Open Merit</option>
 <option selected="" value="EWS (Economically Weaker Section)">EWS (Economically Weaker Section)</option>
 <option value="OBC (Non-Creamy Layer)">OBC (Non-Creamy Layer)</option>
@@ -224,15 +224,15 @@ def render_dashboard_html() -> str:
             </label>
 <div class="grid grid-cols-3 gap-1 pt-1">
 <label class="cursor-pointer border-2 border-outline text-center py-2 text-xs font-headline font-bold uppercase select-none transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-container">
-<input checked="" class="sr-only" name="gender" onchange="runStudentMatch()" type="radio" value="Female"/>
+<input checked="" class="sr-only" name="gender" type="radio" value="Female"/>
                 Female
               </label>
 <label class="cursor-pointer border-2 border-outline text-center py-2 text-xs font-headline font-bold uppercase select-none transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-container">
-<input class="sr-only" name="gender" onchange="runStudentMatch()" type="radio" value="Male"/>
+<input class="sr-only" name="gender" type="radio" value="Male"/>
                 Male
               </label>
 <label class="cursor-pointer border-2 border-outline text-center py-2 text-xs font-headline font-bold uppercase select-none transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-container">
-<input class="sr-only" name="gender" onchange="runStudentMatch()" type="radio" value="Transgender"/>
+<input class="sr-only" name="gender" type="radio" value="Transgender"/>
                 Other
               </label>
 </div>
@@ -251,7 +251,7 @@ def render_dashboard_html() -> str:
                 ≤ ₹ 3,20,000 / yr
               </span>
 </div>
-<input class="w-full h-3 bg-surface-container accent-primary border-2 border-outline rounded-none cursor-pointer" id="stuIncome" max="800000" min="80000" oninput="updateIncomeDisplay(this.value); runStudentMatch()" step="20000" type="range" value="320000"/>
+<input class="w-full h-3 bg-surface-container accent-primary border-2 border-outline rounded-none cursor-pointer" id="stuIncome" max="800000" min="80000" oninput="updateIncomeDisplay(this.value)" step="20000" type="range" value="320000"/>
 <!-- Preset Blocks -->
 <div class="grid grid-cols-4 gap-2 mt-4 font-mono text-[11px] font-bold">
 <button class="py-1.5 px-1 bg-surface-container border border-outline hover:bg-primary-container text-center transition-colors" onclick="setIncomeVal(150000)" type="button">
@@ -274,7 +274,7 @@ def render_dashboard_html() -> str:
               06 // Prior Exam Score %
             </label>
 <div class="flex items-center gap-3">
-<input class="w-24 bg-surface-container text-3xl font-display font-extrabold p-2 border-2 border-outline text-center text-on-surface focus:outline-none focus:bg-primary-container" id="stuMarks" onchange="runStudentMatch()" max="100" min="35" type="number" value="86"/>
+<input class="w-24 bg-surface-container text-3xl font-display font-extrabold p-2 border-2 border-outline text-center text-on-surface focus:outline-none focus:bg-primary-container" id="stuMarks" max="100" min="35" type="number" value="86"/>
 <div class="font-mono text-xs text-on-surface-variant leading-tight">
 <span class="font-bold text-on-surface text-sm block">86.00% Aggregate</span>
                 Class 12 / Diploma Final CGPA equivalent
@@ -290,14 +290,14 @@ def render_dashboard_html() -> str:
               07 // Statutory Criteria Flags
             </span>
 <label class="flex items-center gap-3 cursor-pointer group">
-<input checked="" class="w-5 h-5 border-2 border-outline accent-primary rounded-none" id="stuSingleGirl" onchange="runStudentMatch()" type="checkbox"/>
+<input checked="" class="w-5 h-5 border-2 border-outline accent-primary rounded-none" id="stuSingleGirl" type="checkbox"/>
 <div class="text-xs font-headline font-bold uppercase leading-tight group-hover:text-tertiary">
                 Single Girl Child
                 <span class="font-mono block text-[10px] text-on-surface-variant font-normal">(एकल कन्या योजना Quota)</span>
 </div>
 </label>
 <label class="flex items-center gap-3 cursor-pointer group">
-<input class="w-5 h-5 border-2 border-outline accent-primary rounded-none" id="stuPwd" onchange="runStudentMatch()" type="checkbox"/>
+<input class="w-5 h-5 border-2 border-outline accent-primary rounded-none" id="stuPwd" type="checkbox"/>
 <div class="text-xs font-headline font-bold uppercase leading-tight group-hover:text-tertiary">
                 Differently Abled
                 <span class="font-mono block text-[10px] text-on-surface-variant font-normal">(PwD UDID ≥ 40% Certified)</span>
@@ -321,10 +321,15 @@ def render_dashboard_html() -> str:
 </section>
 
     <!-- Results Section -->
-    <section>
-      <div class="flex items-center gap-3 mb-6">
-        <span class="w-8 h-8 bg-primary text-primary-container font-display font-black flex items-center justify-center border-2 border-outline">02</span>
-        <h2 class="text-3xl font-display font-black uppercase tracking-tight">Scheme Directory</h2>
+    <section id="scheme-directory" class="pt-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 bg-primary text-primary-container font-display font-black flex items-center justify-center border-2 border-outline">02</span>
+          <h2 class="text-3xl font-display font-black uppercase tracking-tight">Scheme Directory</h2>
+        </div>
+        <div id="resultsMatchBadge" class="font-mono text-xs font-bold uppercase bg-primary-container text-on-primary-container px-3 py-1.5 border-2 border-outline brutalist-shadow">
+          READY FOR EVALUATION
+        </div>
       </div>
       <div id="studentResultsContainer" class="space-y-6">
         <!-- JS Render -->
@@ -496,13 +501,14 @@ def render_dashboard_html() -> str:
   function setIncomeVal(val) {
     document.getElementById('stuIncome').value = val;
     updateIncomeDisplay(val);
-    runStudentMatch();
   }
 
-  async function runStudentMatch() {
+  async function runStudentMatch(shouldScroll = false) {
     const container = document.getElementById('studentResultsContainer');
     const btnText = document.getElementById('matchBtnText');
-    if(btnText) btnText.innerHTML = 'EXECUTING...';
+    const badge = document.getElementById('resultsMatchBadge');
+    if(btnText) btnText.innerHTML = 'CALCULATING ELIGIBILITY...';
+    if(badge) badge.innerText = 'EVALUATING SCHEMES...';
 
     const payload = {
       state_domicile: document.getElementById('stuState').value,
@@ -525,10 +531,20 @@ def render_dashboard_html() -> str:
       const results = await res.json();
       currentStudentResults = results;
       renderStudentCards(results);
+
+      const eligibleCount = results.filter(r => r.eligibility_status === 'ELIGIBLE' || r.eligibility_status === 'HIGH_PROBABILITY').length;
+      if(badge) {
+        badge.innerHTML = `MATCHED: ${eligibleCount} ELIGIBLE (${results.length} TOTAL)`;
+      }
+
+      if(shouldScroll) {
+        const sec = document.getElementById('scheme-directory');
+        if(sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     } catch (err) {
       container.innerHTML = '<div class="text-error font-bold">Failed to load.</div>';
     } finally {
-      if(btnText) btnText.innerHTML = 'EXECUTE CHECK';
+      if(btnText) btnText.innerHTML = 'EXECUTE ELIGIBILITY CHECK';
     }
   }
 
