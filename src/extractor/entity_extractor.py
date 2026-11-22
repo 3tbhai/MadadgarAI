@@ -13,11 +13,14 @@ from src.extractor.patterns import (
     BUDGET_NUMERIC_PATTERN,
     DATE_DD_MM_YYYY_PATTERN,
     DATE_TEXTUAL_PATTERN,
+    DATE_YYYY_MM_DD_PATTERN,
+    INCOME_CLAUSE_PATTERN,
     INSTITUTION_KEYWORDS,
     OVERHEAD_PCT_PATTERN,
     QUALIFICATION_KEYWORDS,
     ROLLING_CALL_PATTERN,
     STIPEND_MONTHLY_PATTERN,
+    TOTAL_GRANT_LAKHS_PATTERN,
 )
 from src.schemas.foa import (
     AcademicOntologyTag,
@@ -41,7 +44,7 @@ MONTH_MAP = {
     "jun": 6, "june": 6,
     "jul": 7, "july": 7,
     "aug": 8, "august": 8,
-    "sep": 9, "september": 9,
+    "sep": 9, "sept": 9, "september": 9,
     "oct": 10, "october": 10,
     "nov": 11, "november": 11,
     "dec": 12, "december": 12,
@@ -57,37 +60,54 @@ class FOAEntityExtractor:
         stipend: Optional[float] = None
         overhead: Optional[float] = None
 
-        # Check Crores
-        cr_match = BUDGET_CRORES_PATTERN.search(text)
+        # Strip out family/household income limit phrases so income ceilings aren't mistaken for grant amounts
+        sanitized_text = INCOME_CLAUSE_PATTERN.sub(" [INCOME_CEILING] ", text)
+
+        # 1. Check Crores
+        cr_match = BUDGET_CRORES_PATTERN.search(sanitized_text)
         if cr_match:
             try:
                 max_amount = float(cr_match.group(1)) * 10000000.0
             except ValueError:
                 pass
 
-        # Check Lakhs
+        # 2. Check Explicit Total Grant in Lakhs
         if max_amount is None:
-            lakh_match = BUDGET_LAKHS_PATTERN.search(text)
-            if lakh_match:
+            tot_lakh_match = TOTAL_GRANT_LAKHS_PATTERN.search(sanitized_text)
+            if tot_lakh_match:
                 try:
-                    max_amount = float(lakh_match.group(1)) * 100000.0
+                    max_amount = float(tot_lakh_match.group(1)) * 100000.0
                 except ValueError:
                     pass
 
-        # Check Numeric standard
+        # 3. Check Lakhs
         if max_amount is None:
-            num_match = BUDGET_NUMERIC_PATTERN.search(text)
-            if num_match:
+            lakh_matches = list(BUDGET_LAKHS_PATTERN.finditer(sanitized_text))
+            if lakh_matches:
                 try:
-                    val_str = num_match.group(1).replace(",", "")
-                    val = float(val_str)
-                    if val >= 10000:  # Exclude tiny numbers
-                        max_amount = val
+                    vals = [float(m.group(1)) * 100000.0 for m in lakh_matches]
+                    max_amount = max(vals)
                 except ValueError:
                     pass
+
+        # 4. Check Numeric standard (choose largest award cap if multiple numeric figures exist)
+        if max_amount is None:
+            num_matches = list(BUDGET_NUMERIC_PATTERN.finditer(sanitized_text))
+            if num_matches:
+                valid_nums = []
+                for m in num_matches:
+                    try:
+                        val_str = m.group(1).replace(",", "")
+                        val = float(val_str)
+                        if val >= 10000:
+                            valid_nums.append(val)
+                    except ValueError:
+                        pass
+                if valid_nums:
+                    max_amount = max(valid_nums)
 
         # Check Monthly Stipend
-        stipend_match = STIPEND_MONTHLY_PATTERN.search(text)
+        stipend_match = STIPEND_MONTHLY_PATTERN.search(sanitized_text)
         if stipend_match:
             try:
                 stipend = float(stipend_match.group(1).replace(",", ""))
@@ -95,7 +115,7 @@ class FOAEntityExtractor:
                 pass
 
         # Check Overhead
-        overhead_match = OVERHEAD_PCT_PATTERN.search(text)
+        overhead_match = OVERHEAD_PCT_PATTERN.search(sanitized_text)
         if overhead_match:
             try:
                 overhead = float(overhead_match.group(1))
@@ -117,6 +137,15 @@ class FOAEntityExtractor:
         for match in DATE_DD_MM_YYYY_PATTERN.finditer(text):
             try:
                 day, month, year = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                if 1 <= day <= 31 and 1 <= month <= 12 and 2024 <= year <= 2030:
+                    dates_found.append(date(year, month, day))
+            except ValueError:
+                continue
+
+        # Check ISO YYYY-MM-DD
+        for match in DATE_YYYY_MM_DD_PATTERN.finditer(text):
+            try:
+                year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
                 if 1 <= day <= 31 and 1 <= month <= 12 and 2024 <= year <= 2030:
                     dates_found.append(date(year, month, day))
             except ValueError:
@@ -159,23 +188,35 @@ class FOAEntityExtractor:
             raw_deadline_text=f"Closing Date: {close_d.isoformat() if close_d else ('Rolling' if is_rolling else 'Not specified')}",
         )
 
-    def extract_eligibility(self, text: str) -> EligibilityCriteria:
+    def extract_eligibility(
+        self,
+        text: str,
+        notice_id: Optional[str] = None,
+        agency: Optional[AgencyType] = None,
+    ) -> EligibilityCriteria:
         age_limit: Optional[int] = None
         age_match = AGE_LIMIT_PATTERN.search(text)
         if age_match:
             try:
                 age_val = int(age_match.group(1))
-                if 20 <= age_val <= 75:
+                if 18 <= age_val <= 75:
                     age_limit = age_val
             except ValueError:
                 pass
 
-        # Target Beneficiaries
+        # Target Beneficiaries with contextual disambiguation
         beneficiaries: List[BeneficiaryType] = []
+        if notice_id and (notice_id.upper().startswith("SCHOLARSHIP-") or notice_id.upper().startswith("NSP-")):
+            beneficiaries.append(BeneficiaryType.UG_PG_STUDENT)
+        elif agency in (AgencyType.NSP, AgencyType.UGC, AgencyType.STATE_GOVT, AgencyType.CSR_FOUNDATION):
+            beneficiaries.append(BeneficiaryType.UG_PG_STUDENT)
+
         for ben_name, pat in BENEFICIARY_KEYWORDS:
             if pat.search(text):
                 try:
-                    beneficiaries.append(BeneficiaryType(ben_name))
+                    b_enum = BeneficiaryType(ben_name)
+                    if b_enum not in beneficiaries:
+                        beneficiaries.append(b_enum)
                 except ValueError:
                     pass
         if not beneficiaries:
@@ -218,7 +259,7 @@ class FOAEntityExtractor:
         content_hash = hashlib.sha256(f"{title}|{full_text}".encode("utf-8")).hexdigest()
         financials = self.extract_financials(full_text)
         deadlines = self.extract_dates(full_text)
-        eligibility = self.extract_eligibility(full_text)
+        eligibility = self.extract_eligibility(full_text, notice_id=notice_id, agency=agency)
 
         # Domain classification heuristic fallback
         domain = ResearchDomain.INTERDISCIPLINARY

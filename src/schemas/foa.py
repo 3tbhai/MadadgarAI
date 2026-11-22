@@ -1,8 +1,8 @@
-"""Pydantic schemas for MadadgaarAI Funding Opportunity Announcements (FOAs)."""
+"""Pydantic schemas for MadadgaarAI Funding Opportunity Announcements (FOAs), Explainable Matching, RAG, and Document Intelligence."""
 from datetime import date, datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class AgencyType(str, Enum):
@@ -131,10 +131,13 @@ class EligibilityCriteria(BaseModel):
 
 class FundingOpportunity(BaseModel):
     foa_id: str = Field(
-        ..., description="Unique deterministic FOA identifier (e.g. DST-CRG-2026-01)"
+        ..., description="Unique deterministic opportunity identifier"
     )
     title: str = Field(..., description="Official title of the funding notice")
     agency: AgencyType = Field(..., description="Funding agency")
+    issuing_authority: Optional[str] = Field(
+        default=None, description="Official Ministry, Statutory Council, State Department, or CSR Foundation"
+    )
     scheme_name: Optional[str] = Field(
         default=None, description="Specific scheme under the agency"
     )
@@ -157,6 +160,9 @@ class FundingOpportunity(BaseModel):
     thematic_areas: List[str] = Field(
         default_factory=list, description="Keywords and thematic research topics"
     )
+    field_of_study: List[str] = Field(
+        default_factory=list, description="Academic disciplines or fields eligible for the opportunity"
+    )
     ontology_tags: List[AcademicOntologyTag] = Field(
         default_factory=list, description="Categorized academic taxonomy mappings"
     )
@@ -168,6 +174,21 @@ class FundingOpportunity(BaseModel):
     )
     financials: FinancialCeiling = Field(
         default_factory=FinancialCeiling, description="Financial guidelines"
+    )
+    duration_months: Optional[int] = Field(
+        default=36, description="Standard project or scholarship tenure in months"
+    )
+    renewal_requirements: Optional[str] = Field(
+        default=None, description="Annual continuation or renewal conditions"
+    )
+    common_mistakes: List[str] = Field(
+        default_factory=list, description="Common application errors that lead to rejection"
+    )
+    official_source_references: List[str] = Field(
+        default_factory=list, description="Official statutory guidelines and notification references"
+    )
+    last_verified_date: date = Field(
+        default_factory=lambda: date(2026, 10, 15), description="Date when official guideline was last verified"
     )
     full_text_content: Optional[str] = Field(
         default=None, description="Full extracted text from the circular"
@@ -198,6 +219,16 @@ class ProfileMatchRequest(BaseModel):
     applicant_age: Optional[int] = None
     institution_type: Optional[str] = None  # e.g., "CFTI", "Private", "State Govt"
     highest_degree: Optional[str] = None  # e.g., "Ph.D.", "M.Tech", "B.Tech"
+    publications_count: Optional[int] = Field(default=None, ge=0, description="Total peer-reviewed publications")
+    sci_publications_count: Optional[int] = Field(default=None, ge=0, description="SCI/Scopus indexed journal papers")
+    research_experience_years: Optional[int] = Field(default=None, ge=0, description="Years of post-degree research/teaching experience")
+    research_methodologies: List[str] = Field(default_factory=list, description="Experimental or computational methods")
+    previous_grants: List[str] = Field(default_factory=list, description="Prior extramural or seed grants managed")
+    available_facilities: List[str] = Field(default_factory=list, description="Lab equipment, compute clusters, or clinical access")
+    requested_funding_inr: Optional[float] = Field(default=None, ge=0, description="Target project budget in INR")
+    preferred_duration_months: Optional[int] = Field(default=None, ge=1, description="Target project duration in months")
+    has_industry_partner: Optional[bool] = Field(default=None, description="Whether an industry collaborator is onboarded")
+    has_dsir_siro_recognition: Optional[bool] = Field(default=None, description="Whether host institution holds valid DSIR SIRO recognition")
     top_k: int = Field(default=5, ge=1, le=20)
 
     @field_validator("user_role", mode="before")
@@ -212,17 +243,30 @@ class ProfileMatchRequest(BaseModel):
                 "Early Career": BeneficiaryType.EARLY_CAREER,
                 "Women Scientists": BeneficiaryType.WOMEN_SCIENTIST,
                 "Women Scientist": BeneficiaryType.WOMEN_SCIENTIST,
+                "Women Scientists (WOS-A / WOS-B)": BeneficiaryType.WOMEN_SCIENTIST,
                 "PhD / Postdocs": BeneficiaryType.PHD_POSTDOC,
                 "PhD / Postdoc": BeneficiaryType.PHD_POSTDOC,
                 "PhD Scholars & Postdoctoral Fellows": BeneficiaryType.PHD_POSTDOC,
                 "UG / PG Students": BeneficiaryType.UG_PG_STUDENT,
+                "UG / PG Student Researchers": BeneficiaryType.UG_PG_STUDENT,
                 "Student": BeneficiaryType.UG_PG_STUDENT,
+                "Startups & Industry Partners": BeneficiaryType.STARTUP_INDUSTRY,
+                "Startup / Industry": BeneficiaryType.STARTUP_INDUSTRY,
             }
             if v in mapping:
                 return mapping[v]
             if not v.strip():
                 return BeneficiaryType.FACULTY
         return v or BeneficiaryType.FACULTY
+
+
+class GrantMatchExplanation(BaseModel):
+    why_grant_matches: str
+    overlapping_interests: List[str] = Field(default_factory=list)
+    satisfied_requirements: List[str] = Field(default_factory=list)
+    unverified_requirements: List[str] = Field(default_factory=list)
+    potential_disqualifiers: List[str] = Field(default_factory=list)
+    actionable_improvements: List[str] = Field(default_factory=list)
 
 
 class ComplianceCheckResult(BaseModel):
@@ -232,6 +276,12 @@ class ComplianceCheckResult(BaseModel):
     age_check: Optional[str] = None
     qualification_check: Optional[str] = None
     institution_check: Optional[str] = None
+    budget_compatibility_check: Optional[str] = None
+    duration_compatibility_check: Optional[str] = None
+    satisfied_criteria: List[str] = Field(default_factory=list)
+    unverified_criteria: List[str] = Field(default_factory=list)
+    disqualifying_factors: List[str] = Field(default_factory=list)
+    improvement_suggestions: List[str] = Field(default_factory=list)
 
 
 class MatchResult(BaseModel):
@@ -241,8 +291,15 @@ class MatchResult(BaseModel):
     )
     bm25_score: Optional[float] = None
     dense_score: Optional[float] = None
+    domain_similarity_score: float = Field(default=0.0, ge=0.0, le=1.0)
     matching_keywords: List[str] = Field(default_factory=list)
     compliance: ComplianceCheckResult
+    explanation: Optional[GrantMatchExplanation] = None
+    deadline_proximity_days: Optional[int] = None
+    deadline_status: str = "OPEN"
+    non_probability_disclaimer: str = (
+        "Alignment score reflects semantic and rule-based fit with call guidelines; it does not represent a statistical probability of grant award."
+    )
 
 
 class ProposalSection(BaseModel):
@@ -258,9 +315,17 @@ class ProposalSkeleton(BaseModel):
     agency: AgencyType
     generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     target_deadline: Optional[date] = None
+    suggested_titles: List[str] = Field(default_factory=list)
     sections: List[ProposalSection] = Field(default_factory=list)
     suggested_budget_breakdown: Dict[str, str] = Field(default_factory=dict)
     compliance_checklist: List[str] = Field(default_factory=list)
+    key_references: List[str] = Field(default_factory=list)
+    guideline_verification_status: str = Field(
+        default=(
+            "Structurally formatted per statutory agency call conventions and Ministry of Finance OM norms. "
+            "Applicant must verify call-specific annexures, institutional DSIR/PFMS registration, and exact equipment ceiling caps prior to submission."
+        )
+    )
 
 
 class IngestionReport(BaseModel):
@@ -282,6 +347,7 @@ class DocumentCheckItem(BaseModel):
     validity_and_rules: str
     how_to_obtain: str
     is_mandatory: bool = True
+    verification_status: str = "UNVERIFIED"  # "VERIFIED", "UNVERIFIED"
 
 
 class HinglishExplainer(BaseModel):
@@ -290,6 +356,10 @@ class HinglishExplainer(BaseModel):
     zaruri_documents: List[str] = Field(default_factory=list)
     official_portal_name: str
     official_portal_url: str
+    renewal_kैसे_hoga: str = (
+        "नवीनीकरण (Renewal): प्रत्येक वर्ष न्यूनतम 60% अंक (या 6.0 CGPA), 75% उपस्थिति और बिना किसी बैकलॉग के अगली कक्षा में प्रमोशन प्रमाण पत्र अपलोड करना अनिवार्य है।"
+    )
+    common_galatiyan: List[str] = Field(default_factory=list)
     aadhaar_seeding_warning: str = (
         "महत्वपूर्ण: बैंक खाता आधार और NPCI (DBT) से लिंक होना अनिवार्य है। बिना NPCI मैपिंग छात्रवृत्ति का पैसा बैंक खाते में नहीं आएगा।"
     )
@@ -304,6 +374,8 @@ class StudentProfileRequest(BaseModel):
     state_domicile: str = "All India"
     education_level: EducationLevel = EducationLevel.UG_ENGINEERING
     course_name: Optional[str] = "B.Tech / Computer Science"
+    field_of_study: Optional[str] = None
+    year_of_study: Optional[int] = 1
     social_category: SocialCategory = SocialCategory.GENERAL
     minority_community: Optional[str] = None  # e.g., Muslim, Christian, Sikh, Buddhist, Jain, Parsi
     gender: str = "Female"  # "Female", "Male", "Transgender"
@@ -313,7 +385,10 @@ class StudentProfileRequest(BaseModel):
     is_differently_abled_pwd: bool = False
     is_orphan_or_ward_of_defense: bool = False
     institute_type: Optional[str] = "AICTE Approved / UGC Recognized"
-    top_k: int = Field(default=10, ge=1, le=30)
+    verified_documents: List[str] = Field(default_factory=list)
+    has_npci_dbt_seeded: Optional[bool] = None
+    min_scholarship_amount_inr: Optional[float] = None
+    top_k: int = Field(default=15, ge=1, le=30)
 
     @field_validator("social_category", mode="before")
     @classmethod
@@ -335,6 +410,7 @@ class StudentProfileRequest(BaseModel):
                 "EWS": SocialCategory.EWS,
                 "EWS (Economically Weaker Section)": SocialCategory.EWS,
                 "Minority": SocialCategory.MINORITY,
+                "Minority (Muslim/Christian/Sikh/Buddhist/Jain/Parsi)": SocialCategory.MINORITY,
             }
             if v in mapping:
                 return mapping[v]
@@ -353,15 +429,81 @@ class StudentProfileRequest(BaseModel):
 class StudentScholarshipMatchResult(BaseModel):
     foa: FundingOpportunity
     eligibility_status: str  # "ELIGIBLE", "HIGH_PROBABILITY", "WARNING", "INELIGIBLE"
+    eligibility_confidence: str = "PRELIMINARY_ELIGIBLE"  # "VERIFIED_ELIGIBLE", "PRELIMINARY_ELIGIBLE", "CONDITIONAL_WARNING", "DISQUALIFIED"
     match_percentage: float = Field(..., ge=0.0, le=100.0)
     match_reasons: List[str] = Field(default_factory=list)
     warning_reasons: List[str] = Field(default_factory=list)
+    missing_requirements: List[str] = Field(default_factory=list)
+    disqualifying_conditions: List[str] = Field(default_factory=list)
+    why_you_qualify_explanation: str = ""
     estimated_financial_benefit: str
+    issuing_authority: str = "Statutory Portal"
     portal_name: str
     portal_url: str
     direct_apply_url: Optional[str] = None
     portal_navigation_steps: List[str] = Field(default_factory=list)
+    renewal_requirements: str = ""
+    common_mistakes_to_avoid: List[str] = Field(default_factory=list)
+    last_verified_date: Optional[date] = None
+    official_source_references: List[str] = Field(default_factory=list)
+    deadline_proximity_days: Optional[int] = None
+    deadline_urgency: str = "OPEN"
+    score_breakdown: Dict[str, float] = Field(default_factory=dict)
     is_govt_verified: bool = True
     document_checklist: List[DocumentCheckItem] = Field(default_factory=list)
     hinglish_guide: Optional[HinglishExplainer] = None
 
+
+# -------------------------------------------------------------
+# Conversational RAG, Session Memory & Document Assistant Schemas
+# -------------------------------------------------------------
+
+class RAGCitation(BaseModel):
+    source_id: str
+    title: str
+    issuing_authority: str
+    official_url: str
+    snippet: str
+    relevance_score: float = Field(default=0.9, ge=0.0, le=1.0)
+
+
+class RAGChatRequest(BaseModel):
+    query: str
+    session_id: Optional[str] = None
+    language: str = "auto"  # "auto", "en", "hinglish"
+    consent_to_remember: bool = True
+    student_profile: Optional[Dict[str, Any]] = None
+    researcher_profile: Optional[Dict[str, Any]] = None
+
+
+class RAGChatResponse(BaseModel):
+    answer: str
+    language_used: str
+    confidence_level: str  # "HIGH", "MEDIUM", "LOW"
+    uncertainty_notice: Optional[str] = None
+    citations: List[RAGCitation] = Field(default_factory=list)
+    follow_up_suggestions: List[str] = Field(default_factory=list)
+    session_id: str
+    remembered_profile_updates: Dict[str, Any] = Field(default_factory=dict)
+
+
+class DocumentFieldResult(BaseModel):
+    field_name: str
+    extracted_value: Optional[str] = None
+    status: str  # "DETECTED", "MISSING", "WARNING"
+    note: str
+
+
+class DocumentAnalysisResponse(BaseModel):
+    document_type: str
+    detected_language: str = "en"
+    extraction_method: str
+    extracted_fields: List[DocumentFieldResult] = Field(default_factory=list)
+    missing_fields: List[str] = Field(default_factory=list)
+    checklist_recommendations: List[str] = Field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
+    suggested_profile_updates: Dict[str, Any] = Field(default_factory=dict)
+    authenticity_disclaimer: str = (
+        "IMPORTANT: Automated OCR/text analysis only checks field presence and formatting completeness. "
+        "It does NOT certify legal validity or official authenticity. Final verification is performed by the issuing authority, DigiLocker, or Portal Nodal Officer."
+    )

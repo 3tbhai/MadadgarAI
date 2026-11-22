@@ -28,6 +28,7 @@ class DatasetNormalizer:
                     foa_id TEXT PRIMARY KEY,
                     title TEXT NOT NULL,
                     agency TEXT NOT NULL,
+                    issuing_authority TEXT,
                     scheme_name TEXT,
                     source_url TEXT,
                     direct_apply_url TEXT,
@@ -36,10 +37,16 @@ class DatasetNormalizer:
                     raw_document_hash TEXT UNIQUE,
                     brief_summary TEXT,
                     thematic_areas_json TEXT,
+                    field_of_study_json TEXT,
                     ontology_tags_json TEXT,
                     eligibility_json TEXT,
                     deadlines_json TEXT,
                     financials_json TEXT,
+                    duration_months INTEGER,
+                    renewal_requirements TEXT,
+                    common_mistakes_json TEXT,
+                    official_source_references_json TEXT,
+                    last_verified_date TEXT,
                     full_text_content TEXT,
                     is_ocr_extracted INTEGER,
                     ingested_at TEXT
@@ -47,14 +54,22 @@ class DatasetNormalizer:
                 """
             )
             # Automatic schema migration for existing databases
-            try:
-                cursor.execute("ALTER TABLE funding_opportunities ADD COLUMN direct_apply_url TEXT")
-            except Exception:
-                pass
-            try:
-                cursor.execute("ALTER TABLE funding_opportunities ADD COLUMN portal_navigation_steps_json TEXT")
-            except Exception:
-                pass
+            migration_columns = [
+                ("direct_apply_url", "TEXT"),
+                ("portal_navigation_steps_json", "TEXT"),
+                ("issuing_authority", "TEXT"),
+                ("field_of_study_json", "TEXT"),
+                ("duration_months", "INTEGER"),
+                ("renewal_requirements", "TEXT"),
+                ("common_mistakes_json", "TEXT"),
+                ("official_source_references_json", "TEXT"),
+                ("last_verified_date", "TEXT"),
+            ]
+            for col_name, col_type in migration_columns:
+                try:
+                    cursor.execute(f"ALTER TABLE funding_opportunities ADD COLUMN {col_name} {col_type}")
+                except Exception:
+                    pass
 
             cursor.execute(
                 """
@@ -76,26 +91,39 @@ class DatasetNormalizer:
                 cursor.execute(
                     """
                     INSERT INTO funding_opportunities (
-                        foa_id, title, agency, scheme_name, source_url, direct_apply_url,
-                        portal_navigation_steps_json, pdf_download_url, raw_document_hash,
-                        brief_summary, thematic_areas_json, ontology_tags_json, eligibility_json,
-                        deadlines_json, financials_json, full_text_content, is_ocr_extracted, ingested_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        foa_id, title, agency, issuing_authority, scheme_name, source_url,
+                        direct_apply_url, portal_navigation_steps_json, pdf_download_url,
+                        raw_document_hash, brief_summary, thematic_areas_json, field_of_study_json,
+                        ontology_tags_json, eligibility_json, deadlines_json, financials_json,
+                        duration_months, renewal_requirements, common_mistakes_json,
+                        official_source_references_json, last_verified_date, full_text_content,
+                        is_ocr_extracted, ingested_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(foa_id) DO UPDATE SET
                         title = excluded.title,
+                        issuing_authority = excluded.issuing_authority,
+                        scheme_name = excluded.scheme_name,
                         brief_summary = excluded.brief_summary,
                         source_url = excluded.source_url,
                         direct_apply_url = excluded.direct_apply_url,
                         portal_navigation_steps_json = excluded.portal_navigation_steps_json,
+                        thematic_areas_json = excluded.thematic_areas_json,
+                        field_of_study_json = excluded.field_of_study_json,
                         deadlines_json = excluded.deadlines_json,
                         financials_json = excluded.financials_json,
                         eligibility_json = excluded.eligibility_json,
+                        duration_months = excluded.duration_months,
+                        renewal_requirements = excluded.renewal_requirements,
+                        common_mistakes_json = excluded.common_mistakes_json,
+                        official_source_references_json = excluded.official_source_references_json,
+                        last_verified_date = excluded.last_verified_date,
                         full_text_content = excluded.full_text_content
                     """,
                     (
                         foa.foa_id,
                         foa.title,
                         foa.agency.value,
+                        foa.issuing_authority,
                         foa.scheme_name,
                         foa.source_url,
                         foa.direct_apply_url or foa.source_url,
@@ -104,10 +132,16 @@ class DatasetNormalizer:
                         foa.raw_document_hash,
                         foa.brief_summary,
                         json.dumps(foa.thematic_areas),
+                        json.dumps(foa.field_of_study),
                         json.dumps([t.model_dump() for t in foa.ontology_tags]),
                         json.dumps(foa.eligibility.model_dump()),
                         json.dumps(foa.deadlines.model_dump(), default=str),
                         json.dumps(foa.financials.model_dump()),
+                        foa.duration_months,
+                        foa.renewal_requirements,
+                        json.dumps(foa.common_mistakes),
+                        json.dumps(foa.official_source_references),
+                        foa.last_verified_date.isoformat() if foa.last_verified_date else "2026-10-15",
                         foa.full_text_content,
                         1 if foa.is_ocr_extracted else 0,
                         foa.ingested_at.isoformat(),
@@ -132,11 +166,19 @@ class DatasetNormalizer:
                     keys = r.keys()
                     direct_apply = r["direct_apply_url"] if "direct_apply_url" in keys else r["source_url"]
                     nav_steps = json.loads(r["portal_navigation_steps_json"] or "[]") if "portal_navigation_steps_json" in keys and r["portal_navigation_steps_json"] else []
+                    issuing_auth = r["issuing_authority"] if "issuing_authority" in keys else None
+                    fields_study = json.loads(r["field_of_study_json"] or "[]") if "field_of_study_json" in keys and r["field_of_study_json"] else []
+                    duration_m = r["duration_months"] if "duration_months" in keys else 36
+                    renewal_req = r["renewal_requirements"] if "renewal_requirements" in keys else None
+                    common_err = json.loads(r["common_mistakes_json"] or "[]") if "common_mistakes_json" in keys and r["common_mistakes_json"] else []
+                    source_refs = json.loads(r["official_source_references_json"] or "[]") if "official_source_references_json" in keys and r["official_source_references_json"] else []
+                    verified_dt = r["last_verified_date"] if "last_verified_date" in keys and r["last_verified_date"] else "2026-10-15"
 
                     foa_dict = {
                         "foa_id": r["foa_id"],
                         "title": r["title"],
                         "agency": r["agency"],
+                        "issuing_authority": issuing_auth,
                         "scheme_name": r["scheme_name"],
                         "source_url": r["source_url"],
                         "direct_apply_url": direct_apply or r["source_url"],
@@ -145,10 +187,16 @@ class DatasetNormalizer:
                         "raw_document_hash": r["raw_document_hash"],
                         "brief_summary": r["brief_summary"],
                         "thematic_areas": json.loads(r["thematic_areas_json"] or "[]"),
+                        "field_of_study": fields_study,
                         "ontology_tags": json.loads(r["ontology_tags_json"] or "[]"),
                         "eligibility": json.loads(r["eligibility_json"] or "{}"),
                         "deadlines": json.loads(r["deadlines_json"] or "{}"),
                         "financials": json.loads(r["financials_json"] or "{}"),
+                        "duration_months": duration_m,
+                        "renewal_requirements": renewal_req,
+                        "common_mistakes": common_err,
+                        "official_source_references": source_refs,
+                        "last_verified_date": verified_dt,
                         "full_text_content": r["full_text_content"],
                         "is_ocr_extracted": bool(r["is_ocr_extracted"]),
                         "ingested_at": r["ingested_at"],
@@ -193,6 +241,7 @@ class DatasetNormalizer:
                     "FOA ID",
                     "Title",
                     "Agency",
+                    "Issuing Authority",
                     "Scheme Name",
                     "Closing Date",
                     "Extended Date",
@@ -208,6 +257,7 @@ class DatasetNormalizer:
                         foa.foa_id,
                         foa.title,
                         foa.agency.value,
+                        foa.issuing_authority or foa.agency.value,
                         foa.scheme_name or "",
                         foa.deadlines.closing_date.isoformat() if foa.deadlines.closing_date else "",
                         foa.deadlines.extended_closing_date.isoformat() if foa.deadlines.extended_closing_date else "",

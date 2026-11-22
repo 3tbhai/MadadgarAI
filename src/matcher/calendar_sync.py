@@ -1,12 +1,12 @@
-"""RFC 5545 iCalendar (.ics) Generator for Grant Deadlines."""
-from datetime import datetime, time, timedelta, timezone
+"""RFC 5545 iCalendar (.ics) Generator and Deadline Tracker for Scholarships & Research Grants."""
+from datetime import date, datetime, time, timedelta, timezone
 import logging
-from typing import Optional
+from typing import Any, Dict, List, Optional
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
     ZoneInfo = None
-from icalendar import Alarm, Calendar, Event
+from icalendar import Alarm, Calendar, Event, Timezone, TimezoneStandard
 
 from src.schemas.foa import FundingOpportunity
 
@@ -15,71 +15,198 @@ logger = logging.getLogger("MadadgaarAI.Matcher.Calendar")
 
 class CalendarSyncGenerator:
     def __init__(self, tz_name: str = "Asia/Kolkata"):
+        self.tz_name = tz_name
         if ZoneInfo:
             try:
                 self.tz = ZoneInfo(tz_name)
             except Exception:
-                self.tz = timezone.utc
+                self.tz = timezone(timedelta(hours=5, minutes=30))
         else:
-            self.tz = timezone.utc
+            self.tz = timezone(timedelta(hours=5, minutes=30))
 
-    def generate_ics_for_foa(self, foa: FundingOpportunity) -> bytes:
-        """Generates standard .ics calendar bytes for a given funding opportunity."""
+    def _create_base_calendar(self, cal_name: str) -> Calendar:
         cal = Calendar()
-        cal.add("prodid", "-//MadadgaarAI Funding Intelligence//jklu.edu.in//EN")
+        cal.add("prodid", "-//MadadgaarAI National Funding Intelligence//jklu.edu.in//EN")
         cal.add("version", "2.0")
         cal.add("calscale", "GREGORIAN")
-        cal.add("x-wr-calname", f"MadadgaarAI Deadline: {foa.foa_id}")
+        cal.add("method", "PUBLISH")
+        cal.add("x-wr-calname", cal_name)
+        cal.add("x-wr-timezone", self.tz_name)
 
+        # Explicit RFC 5545 VTIMEZONE block for Asia/Kolkata (IST, UTC+05:30)
+        tz_comp = Timezone()
+        tz_comp.add("tzid", self.tz_name)
+        tz_std = TimezoneStandard()
+        tz_std.add("dtstart", datetime(1970, 1, 1, 0, 0, 0))
+        tz_std.add("tzoffsetfrom", timedelta(hours=5, minutes=30))
+        tz_std.add("tzoffsetto", timedelta(hours=5, minutes=30))
+        tz_std.add("tzname", "IST")
+        tz_comp.add_component(tz_std)
+        cal.add_component(tz_comp)
+        return cal
+
+    def _build_event_for_foa(self, foa: FundingOpportunity) -> Event:
         effective_deadline = foa.deadlines.effective_deadline
-        if not effective_deadline:
-            # If rolling, set an informative recurring calendar event
-            event = Event()
-            event.add("summary", f"[Rolling Call] {foa.title} ({foa.agency.value})")
-            event.add("description", f"Rolling call. Check details at: {foa.source_url}\n\nSummary:\n{foa.brief_summary}")
-            event.add("dtstart", datetime.now().date())
-            event.add("dtend", datetime.now().date())
-            event.add("uid", f"{foa.foa_id}-rolling@madadgaarai.ai")
-            cal.add_component(event)
-            return cal.to_ical()
-
-        # Closing Deadline Event
-        deadline_dt = datetime.combine(effective_deadline, time(17, 0))  # 5:00 PM IST standard submission close
-        deadline_dt = deadline_dt.replace(tzinfo=self.tz)
+        is_extended = bool(
+            foa.deadlines.extended_closing_date
+            and foa.deadlines.closing_date
+            and foa.deadlines.extended_closing_date != foa.deadlines.closing_date
+        )
+        sequence_num = 1 if is_extended else 0
 
         event = Event()
-        event.add("summary", f"🚨 Grant Deadline: {foa.title} ({foa.agency.value})")
+        # Deterministic UID prevents duplicate events across re-imports
+        event.add("uid", f"{foa.foa_id}-deadline@madadgaarai.ai")
+        event.add("sequence", sequence_num)
+        event.add("dtstamp", datetime.now(self.tz))
+
+        if not effective_deadline:
+            event.add("summary", f"[Rolling Call] {foa.title} ({foa.agency.value})")
+            event.add(
+                "description",
+                f"Rolling Call (Open Year-Round)\n"
+                f"Issuing Authority: {foa.issuing_authority or foa.agency.value}\n"
+                f"Portal URL: {foa.direct_apply_url or foa.source_url}\n"
+                f"Time Zone: {self.tz_name} (IST, UTC+05:30)\n\n"
+                f"Summary:\n{foa.brief_summary}",
+            )
+            today_d = datetime.now(self.tz).date()
+            event.add("dtstart", today_d)
+            event.add("dtend", today_d + timedelta(days=1))
+            event.add("status", "CONFIRMED")
+            return event
+
+        # Standard 17:00 IST submission deadline
+        deadline_dt = datetime.combine(effective_deadline, time(17, 0), tzinfo=self.tz)
+        deadline_end_dt = datetime.combine(effective_deadline, time(18, 0), tzinfo=self.tz)
+
+        prefix = "🚨 [EXTENDED] Deadline" if is_extended else "🚨 Deadline"
+        event.add("summary", f"{prefix}: {foa.title} ({foa.agency.value})")
+
+        max_grant_str = (
+            f"Max Financial Support: ₹ {foa.financials.max_amount_inr:,.2f}\n"
+            if foa.financials.max_amount_inr
+            else ""
+        )
+        extension_note = (
+            f"Deadline Status: EXTENDED from {foa.deadlines.closing_date.isoformat()} to {foa.deadlines.extended_closing_date.isoformat()} (Sequence #{sequence_num})\n"
+            if is_extended
+            else f"Deadline Status: Official Closing Date ({effective_deadline.isoformat()})\n"
+        )
+
         description_text = (
-            f"Funding Opportunity: {foa.title}\n"
-            f"Agency: {foa.agency.value}\n"
+            f"Opportunity: {foa.title}\n"
+            f"FOA ID: {foa.foa_id}\n"
+            f"Agency / Authority: {foa.issuing_authority or foa.agency.value}\n"
             f"Scheme: {foa.scheme_name or 'N/A'}\n"
-            f"Max Grant: ₹ {foa.financials.max_amount_inr:,.2f}\n" if foa.financials.max_amount_inr else ""
-            f"Portal URL: {foa.source_url}\n\n"
+            f"{max_grant_str}"
+            f"{extension_note}"
+            f"Time Zone: {self.tz_name} (Indian Standard Time, UTC+05:30 — 17:00 hrs)\n"
+            f"Direct Apply URL: {foa.direct_apply_url or foa.source_url}\n"
+            f"Official Portal: {foa.source_url}\n\n"
             f"Summary:\n{foa.brief_summary}\n\n"
-            f"Auto-generated by MadadgaarAI"
+            f"Auto-generated by MadadgaarAI (Deterministic UID for duplicate prevention)"
         )
         event.add("description", description_text)
         event.add("dtstart", deadline_dt)
-        event.add("dtend", deadline_dt)
-        event.add("dtstamp", datetime.now(self.tz))
-        event.add("uid", f"{foa.foa_id}-deadline@madadgaarai.ai")
-        event.add("url", foa.source_url)
+        event.add("dtend", deadline_end_dt)
+        event.add("url", foa.direct_apply_url or foa.source_url)
         event.add("status", "CONFIRMED")
-        event.add("categories", ["GRANT_DEADLINE", "RESEARCH", foa.agency.value])
+        event.add("categories", ["FUNDING_DEADLINE", foa.agency.value])
 
         # 7-day reminder alarm
         alarm_7d = Alarm()
         alarm_7d.add("action", "DISPLAY")
-        alarm_7d.add("description", f"Reminder: 7 days until {foa.foa_id} deadline!")
+        alarm_7d.add("description", f"Reminder: 7 days remaining until {foa.foa_id} ({foa.title}) deadline!")
         alarm_7d.add("trigger", timedelta(days=-7))
         event.add_component(alarm_7d)
 
-        # 1-day reminder alarm
+        # 24-hour reminder alarm
         alarm_1d = Alarm()
         alarm_1d.add("action", "DISPLAY")
-        alarm_1d.add("description", f"URGENT: 24 hours left to submit {foa.foa_id} proposal!")
+        alarm_1d.add("description", f"URGENT: 24 hours left to submit {foa.foa_id} ({foa.title}) application!")
         alarm_1d.add("trigger", timedelta(days=-1))
         event.add_component(alarm_1d)
 
+        return event
+
+    def generate_ics_for_foa(self, foa: FundingOpportunity) -> bytes:
+        """Generates standard RFC 5545 .ics calendar bytes for a single funding opportunity."""
+        cal = self._create_base_calendar(f"MadadgaarAI Deadline: {foa.foa_id}")
+        event = self._build_event_for_foa(foa)
         cal.add_component(event)
         return cal.to_ical()
+
+    def generate_multi_foa_ics(self, opportunities: List[FundingOpportunity]) -> bytes:
+        """Generates a consolidated, deduplicated .ics calendar feed for multiple opportunities."""
+        cal = self._create_base_calendar("MadadgaarAI — National Scholarships & Research Grant Deadlines")
+        seen_uids = set()
+        for foa in opportunities:
+            if foa.foa_id in seen_uids:
+                continue
+            seen_uids.add(foa.foa_id)
+            cal.add_component(self._build_event_for_foa(foa))
+        return cal.to_ical()
+
+    def get_upcoming_deadlines(
+        self,
+        opportunities: List[FundingOpportunity],
+        reference_date: Optional[date] = None,
+    ) -> List[Dict[str, Any]]:
+        """Returns structured upcoming deadlines sorted by urgency with timezone metadata."""
+        ref_dt = reference_date or date(2026, 10, 15)
+        items: List[Dict[str, Any]] = []
+        seen_ids = set()
+
+        for foa in opportunities:
+            if foa.foa_id in seen_ids:
+                continue
+            seen_ids.add(foa.foa_id)
+            eff = foa.deadlines.effective_deadline
+            is_ext = bool(
+                foa.deadlines.extended_closing_date
+                and foa.deadlines.closing_date
+                and foa.deadlines.extended_closing_date != foa.deadlines.closing_date
+            )
+            days_left = (eff - ref_dt).days if eff else None
+            if foa.deadlines.is_rolling:
+                status = "ROLLING"
+            elif days_left is not None and days_left < 0:
+                status = "RECENTLY_CLOSED"
+            elif days_left is not None and days_left <= 30:
+                status = "URGENT"
+            else:
+                status = "UPCOMING"
+
+            items.append(
+                {
+                    "foa_id": foa.foa_id,
+                    "title": foa.title,
+                    "agency": foa.agency.value,
+                    "issuing_authority": foa.issuing_authority or foa.agency.value,
+                    "open_date": foa.deadlines.open_date.isoformat() if foa.deadlines.open_date else None,
+                    "closing_date": foa.deadlines.closing_date.isoformat() if foa.deadlines.closing_date else None,
+                    "extended_closing_date": (
+                        foa.deadlines.extended_closing_date.isoformat()
+                        if foa.deadlines.extended_closing_date
+                        else None
+                    ),
+                    "effective_deadline": eff.isoformat() if eff else "Rolling",
+                    "is_extended": is_ext,
+                    "is_rolling": foa.deadlines.is_rolling,
+                    "days_remaining": days_left,
+                    "status": status,
+                    "timezone": f"{self.tz_name} (IST, UTC+05:30, 17:00 hrs)",
+                    "max_amount_inr": foa.financials.max_amount_inr,
+                    "direct_apply_url": foa.direct_apply_url or foa.source_url,
+                    "calendar_export_url": f"/api/foas/{foa.foa_id}/calendar",
+                }
+            )
+
+        items.sort(
+            key=lambda x: (
+                0 if x["status"] in ("URGENT", "UPCOMING") else (1 if x["status"] == "ROLLING" else 2),
+                x["days_remaining"] if x["days_remaining"] is not None and x["days_remaining"] >= 0 else 9999,
+            )
+        )
+        return items

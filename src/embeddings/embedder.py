@@ -1,6 +1,7 @@
 """Dense Semantic Text Embedder with Resilient Fallback."""
 import logging
 from typing import List, Optional
+import zlib
 import numpy as np
 
 from src.config import EMBEDDING_DIMENSION, EMBEDDING_MODEL_NAME
@@ -64,9 +65,9 @@ class TextEmbedder:
         for idx, word in enumerate(words):
             if len(word) < 2:
                 continue
-            # Use deterministic hash projections
-            h1 = hash(word) % self.dimension
-            h2 = hash(word + "_term") % self.dimension
+            # Use cross-process deterministic CRC32 projections
+            h1 = zlib.crc32(word.encode("utf-8")) % self.dimension
+            h2 = zlib.crc32((word + "_term").encode("utf-8")) % self.dimension
             weight = 1.0 / (1.0 + (idx * 0.01))
             vector[h1] += weight
             vector[h2] += weight * 0.5
@@ -74,7 +75,7 @@ class TextEmbedder:
         # Also add bigrams for local context
         for idx in range(len(words) - 1):
             bigram = f"{words[idx]}_{words[idx+1]}"
-            bh = hash(bigram) % self.dimension
+            bh = zlib.crc32(bigram.encode("utf-8")) % self.dimension
             vector[bh] += 1.5
 
         # L2 Normalization
