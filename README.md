@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python: 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111%2B-green.svg)](https://fastapi.tiangolo.com)
-[![Tests: Passing](https://img.shields.io/badge/Tests-28%2F28%20Passed-brightgreen.svg)]()
+[![Tests: Passing](https://img.shields.io/badge/Tests-41%2F41%20Passed-brightgreen.svg)]()
 
 MadadgaarAI is an end-to-end funding and scholarship intelligence platform engineered to ingest, parse, semantically tag, and match **Student Scholarships & Funding Opportunity Announcements (FOAs)** across Indian statutory portals (**NSP, AICTE, UGC, State Portals like MahaDBT & UP Scholarship, CSR Trusts, DST, ANRF/SERB, CSIR, DBT**).
 
@@ -141,6 +141,37 @@ python -m evaluation.benchmark_runner
 | `GET` | `/api/foas/{foa_id}/calendar` | Download RFC 5545 `.ics` deadline reminder |
 | `POST` | `/api/foas/{foa_id}/draft-proposal` | Draft tailored MoF proposal skeleton |
 | `POST` | `/api/ingest/trigger` | Trigger ingestion & index updates |
+
+---
+
+## 🛠️ Developer Tooling & Diagnostics
+
+MadadgaarAI includes standalone diagnostic and analytics scripts in `scripts/`:
+
+```bash
+# 1. Pre-flight System & Dependency Diagnostics
+python scripts/check_system_health.py
+
+# 2. Database & Repository Analytics
+python scripts/export_stats.py
+
+# 3. Dense Vector Index Inspector & Norm Verification
+python scripts/verify_index.py
+
+# 4. Generate Markdown Benchmark Report
+python scripts/benchmark_summary.py
+```
+
+---
+
+## 📚 Documentation Library
+
+- [Architecture & Mathematical Foundations](file:///d:/Project/MadadgarAI/docs/ARCHITECTURE.md) (RRF Formula, Dense Vector Store, Zero-Knowledge Engine)
+- [REST API Reference & Curl Guide](file:///d:/Project/MadadgarAI/docs/API_GUIDE.md) (Endpoints, Schemas, Sample Payloads)
+- [Production Deployment Guide](file:///d:/Project/MadadgarAI/docs/DEPLOYMENT.md) (Systemd, Nginx, SSL, Docker)
+- [Contributing Guidelines](file:///d:/Project/MadadgarAI/docs/CONTRIBUTING.md) (Branching, Code Style, PR Standards)
+- [Frequently Asked Questions & Troubleshooting](file:///d:/Project/MadadgarAI/docs/FAQ.md) (Windows PyTorch, Port Conflicts, Tesseract)
+- [Security Policy & Scam Shield](file:///d:/Project/MadadgarAI/SECURITY.md) (Official Statutory Domain Guardrails)
 
 ---
 
