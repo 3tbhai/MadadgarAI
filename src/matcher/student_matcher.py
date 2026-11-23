@@ -19,7 +19,21 @@ logger = logging.getLogger("MadadgaarAI.Matcher.Student")
 
 
 class StudentScholarshipMatcher:
-    """Intelligent engine for matching student profiles to Indian Central, State, and CSR scholarships."""
+    """Intelligent engine for matching student profiles to Indian Central, State, and CSR scholarships.
+
+    Multi-Criteria Decision Matrix:
+    1. Domicile Verification:
+       - Central Schemes (NSP, AICTE, UGC, CSR): Universal All-India eligibility.
+       - State Portals (UP Dashmottar, MahaDBT): Exact domicile matching against state of origin.
+    2. Gender & Social Inclusivity:
+       - Female-exclusive schemes (e.g., AICTE Pragati, Kotak Kanya) enforce strict gender gate.
+       - Category-specific reservations (SC, ST, OBC, EBC, DNT, Minority) vs General eligibility.
+    3. Means-Tested Income Thresholds:
+       - Evaluates applicant's annual family income against statutory scheme ceilings (e.g., ₹2.5L, ₹6L, ₹8L).
+    4. Categorization & Ranking:
+       - 'Guaranteed' (confidence >= 0.95): All non-competitive statutory criteria fulfilled.
+       - 'High Probability' (confidence >= 0.70): Merit-cum-means criteria met pending merit quotas.
+    """
 
     def __init__(self, normalizer: Optional[DatasetNormalizer] = None):
         self.normalizer = normalizer or DatasetNormalizer()
