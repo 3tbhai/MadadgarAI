@@ -1,0 +1,48 @@
+name: MadadgaarAI CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Test Suite & Code Quality
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Pre-cache Sentence Transformer Model
+        env:
+          HF_HUB_ENABLE_HF_TRANSFER: "0"
+        run: |
+          python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
+      - name: Run Test Suite
+        env:
+          HF_HUB_OFFLINE: "1"
+        run: |
+          python -m pytest tests/ -v --maxfail=1
+
+      - name: Verify Benchmark Evaluation
+        env:
+          HF_HUB_OFFLINE: "1"
+        run: |
+          python -m evaluation.benchmark_runner
