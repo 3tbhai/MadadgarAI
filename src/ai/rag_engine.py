@@ -176,7 +176,20 @@ STATUTORY_POLICY_CORPUS: List[Dict[str, str]] = [
 
 
 class SaralSamjhautiRAG:
-    """Hybrid BM25 + Dense Vector + RRF + Semantic Reranking RAG Engine with Bilingual Grounding."""
+    """Hybrid BM25 + Dense Vector + RRF + Semantic Reranking RAG Engine with Bilingual Grounding.
+
+    Architecture & Guardrails:
+    1. Dual-Corpus Indexing:
+       - Statutory policy database (NPCI-DBT mapping, renewal rules, GFR 2017 norms, income certificates).
+       - Live and parsed funding opportunities database from national statutory portals.
+    2. Hybrid Dense-Sparse RRF Retrieval:
+       - Reciprocal Rank Fusion ($k=60$) over BM25 and 384-dimensional dense semantic embeddings.
+    3. Strict Grounding & Anti-Hallucination:
+       - Verified citations with official government authority, issuing ministry, and portal URLs.
+       - Conversational multi-turn context retention per session.
+    4. Bilingual Generation:
+       - Seamless toggle between formal English and conversational Hinglish explainers.
+    """
 
     def __init__(
         self,
