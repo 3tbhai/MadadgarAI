@@ -1,6 +1,8 @@
 """FastAPI Main REST API Application for MadadgaarAI — Real-Time Live Opportunity Curation Platform."""
-import logging
+import asyncio
 from contextlib import asynccontextmanager
+from datetime import date, datetime
+import logging
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, Query, Response, UploadFile
@@ -11,6 +13,7 @@ from pydantic import BaseModel, Field
 from src.ai.document_assistant import IntelligentDocumentAssistant
 from src.ai.rag_engine import SaralSamjhautiRAG
 from src.ai.session_store import ConversationalMemoryStore
+from src.crawlers.deep_analyzer import DeepPageAnalysis, DeepPageAnalyzer
 from src.crawlers.pipeline import LiveOpportunityStore, LivePipelineOrchestrator, live_opportunity_to_foa
 from src.dashboard.web_ui import render_dashboard_html
 from src.embeddings.hybrid_search import HybridSearchEngine
@@ -23,9 +26,12 @@ from src.matcher.proposal_drafter import ProposalDrafter
 from src.matcher.student_matcher import StudentScholarshipMatcher
 from src.schemas.foa import (
     AgencyType,
+    Deadlines,
     DocumentAnalysisResponse,
     DocumentCheckItem,
     EducationLevel,
+    EligibilityCriteria,
+    FinancialCeiling,
     FundingOpportunity,
     HinglishExplainer,
     IngestionReport,
@@ -52,6 +58,7 @@ logging.basicConfig(level=logging.INFO)
 normalizer = DatasetNormalizer()
 live_store = LiveOpportunityStore()
 live_pipeline = LivePipelineOrchestrator(store=live_store, normalizer=normalizer)
+deep_analyzer = DeepPageAnalyzer()
 vector_store = VectorStore()
 hybrid_search = HybridSearchEngine(normalizer=normalizer, vector_store=vector_store)
 compliance_checker = ComplianceChecker()
@@ -63,10 +70,33 @@ session_store = ConversationalMemoryStore()
 rag_engine = SaralSamjhautiRAG(normalizer=normalizer, session_store=session_store)
 document_assistant = IntelligentDocumentAssistant()
 
+_background_cron_task: Optional[asyncio.Task] = None
+
+
+async def _background_auto_refresh_loop():
+    """Periodically crawls & verifies live opportunities every CACHE_TTL_HOURS in the background."""
+    interval_sec = max(300.0, float(live_store.cache_ttl_hours) * 3600.0)
+    while True:
+        try:
+            await asyncio.sleep(interval_sec)
+            logger.info("Background auto-refresh cron triggered: refreshing live opportunities...")
+            report = await live_pipeline.refresh_live_data(force=True)
+            hybrid_search.rebuild_index()
+            rag_engine.rebuild_knowledge_base()
+            logger.info(
+                f"Background auto-refresh complete: {report.total_live_opportunities} live opportunities synced."
+            )
+        except asyncio.CancelledError:
+            logger.info("Background auto-refresh cron cancelled cleanly.")
+            break
+        except Exception as exc:
+            logger.error(f"Background auto-refresh cron error: {exc}")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Refreshes live verified opportunities on startup if TTL cache is empty or expired."""
+    """Refreshes live verified opportunities on startup and starts the periodic background cron."""
+    global _background_cron_task
     try:
         report = await live_pipeline.refresh_live_data(force=False)
         logger.info(
@@ -77,7 +107,17 @@ async def lifespan(app: FastAPI):
         rag_engine.rebuild_knowledge_base()
     except Exception as exc:
         logger.error(f"Startup live refresh encountered an error (no mock fallback used): {exc}")
-    yield
+
+    _background_cron_task = asyncio.create_task(_background_auto_refresh_loop())
+    try:
+        yield
+    finally:
+        if _background_cron_task and not _background_cron_task.done():
+            _background_cron_task.cancel()
+            try:
+                await _background_cron_task
+            except asyncio.CancelledError:
+                pass
 
 
 app = FastAPI(
@@ -139,6 +179,24 @@ class DocumentTextAnalyzeRequest(BaseModel):
     document_type_hint: Optional[str] = "AUTO"
 
 
+class KanbanUpsertRequest(BaseModel):
+    opp_id: str
+    stage: str = "Saved"
+    notes: str = ""
+    title: Optional[str] = None
+    organization: Optional[str] = None
+    category: Optional[str] = None
+    source_type: Optional[str] = None
+    stipend_or_amount: Optional[str] = None
+    deadline: Optional[str] = None
+    source_url: Optional[str] = None
+
+
+class KanbanStageUpdateRequest(BaseModel):
+    stage: str
+    notes: Optional[str] = None
+
+
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     """Serves an inline SVG favicon to prevent 404 logs."""
@@ -160,13 +218,16 @@ async def get_dashboard():
 @app.get("/api/health")
 async def health_check():
     last_ts = live_store.get_last_refreshed_at()
+    cron_running = bool(_background_cron_task is not None and not _background_cron_task.done())
     return {
         "status": "healthy",
         "service": "MadadgaarAI Real-Time Opportunity Intelligence",
-        "version": "3.0.0",
+        "version": "3.1.0",
         "total_opportunities": live_store.count(),
         "last_refreshed_at": last_ts.isoformat() if last_ts else None,
         "cache_ttl_hours": live_store.cache_ttl_hours,
+        "background_cron_active": cron_running,
+        "embedding_backend": vector_store.embedder.backend_name,
         "zero_mock_data": True,
     }
 
@@ -230,6 +291,133 @@ async def export_live_opportunity_calendar(opp_id: str):
                 headers={"Content-Disposition": f"attachment; filename={opp.id}_deadline.ics"},
             )
     raise HTTPException(status_code=404, detail=f"Opportunity '{opp_id}' not found")
+
+
+@app.post("/api/opportunities/{opp_id}/deep-analyze", response_model=DeepPageAnalysis)
+async def deep_analyze_live_opportunity(opp_id: str):
+    """Fetches the live destination HTML/PDF circular on demand and extracts structured details."""
+    for opp in live_store.load_all(exclude_expired=False):
+        if opp.id == opp_id:
+            return await deep_analyzer.analyze_opportunity(opp)
+    raise HTTPException(status_code=404, detail=f"Opportunity '{opp_id}' not found")
+
+
+# -------------------------------------------------------------
+# Personal Application Kanban Tracker & Saved Deadlines (.ics)
+# -------------------------------------------------------------
+
+@app.get("/api/tracker/{session_id}")
+async def get_kanban_tracker(session_id: str):
+    """Returns all saved Kanban application items for a user session."""
+    items = session_store.get_kanban_items(session_id)
+    return {
+        "session_id": session_id,
+        "total": len(items),
+        "items": items,
+    }
+
+
+@app.post("/api/tracker/{session_id}")
+async def add_or_update_kanban_item(session_id: str, req: KanbanUpsertRequest):
+    """Saves an opportunity into the user's Personal Application Kanban Tracker."""
+    matched_opp: Optional[LiveOpportunity] = None
+    for opp in live_store.load_all(exclude_expired=False):
+        if opp.id == req.opp_id:
+            matched_opp = opp
+            break
+
+    if matched_opp:
+        opp_data = {
+            "id": matched_opp.id,
+            "title": matched_opp.title,
+            "organization": matched_opp.organization,
+            "category": matched_opp.category.value,
+            "source_type": matched_opp.source_type,
+            "stipend_or_amount": matched_opp.stipend_or_amount,
+            "deadline": matched_opp.deadline.isoformat() if matched_opp.deadline else None,
+            "source_url": str(matched_opp.source_url),
+        }
+    else:
+        if not req.title or not req.source_url:
+            raise HTTPException(status_code=404, detail=f"Opportunity '{req.opp_id}' not found in live store")
+        opp_data = {
+            "id": req.opp_id,
+            "title": req.title,
+            "organization": req.organization or "Official Portal",
+            "category": req.category or "Scholarship",
+            "source_type": req.source_type or "Government",
+            "stipend_or_amount": req.stipend_or_amount or "See portal",
+            "deadline": req.deadline,
+            "source_url": req.source_url,
+        }
+
+    items = session_store.upsert_kanban_item(
+        session_id=session_id,
+        opp_data=opp_data,
+        stage=req.stage,
+        notes=req.notes,
+    )
+    return {"session_id": session_id, "total": len(items), "items": items}
+
+
+@app.patch("/api/tracker/{session_id}/{opp_id}")
+async def move_kanban_item_stage(session_id: str, opp_id: str, req: KanbanStageUpdateRequest):
+    """Moves a saved application card across Kanban stages (Saved -> Preparing Docs -> Applied -> Result)."""
+    items = session_store.update_kanban_stage(
+        session_id=session_id,
+        opp_id=opp_id,
+        stage=req.stage,
+        notes=req.notes,
+    )
+    return {"session_id": session_id, "total": len(items), "items": items}
+
+
+@app.delete("/api/tracker/{session_id}/{opp_id}")
+async def remove_kanban_tracker_item(session_id: str, opp_id: str):
+    """Removes an opportunity from the user's Kanban tracker."""
+    items = session_store.remove_kanban_item(session_id=session_id, opp_id=opp_id)
+    return {"session_id": session_id, "total": len(items), "items": items}
+
+
+@app.get("/api/tracker/{session_id}/calendar.ics")
+async def export_saved_kanban_calendar(session_id: str):
+    """Exports an iCalendar (.ics) bundle containing only the user's saved Kanban opportunities."""
+    items = session_store.get_kanban_items(session_id)
+    live_lookup = {o.id: o for o in live_store.load_all(exclude_expired=False)}
+    saved_foas: List[FundingOpportunity] = []
+
+    for item in items:
+        oid = item["opp_id"]
+        if oid in live_lookup:
+            saved_foas.append(live_opportunity_to_foa(live_lookup[oid]))
+        else:
+            parsed_dl = None
+            if item.get("deadline"):
+                try:
+                    parsed_dl = date.fromisoformat(str(item["deadline"])[:10])
+                except ValueError:
+                    parsed_dl = None
+            saved_foas.append(
+                FundingOpportunity(
+                    foa_id=oid,
+                    title=item["title"],
+                    agency=AgencyType.DST,
+                    issuing_authority=item["organization"],
+                    source_url=item["source_url"],
+                    direct_apply_url=item["source_url"],
+                    brief_summary=f"Saved Kanban Opportunity ({item['stage']})",
+                    financials=FinancialCeiling(raw_budget_text=item.get("stipend_or_amount") or "See portal"),
+                    eligibility=EligibilityCriteria(raw_eligibility_text="Saved in Personal Tracker"),
+                    deadlines=Deadlines(closing_date=parsed_dl, is_rolling=parsed_dl is None),
+                )
+            )
+
+    ics_bytes = calendar_generator.generate_multi_foa_ics(saved_foas)
+    return Response(
+        content=ics_bytes,
+        media_type="text/calendar",
+        headers={"Content-Disposition": f"attachment; filename=madadgaar_saved_deadlines_{session_id[:8]}.ics"},
+    )
 
 
 # -------------------------------------------------------------

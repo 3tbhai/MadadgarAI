@@ -37,6 +37,25 @@ class ConversationalMemoryStore:
                 )
                 """
             )
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS kanban_applications (
+                    session_id TEXT NOT NULL,
+                    opp_id TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    organization TEXT NOT NULL,
+                    category TEXT NOT NULL,
+                    source_type TEXT DEFAULT 'Government',
+                    stipend_or_amount TEXT,
+                    deadline TEXT,
+                    source_url TEXT NOT NULL,
+                    stage TEXT NOT NULL DEFAULT 'Saved',
+                    notes TEXT DEFAULT '',
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY (session_id, opp_id)
+                )
+                """
+            )
             conn.commit()
 
     def get_or_create_session(
@@ -157,8 +176,120 @@ class ConversationalMemoryStore:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("DELETE FROM user_sessions WHERE session_id = ?", (session_id,))
+            cursor.execute("DELETE FROM kanban_applications WHERE session_id = ?", (session_id,))
             conn.commit()
         return True
+
+    # ------------------------------------------------------------------
+    # Personal Application Kanban Tracker (Feature 1.5)
+    # Stages: "Saved" | "Preparing Docs" | "Applied" | "Result"
+    # ------------------------------------------------------------------
+
+    VALID_STAGES = ("Saved", "Preparing Docs", "Applied", "Result")
+
+    def get_kanban_items(self, session_id: str) -> List[Dict[str, Any]]:
+        sid = (session_id or "default-user").strip()
+        items: List[Dict[str, Any]] = []
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT * FROM kanban_applications WHERE session_id = ? ORDER BY updated_at DESC",
+                (sid,),
+            )
+            for r in cur.fetchall():
+                items.append({
+                    "session_id": r["session_id"],
+                    "opp_id": r["opp_id"],
+                    "title": r["title"],
+                    "organization": r["organization"],
+                    "category": r["category"],
+                    "source_type": r["source_type"],
+                    "stipend_or_amount": r["stipend_or_amount"],
+                    "deadline": r["deadline"],
+                    "source_url": r["source_url"],
+                    "stage": r["stage"],
+                    "notes": r["notes"] or "",
+                    "updated_at": r["updated_at"],
+                })
+        return items
+
+    def upsert_kanban_item(
+        self,
+        session_id: str,
+        opp_data: Dict[str, Any],
+        stage: str = "Saved",
+        notes: str = "",
+    ) -> List[Dict[str, Any]]:
+        sid = (session_id or "default-user").strip()
+        clean_stage = stage if stage in self.VALID_STAGES else "Saved"
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with sqlite3.connect(self.db_path) as conn:
+            cur = conn.cursor()
+            cur.execute(
+                """
+                INSERT INTO kanban_applications (
+                    session_id, opp_id, title, organization, category, source_type,
+                    stipend_or_amount, deadline, source_url, stage, notes, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(session_id, opp_id) DO UPDATE SET
+                    stage = excluded.stage,
+                    notes = CASE WHEN excluded.notes != '' THEN excluded.notes ELSE kanban_applications.notes END,
+                    updated_at = excluded.updated_at
+                """,
+                (
+                    sid,
+                    str(opp_data.get("opp_id") or opp_data.get("id")),
+                    str(opp_data.get("title") or "Opportunity"),
+                    str(opp_data.get("organization") or "Organization"),
+                    str(opp_data.get("category") or "Scholarship"),
+                    str(opp_data.get("source_type") or "Government"),
+                    str(opp_data.get("stipend_or_amount") or "See Listing"),
+                    opp_data.get("deadline"),
+                    str(opp_data.get("source_url") or "https://scholarships.gov.in"),
+                    clean_stage,
+                    notes,
+                    now_iso,
+                ),
+            )
+            conn.commit()
+        return self.get_kanban_items(sid)
+
+    def update_kanban_stage(
+        self,
+        session_id: str,
+        opp_id: str,
+        stage: str,
+        notes: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        sid = (session_id or "default-user").strip()
+        clean_stage = stage if stage in self.VALID_STAGES else "Saved"
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with sqlite3.connect(self.db_path) as conn:
+            cur = conn.cursor()
+            if notes is not None:
+                cur.execute(
+                    "UPDATE kanban_applications SET stage = ?, notes = ?, updated_at = ? WHERE session_id = ? AND opp_id = ?",
+                    (clean_stage, notes, now_iso, sid, opp_id),
+                )
+            else:
+                cur.execute(
+                    "UPDATE kanban_applications SET stage = ?, updated_at = ? WHERE session_id = ? AND opp_id = ?",
+                    (clean_stage, now_iso, sid, opp_id),
+                )
+            conn.commit()
+        return self.get_kanban_items(sid)
+
+    def remove_kanban_item(self, session_id: str, opp_id: str) -> List[Dict[str, Any]]:
+        sid = (session_id or "default-user").strip()
+        with sqlite3.connect(self.db_path) as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "DELETE FROM kanban_applications WHERE session_id = ? AND opp_id = ?",
+                (sid, opp_id),
+            )
+            conn.commit()
+        return self.get_kanban_items(sid)
 
     @staticmethod
     def extract_profile_facts_from_message(text: str) -> Dict[str, Any]:

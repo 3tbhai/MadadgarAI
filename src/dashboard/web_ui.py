@@ -85,10 +85,14 @@ def render_dashboard_html() -> str:
       </div>
     </button>
 
-    <!-- Primary 2-Tab Navigation -->
+    <!-- Primary 3-Tab Navigation -->
     <nav class="flex items-center gap-1.5">
       <button id="navOpportunities" onclick="switchWorkspace('opportunities')" class="px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b]">
         Opportunities
+      </button>
+      <button id="navTracker" onclick="switchWorkspace('tracker')" class="px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink inline-flex items-center gap-1.5">
+        <span>My Tracker</span>
+        <span id="navTrackerCount" class="px-1.5 py-0.2 bg-ink text-accent font-mono text-[10px] font-bold">0</span>
       </button>
       <button id="navAssistant" onclick="switchWorkspace('assistant')" class="px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink">
         Saral AI &amp; Docs
@@ -242,7 +246,29 @@ def render_dashboard_html() -> str:
   </div>
 
   <!-- ======================================================== -->
-  <!-- VIEW 2: SARAL SAMJHAUTI AI & DOCUMENT CHECKER            -->
+  <!-- VIEW 2: PERSONAL APPLICATION KANBAN TRACKER              -->
+  <!-- ======================================================== -->
+  <div id="workspaceTracker" class="hidden space-y-5">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <h2 class="font-display font-bold text-2xl tracking-tight text-ink">Personal Application Kanban Tracker</h2>
+        <p class="text-xs sm:text-sm text-neutral-600 mt-0.5">
+          Bookmark live opportunities, track your progress from Saved to Applied, and export your personal deadlines.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="exportSavedKanbanIcs()" class="nb-btn px-3.5 py-2 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">calendar_month</span>
+          <span>Export My Saved Deadlines (.ics)</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="kanbanBoardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start"></div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- VIEW 3: SARAL SAMJHAUTI AI & DOCUMENT CHECKER            -->
   <!-- ======================================================== -->
   <div id="workspaceAssistant" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
     <!-- Chat -->
@@ -303,7 +329,7 @@ def render_dashboard_html() -> str:
 
 <!-- ================= DETAIL MODAL ================= -->
 <div id="detailModal" class="hidden fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeDetailModal()">
-  <div class="bg-white border-2 border-ink shadow-[6px_6px_0px_#18181b] max-w-xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+  <div class="bg-white border-2 border-ink shadow-[6px_6px_0px_#18181b] max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
     <div class="p-4 border-b-2 border-ink bg-cream flex items-start justify-between gap-3">
       <div>
         <div id="dmBadges" class="flex flex-wrap gap-1.5 mb-1.5"></div>
@@ -315,10 +341,16 @@ def render_dashboard_html() -> str:
       </button>
     </div>
     <div id="dmBody" class="p-5 overflow-y-auto space-y-4 text-sm text-neutral-700"></div>
-    <div class="p-4 border-t-2 border-ink bg-cream flex items-center justify-between gap-3">
-      <a id="dmCal" href="#" download class="nb-btn px-3.5 py-2 bg-white hover:bg-sand text-xs font-semibold inline-flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-[16px]">calendar_month</span> Add to Calendar
-      </a>
+    <div class="p-4 border-t-2 border-ink bg-cream flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <button id="dmSaveBtn" onclick="toggleSaveCurrentModalOpp()" class="nb-btn px-3 py-2 bg-white hover:bg-accent text-xs font-bold inline-flex items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">bookmark_add</span>
+          <span id="dmSaveLabel">Save to Tracker</span>
+        </button>
+        <a id="dmCal" href="#" download class="nb-btn px-3 py-2 bg-white hover:bg-sand text-xs font-semibold inline-flex items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">calendar_month</span> .ics
+        </a>
+      </div>
       <a id="dmApply" href="#" target="_blank" rel="noopener noreferrer" class="nb-btn px-5 py-2 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-bold inline-flex items-center gap-1.5">
         <span>Apply / View Official Source</span>
         <span class="material-symbols-outlined text-[15px]">open_in_new</span>
@@ -346,7 +378,14 @@ def render_dashboard_html() -> str:
   let visibleCount = 18;
   let searchDebounce = null;
   let facetsInitialized = false;
+  let currentModalIdx = null;
+  let kanbanItems = [];
+  const KANBAN_STAGES = ['Saved', 'Preparing Docs', 'Applied', 'Result'];
   let activeSessionId = localStorage.getItem('madadgaar_session_id') || '';
+  if (!activeSessionId) {
+    activeSessionId = 'sess-' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    localStorage.setItem('madadgaar_session_id', activeSessionId);
+  }
 
   function escapeHtml(str) {
     return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -370,11 +409,16 @@ def render_dashboard_html() -> str:
 
   function switchWorkspace(ws) {
     document.getElementById('workspaceOpportunities').classList.toggle('hidden', ws !== 'opportunities');
+    document.getElementById('workspaceTracker').classList.toggle('hidden', ws !== 'tracker');
     document.getElementById('workspaceAssistant').classList.toggle('hidden', ws !== 'assistant');
-    const act = 'px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b]';
-    const inact = 'px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink';
+    const act = 'px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b] inline-flex items-center gap-1.5';
+    const inact = 'px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink inline-flex items-center gap-1.5';
     document.getElementById('navOpportunities').className = ws === 'opportunities' ? act : inact;
+    document.getElementById('navTracker').className = ws === 'tracker' ? act : inact;
     document.getElementById('navAssistant').className = ws === 'assistant' ? act : inact;
+    if (ws === 'tracker') {
+      renderKanbanBoard();
+    }
   }
 
   function toggleAdvancedFilters() {
@@ -640,7 +684,10 @@ def render_dashboard_html() -> str:
               <span class="truncate block">${escapeHtml(opp.source_domain)}</span>
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
-              <button onclick="openDetailModal(${idx})" class="px-2.5 py-1.5 text-[11px] font-semibold border-2 border-ink bg-cream hover:bg-sand" title="View full details">Details</button>
+              <button onclick="toggleSaveOpportunity(${idx})" class="px-2 py-1.5 text-[11px] font-bold border-2 border-ink ${isOppSaved(opp.id) ? 'bg-accent text-ink' : 'bg-white hover:bg-sand text-neutral-700'}" title="Save to Personal Kanban Tracker">
+                ${isOppSaved(opp.id) ? '★ Saved' : '+ Save'}
+              </button>
+              <button onclick="openDetailModal(${idx})" class="px-2.5 py-1.5 text-[11px] font-semibold border-2 border-ink bg-cream hover:bg-sand" title="View full details & Deep Analyze">Details</button>
               <a href="${escapeHtml(opp.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1.5 bg-ink text-white hover:bg-accent hover:text-ink text-[11px] font-bold inline-flex items-center gap-1">
                 <span>Apply</span>
                 <span class="material-symbols-outlined text-[14px]">open_in_new</span>
@@ -662,6 +709,7 @@ def render_dashboard_html() -> str:
   function openDetailModal(idx) {
     const opp = allFetchedItems[idx];
     if (!opp) return;
+    currentModalIdx = idx;
     document.getElementById('dmBadges').innerHTML = `
       <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-ink bg-accent">${escapeHtml(opp.category)}</span>
       <span class="px-2 py-0.5 text-[10px] font-mono font-semibold border border-ink bg-white">${escapeHtml(opp.source_type)}</span>
@@ -669,6 +717,9 @@ def render_dashboard_html() -> str:
     `;
     document.getElementById('dmTitle').innerText = opp.title;
     document.getElementById('dmOrg').innerText = `${opp.organization} · ${opp.source_domain}`;
+    const saved = isOppSaved(opp.id);
+    document.getElementById('dmSaveLabel').innerText = saved ? '★ Saved in Tracker' : '+ Save to Tracker';
+
     document.getElementById('dmBody').innerHTML = `
       <p class="leading-relaxed">${escapeHtml(opp.summary)}</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-cream border-2 border-ink text-xs">
@@ -677,13 +728,236 @@ def render_dashboard_html() -> str:
         <div><span class="text-neutral-500 block font-mono text-[10px]">ELIGIBILITY</span><strong>${escapeHtml(opp.eligibility)}</strong></div>
         <div><span class="text-neutral-500 block font-mono text-[10px]">LOCATION</span><strong>${escapeHtml(opp.location || 'Global / India')}</strong></div>
       </div>
-      <div class="text-[11px] font-mono text-forest font-semibold">
-        ✓ Link HTTP ${opp.http_status} verified (${formatRelativeTime(opp.last_verified_at)})
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <div class="text-[11px] font-mono text-forest font-semibold">
+          ✓ Link HTTP ${opp.http_status} verified (${formatRelativeTime(opp.last_verified_at)})
+        </div>
+        <button id="deepAnalyzeBtn" onclick="runDeepPageAnalysis('${escapeHtml(opp.id)}')" class="nb-btn px-3 py-1.5 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px]">plumbing</span>
+          <span>Deep Analyze Official Page / Circular</span>
+        </button>
       </div>
+      <div id="deepAnalysisContainer" class="hidden pt-2"></div>
     `;
     document.getElementById('dmCal').href = `/api/opportunities/${encodeURIComponent(opp.id)}/calendar`;
     document.getElementById('dmApply').href = opp.source_url;
     document.getElementById('detailModal').classList.remove('hidden');
+  }
+
+  async function runDeepPageAnalysis(oppId) {
+    const btn = document.getElementById('deepAnalyzeBtn');
+    const box = document.getElementById('deepAnalysisContainer');
+    if (!box) return;
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">sync</span><span>Reading Live Official Page...</span>';
+    }
+    box.classList.remove('hidden');
+    box.innerHTML = '<div class="p-3.5 bg-cream border-2 border-ink font-mono text-xs animate-pulse">Fetching live destination HTML/PDF circular &amp; running layout + entity extraction...</div>';
+
+    try {
+      const res = await fetch(`/api/opportunities/${encodeURIComponent(oppId)}/deep-analyze`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const d = await res.json();
+
+      const eligHtml = (d.eligibility_highlights || []).map(item =>
+        `<li class="flex items-start gap-1.5"><span class="text-cobalt font-bold">▪</span><span>${escapeHtml(item)}</span></li>`
+      ).join('');
+      const docsHtml = (d.required_documents || []).map(doc =>
+        `<span class="px-2 py-1 bg-white border border-ink text-[11px] font-mono font-semibold">📄 ${escapeHtml(doc)}</span>`
+      ).join('');
+      const stepsHtml = (d.application_steps || []).map((st, i) =>
+        `<li class="text-xs"><strong class="font-mono text-ink">${i + 1}.</strong> ${escapeHtml(st)}</li>`
+      ).join('');
+      const pdfLinksHtml = (d.direct_pdf_urls || []).map(u =>
+        `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-white border border-ink hover:bg-accent text-[11px] font-mono font-bold text-cobalt inline-flex items-center gap-1">📎 Official PDF / Circular ↗</a>`
+      ).join('');
+
+      box.innerHTML = `
+        <div class="p-4 bg-sand/70 border-2 border-ink space-y-3 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ink/20 pb-2">
+            <span class="font-display font-bold text-sm text-ink">Deep-Page Official Circular Intelligence</span>
+            <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">HTTP ${d.http_status} · ${escapeHtml(d.content_type)}</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div class="p-2.5 bg-white border border-ink">
+              <span class="text-[10px] font-mono text-neutral-500 block">EXTRACTED FINANCIALS / STIPEND</span>
+              <strong class="text-ink">${escapeHtml(d.extracted_financials)}</strong>
+            </div>
+            <div class="p-2.5 bg-white border border-ink">
+              <span class="text-[10px] font-mono text-neutral-500 block">EXTRACTED DEADLINE</span>
+              <strong class="text-ink">${escapeHtml(d.extracted_deadline_text)}</strong>
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Key Eligibility &amp; Guidelines From Page</span>
+            <ul class="space-y-1 text-neutral-800">${eligHtml}</ul>
+          </div>
+          <div>
+            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Required Documents Checklist</span>
+            <div class="flex flex-wrap gap-1.5">${docsHtml}</div>
+          </div>
+          ${pdfLinksHtml ? `<div><span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Direct Circular / Guideline Attachments</span><div class="flex flex-wrap gap-1.5">${pdfLinksHtml}</div></div>` : ''}
+          <div>
+            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Application Steps</span>
+            <ol class="space-y-1 text-neutral-800">${stepsHtml}</ol>
+          </div>
+        </div>
+      `;
+      showToast('Deep-page circular analysis complete.', 'success');
+    } catch (err) {
+      box.innerHTML = `<div class="p-3 bg-red-50 border-2 border-vermilion text-vermilion text-xs font-semibold">Could not deep-analyze page (${escapeHtml(err.message)}).</div>`;
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">check_circle</span><span>Re-Run Deep Analysis</span>';
+      }
+    }
+  }
+
+  // Personal Kanban Application Tracker
+  function isOppSaved(oppId) {
+    return kanbanItems.some(k => k.opp_id === oppId);
+  }
+
+  function updateTrackerBadge() {
+    const el = document.getElementById('navTrackerCount');
+    if (el) el.innerText = kanbanItems.length;
+  }
+
+  async function loadKanbanTracker() {
+    try {
+      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      kanbanItems = data.items || [];
+      updateTrackerBadge();
+    } catch (e) {}
+  }
+
+  async function toggleSaveOpportunity(idx) {
+    const opp = allFetchedItems[idx];
+    if (!opp) return;
+    if (isOppSaved(opp.id)) {
+      await removeKanbanItem(opp.id);
+    } else {
+      try {
+        const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ opp_id: opp.id, stage: 'Saved' })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        kanbanItems = data.items || [];
+        updateTrackerBadge();
+        renderVisibleCards(allFetchedItems.length);
+        showToast(`Saved "${opp.title.slice(0, 38)}..." to My Tracker!`, 'success');
+      } catch (e) {
+        showToast('Could not save opportunity to tracker.', 'error');
+      }
+    }
+  }
+
+  async function toggleSaveCurrentModalOpp() {
+    if (currentModalIdx === null) return;
+    await toggleSaveOpportunity(currentModalIdx);
+    const opp = allFetchedItems[currentModalIdx];
+    if (opp) {
+      document.getElementById('dmSaveLabel').innerText = isOppSaved(opp.id) ? '★ Saved in Tracker' : '+ Save to Tracker';
+    }
+  }
+
+  async function moveKanbanStage(oppId, newStage) {
+    try {
+      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage: newStage })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      kanbanItems = data.items || [];
+      updateTrackerBadge();
+      renderKanbanBoard();
+      showToast(`Moved to "${newStage}"`, 'info');
+    } catch (e) {
+      showToast('Failed to update stage.', 'error');
+    }
+  }
+
+  async function removeKanbanItem(oppId) {
+    try {
+      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      kanbanItems = data.items || [];
+      updateTrackerBadge();
+      renderKanbanBoard();
+      renderVisibleCards(allFetchedItems.length);
+      showToast('Removed from tracker.', 'info');
+    } catch (e) {
+      showToast('Failed to remove item.', 'error');
+    }
+  }
+
+  function exportSavedKanbanIcs() {
+    if (!kanbanItems.length) {
+      showToast('Save at least one opportunity to export your personal deadlines.', 'warning');
+      return;
+    }
+    window.location.href = `/api/tracker/${encodeURIComponent(activeSessionId)}/calendar.ics`;
+  }
+
+  function renderKanbanBoard() {
+    const board = document.getElementById('kanbanBoardGrid');
+    if (!board) return;
+    const stageColors = {
+      'Saved': 'bg-accent text-ink',
+      'Preparing Docs': 'bg-cobalt text-white',
+      'Applied': 'bg-ink text-accent',
+      'Result': 'bg-forest text-white'
+    };
+
+    board.innerHTML = KANBAN_STAGES.map(stage => {
+      const colItems = kanbanItems.filter(i => i.stage === stage);
+      const cardsHtml = colItems.length
+        ? colItems.map(item => `
+            <div class="p-3.5 bg-cream/70 border-2 border-ink space-y-2">
+              <div class="flex items-start justify-between gap-2">
+                <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold border border-ink bg-white">${escapeHtml(item.category)}</span>
+                <button onclick="removeKanbanItem('${escapeHtml(item.opp_id)}')" class="text-neutral-400 hover:text-vermilion text-xs font-bold" title="Remove">✕</button>
+              </div>
+              <a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener noreferrer" class="block font-display font-bold text-xs text-ink hover:text-cobalt leading-snug">
+                ${escapeHtml(item.title)} ↗
+              </a>
+              <div class="text-[11px] text-neutral-600 truncate">${escapeHtml(item.organization)}</div>
+              <div class="flex items-center justify-between text-[10px] font-mono text-neutral-700 pt-1">
+                <span class="truncate max-w-[110px]">💰 ${escapeHtml(item.stipend_or_amount)}</span>
+                <span class="font-semibold">${item.deadline ? escapeHtml(item.deadline) : 'Rolling'}</span>
+              </div>
+              <div class="pt-2 border-t border-neutral-300 flex items-center justify-between gap-1">
+                <label class="text-[10px] font-mono text-neutral-500">Stage:</label>
+                <select onchange="moveKanbanStage('${escapeHtml(item.opp_id)}', this.value)" class="bg-white border border-ink px-1.5 py-0.5 text-[11px] font-semibold">
+                  ${KANBAN_STAGES.map(s => `<option value="${s}" ${s === item.stage ? 'selected' : ''}>${s}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+          `).join('')
+        : `<div class="p-6 border-2 border-dashed border-neutral-300 text-center text-xs text-neutral-400">No items in ${escapeHtml(stage)}</div>`;
+
+      return `
+        <div class="nb-card p-3.5 space-y-3">
+          <div class="flex items-center justify-between border-b-2 border-ink pb-2">
+            <span class="px-2 py-0.5 text-xs font-display font-bold border border-ink ${stageColors[stage] || 'bg-accent'}">${escapeHtml(stage)}</span>
+            <span class="font-mono text-xs font-bold">${colItems.length}</span>
+          </div>
+          <div class="space-y-2.5">${cardsHtml}</div>
+        </div>
+      `;
+    }).join('');
   }
 
   function closeDetailModal() {
@@ -795,6 +1069,7 @@ def render_dashboard_html() -> str:
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetailModal(); });
 
   (async function init() {
+    await loadKanbanTracker();
     await updateStatsCounters();
     await fetchOpportunities();
   })();

@@ -122,9 +122,12 @@ class HybridSearchEngine:
 
         for d_id in sorted_foa_ids:
             foa = foa_map[d_id]
-            norm_score = min(1.0, rrf_scores[d_id] / max_possible_rrf)
+            base_rrf = min(1.0, rrf_scores[d_id] / max_possible_rrf)
+            doc_text = f"{foa.title} {foa.brief_summary} {' '.join(foa.thematic_areas)}"
+            reranked_score = self.vector_store.embedder.rerank_score(query, doc_text, base_rrf_score=base_rrf)
             b_score = bm25_scores.get(d_id, 0.0)
             d_score = dense_scores.get(d_id, 0.0)
-            results.append((foa, round(norm_score, 4), round(b_score, 2), round(d_score, 4)))
+            results.append((foa, round(reranked_score, 4), round(b_score, 2), round(d_score, 4)))
 
+        results.sort(key=lambda item: item[1], reverse=True)
         return results

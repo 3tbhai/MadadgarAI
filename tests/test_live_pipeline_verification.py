@@ -157,3 +157,66 @@ def test_5_frontend_html_and_health_endpoints(client):
     r_ics = client.get(f"/api/opportunities/{first_id}/calendar")
     assert r_ics.status_code == 200
     assert b"BEGIN:VCALENDAR" in r_ics.content
+    assert h["background_cron_active"] is True
+
+
+def test_6_deep_page_analyzer_and_kanban_tracker_and_reranker(client):
+    """Verify Features 1.4 (Deep-Page Analyzer), 1.5 (Kanban Tracker + .ics), 2.1-2.3 (New Scrapers), 3.1 (Reranker)."""
+    from src.crawlers.live_scrapers import build_live_scrapers
+    from src.embeddings.embedder import TextEmbedder
+
+    # 1. Verify all 15 live scrapers are registered (including AICTE, ISRO, Tata Trusts, Ashby, Lever)
+    scraper_classes = {s.__class__.__name__ for s in build_live_scrapers()}
+    assert "AICTEIndiaInternshipScraper" in scraper_classes
+    assert "ISRORespondScraper" in scraper_classes
+    assert "TataTrustsCSRScraper" in scraper_classes
+    assert "AshbyCompaniesScraper" in scraper_classes
+    assert "LeverCompaniesScraper" in scraper_classes
+
+    # 2. Verify Semantic Reranker (3.1) ranks relevant candidates above unrelated ones
+    emb = TextEmbedder()
+    s_rel = emb.rerank_score("AICTE engineering internship stipend", "AICTE National Internship Portal for B.Tech engineering students with monthly stipend", 0.5)
+    s_irrel = emb.rerank_score("AICTE engineering internship stipend", " Biomedical clinical pathology laboratory mice experiment", 0.5)
+    assert s_rel > s_irrel
+
+    # 3. Verify Deep-Page Detail Enrichment (1.4) on a live opportunity
+    items = client.get("/api/opportunities?limit=5").json()["items"]
+    assert len(items) > 0
+    target_opp = items[0]
+    r_deep = client.post(f"/api/opportunities/{target_opp['id']}/deep-analyze")
+    assert r_deep.status_code == 200
+    deep_data = r_deep.json()
+    assert deep_data["opp_id"] == target_opp["id"]
+    assert len(deep_data["eligibility_highlights"]) >= 1
+    assert len(deep_data["required_documents"]) >= 1
+    assert len(deep_data["application_steps"]) >= 1
+
+    # 4. Verify Personal Application Kanban Tracker & Saved Deadlines .ics Export (1.5)
+    test_sid = "pytest-kanban-session-001"
+    r_add = client.post(
+        f"/api/tracker/{test_sid}",
+        json={"opp_id": target_opp["id"], "stage": "Saved", "notes": "Priority application"},
+    )
+    assert r_add.status_code == 200
+    assert r_add.json()["total"] >= 1
+
+    r_move = client.patch(
+        f"/api/tracker/{test_sid}/{target_opp['id']}",
+        json={"stage": "Preparing Docs", "notes": "Collecting marksheets"},
+    )
+    assert r_move.status_code == 200
+    moved_item = [i for i in r_move.json()["items"] if i["opp_id"] == target_opp["id"]][0]
+    assert moved_item["stage"] == "Preparing Docs"
+
+    r_saved_ics = client.get(f"/api/tracker/{test_sid}/calendar.ics")
+    assert r_saved_ics.status_code == 200
+    assert b"BEGIN:VCALENDAR" in r_saved_ics.content
+
+    r_del = client.delete(f"/api/tracker/{test_sid}/{target_opp['id']}")
+    assert r_del.status_code == 200
+    assert all(i["opp_id"] != target_opp["id"] for i in r_del.json()["items"])
+
+    # 5. Verify legacy unused crawler files remain deleted (3.3)
+    project_root = Path(__file__).resolve().parent.parent
+    for legacy_file in ("aicte_crawler.py", "anrf_crawler.py", "csir_crawler.py", "dst_crawler.py", "nsp_crawler.py"):
+        assert not (project_root / "src" / "crawlers" / legacy_file).exists()

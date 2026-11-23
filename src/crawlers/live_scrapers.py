@@ -1,4 +1,4 @@
-"""Modular Asynchronous Real-Time Scrapers for Government Portals, Top Companies, Scholarships & Research Funding."""
+"""Modular Asynchronous Real-Time Scrapers for Government Portals, CSR Foundations, Top Companies (Greenhouse, Ashby, Lever), Scholarships & Research Funding."""
 from abc import ABC, abstractmethod
 import asyncio
 from datetime import date
@@ -75,17 +75,17 @@ def parse_deadline_from_text(text: str) -> Optional[date]:
 
 def infer_domain(text: str) -> str:
     low = text.lower()
-    if any(k in low for k in ["software", "ai ", "artificial intelligence", "machine learning", "genai", "data science", "computer", "cyber", "python", "react", "developer", "web dev", "cloud", "computing", "robotics", "nlp", "ml "]):
+    if any(k in low for k in ["software", "ai ", "artificial intelligence", "machine learning", "genai", "data science", "computer", "cyber", "python", "react", "developer", "web dev", "cloud", "computing", "robotics", "nlp", "ml ", "c-dac", "nielit", "search"]):
         return "Computer Science & AI"
-    if any(k in low for k in ["mechanical", "electrical", "electronics", "civil", "engineering", "vlsi", "semiconductor", "hardware", "aerospace", "materials", "drone", "renewable energy", "water"]):
+    if any(k in low for k in ["mechanical", "electrical", "electronics", "civil", "engineering", "vlsi", "semiconductor", "hardware", "aerospace", "materials", "drone", "renewable energy", "water", "highways", "nhai", "cpwd", "smart cities", "space", "isro", "firmware"]):
         return "Engineering"
-    if any(k in low for k in ["health", "medical", "medtech", "biotech", "biomedical", "clinical", "pharma", "biology", "genom", "cancer", "life science", "nursing", "icmr"]):
+    if any(k in low for k in ["health", "medical", "medtech", "biotech", "biomedical", "clinical", "pharma", "biology", "genom", "cancer", "life science", "nursing", "icmr", "nutrition"]):
         return "Healthcare & Biotech"
-    if any(k in low for k in ["marketing", "finance", "business", "management", "economics", "sales", "hr ", "human resource", "content", "social media", "accounting", "mba", "commerce", "operations"]):
+    if any(k in low for k in ["marketing", "finance", "business", "management", "economics", "sales", "hr ", "human resource", "content", "social media", "accounting", "mba", "commerce", "operations", "deployment strategist"]):
         return "Business & Marketing"
     if any(k in low for k in ["physics", "chemistry", "mathematics", "matrics", "climate", "energy", "environment", "astronomy", "geoscience", "quantum", "research"]):
         return "Science & Research"
-    if any(k in low for k in ["design", "ui/ux", "graphic", "video", "arts", "humanities", "law", "policy", "journalism", "communications"]):
+    if any(k in low for k in ["design", "ui/ux", "graphic", "video", "arts", "humanities", "law", "policy", "journalism", "communications", "rural"]):
         return "Design, Policy & Arts"
     return "General"
 
@@ -130,8 +130,111 @@ class BaseLiveScraper(ABC):
 
 
 # =========================================================================
-# 1. INDIAN & INTERNATIONAL GOVERNMENT PORTALS
+# 1. INDIAN & INTERNATIONAL GOVERNMENT PORTALS (2.1)
 # =========================================================================
+
+class AICTEIndiaInternshipScraper(BaseLiveScraper):
+    """Scrapes live Government of India & Ministry internships from the AICTE National Internship Portal (internship.aicte-india.org)."""
+    source_name = "AICTE National Internship Portal (Govt. of India)"
+    default_category = OpportunityCategory.INTERNSHIP
+    source_type = "Government"
+    URL = "https://internship.aicte-india.org/"
+
+    async def fetch_raw(self, client: httpx.AsyncClient) -> List[Dict[str, Any]]:
+        resp = await client.get(self.URL, timeout=14.0, follow_redirects=True)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        items: List[Dict[str, Any]] = []
+        seen_urls = set()
+
+        for a in soup.select("a[href]"):
+            text = " ".join(a.get_text(" ", strip=True).split())
+            href = (a.get("href") or "").strip()
+            if len(text) < 14 or len(text) > 160 or not href or href.startswith("#") or href.lower().startswith("javascript"):
+                continue
+            low = (text + " " + href).lower()
+            if not any(k in low for k in ["/dashboards/", "internship-details.php", "internship"]):
+                continue
+            if any(skip in low for skip in ["login", "register", "post internship", "forgot", "terms", "privacy", "contact", "all internships live"]):
+                continue
+
+            full_url = urljoin("https://internship.aicte-india.org/", href)
+            if full_url in seen_urls or full_url.rstrip("/") == "https://internship.aicte-india.org":
+                continue
+            seen_urls.add(full_url)
+
+            domain = infer_domain(text)
+            items.append({
+                "title": f"AICTE Bharat Portal — {text[:110]}",
+                "organization": "AICTE & Participating Ministries, Govt. of India",
+                "category": OpportunityCategory.INTERNSHIP,
+                "source_type": "Government",
+                "domain": domain,
+                "eligibility": "Indian Engineering, Diploma, Management & Undergraduate Students (AICTE Approved)",
+                "degree_level": "Undergraduate",
+                "deadline": None,
+                "is_rolling": True,
+                "stipend_or_amount": "Govt. of India / Ministry Stipend & Certificate",
+                "funding_type": "Paid / Stipend",
+                "source_url": full_url,
+                "summary": f"Official Government of India National Internship Portal program: {text}. Hosted directly on internship.aicte-india.org.",
+                "tags": ["AICTE India", "Govt. of India", domain],
+                "location": "India",
+            })
+            if len(items) >= 10:
+                break
+        return items
+
+
+class ISRORespondScraper(BaseLiveScraper):
+    """Scrapes live sponsored space research grants & fellowships from ISRO RESPOND (isro.gov.in)."""
+    source_name = "ISRO RESPOND (Dept. of Space, Govt. of India)"
+    default_category = OpportunityCategory.FUNDING
+    source_type = "Government"
+    URL = "https://www.isro.gov.in/SponsoredResearch.html"
+
+    async def fetch_raw(self, client: httpx.AsyncClient) -> List[Dict[str, Any]]:
+        resp = await client.get(self.URL, timeout=12.0, follow_redirects=True)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        items: List[Dict[str, Any]] = []
+        seen_urls = set()
+
+        for a in soup.select("a[href]"):
+            title = " ".join(a.get_text(" ", strip=True).split())
+            href = (a.get("href") or "").strip()
+            if len(title) < 12 or len(title) > 130 or not href or href.startswith("#") or href.lower().startswith("javascript"):
+                continue
+            low = (title + " " + href).lower()
+            if not any(k in low for k in ["researchfellowships", "researchgrants", "submissionofresearchproposal", "supportedareasofresearch", "respondforms"]):
+                continue
+
+            full_url = urljoin("https://www.isro.gov.in/", href)
+            if full_url in seen_urls:
+                continue
+            seen_urls.add(full_url)
+
+            is_fellowship = "fellowship" in low
+            cat = OpportunityCategory.SCHOLARSHIP if is_fellowship else OpportunityCategory.FUNDING
+            items.append({
+                "title": f"ISRO Dept. of Space — {title}",
+                "organization": "Indian Space Research Organisation (ISRO), Govt. of India",
+                "category": cat,
+                "source_type": "Government",
+                "domain": "Engineering",
+                "eligibility": "Indian Universities, IITs, NITs, Space Scientists & Doctoral Researchers",
+                "degree_level": "PhD / Faculty",
+                "deadline": None,
+                "is_rolling": True,
+                "stipend_or_amount": "ISRO RESPOND Sponsored Research Grant / Fellowship",
+                "funding_type": "Grant-in-Aid",
+                "source_url": full_url,
+                "summary": f"Official Indian Space Research Organisation (ISRO RESPOND) program: {title}. Encourages academia participation in space science and technology R&D.",
+                "tags": ["ISRO", "Space Tech", "Govt. of India"],
+                "location": "India",
+            })
+        return items
+
 
 class ANRFIndiaScraper(BaseLiveScraper):
     """Scrapes live Indian Govt research grants & fellowships from ANRF / SERB (anrfonline.in)."""
@@ -189,7 +292,7 @@ class ANRFIndiaScraper(BaseLiveScraper):
                 "tags": ["ANRF India", "Govt. of India", domain],
                 "location": "India",
             })
-            if len(items) >= 14:
+            if len(items) >= 12:
                 break
         return items
 
@@ -399,12 +502,71 @@ class GrantsGovScraper(BaseLiveScraper):
 
 
 # =========================================================================
-# 2. TOP TECH COMPANIES (DIRECT OFFICIAL GREENHOUSE CAREER APIs)
+# 2. INDIA CORPORATE CSR & FOUNDATION PORTALS (2.2)
 # =========================================================================
 
+class TataTrustsCSRScraper(BaseLiveScraper):
+    """Scrapes live education, individual, and healthcare grant programs from Tata Trusts (tatatrusts.org)."""
+    source_name = "Tata Trusts CSR Grants (India)"
+    default_category = OpportunityCategory.SCHOLARSHIP
+    source_type = "Foundation / University"
+    URL = "https://www.tatatrusts.org/our-work/individual-grants-programme/education-grants"
+
+    async def fetch_raw(self, client: httpx.AsyncClient) -> List[Dict[str, Any]]:
+        resp = await client.get(self.URL, timeout=12.0, follow_redirects=True)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        items: List[Dict[str, Any]] = []
+        seen_urls = set()
+
+        for a in soup.select("a[href]"):
+            title = " ".join(a.get_text(" ", strip=True).split())
+            href = (a.get("href") or "").strip()
+            if len(title) < 6 or len(title) > 100 or not href or href.startswith("#") or href.lower().startswith("javascript"):
+                continue
+            low = (title + " " + href).lower()
+            if not any(k in low for k in ["individual-grants", "enabling-human-potential/education", "enabling-human-potential/healthcare", "fluxx.io"]):
+                continue
+
+            full_url = urljoin("https://www.tatatrusts.org/", href)
+            if full_url in seen_urls:
+                continue
+            seen_urls.add(full_url)
+
+            cat = OpportunityCategory.FUNDING if "healthcare" in low else OpportunityCategory.SCHOLARSHIP
+            items.append({
+                "title": f"Tata Trusts Philanthropy — {title} Program",
+                "organization": "Tata Trusts (Sir Ratan Tata Trust & Allied Trusts)",
+                "category": cat,
+                "source_type": "Foundation / University",
+                "domain": infer_domain(title),
+                "eligibility": "Indian Undergraduate, Postgraduate & Research Students / Grantees",
+                "degree_level": "All Levels",
+                "deadline": None,
+                "is_rolling": True,
+                "stipend_or_amount": "Tata Trusts Merit & Need-Based Educational / Research Grant",
+                "funding_type": "Merit / Competitive",
+                "source_url": full_url,
+                "summary": f"Official Tata Trusts India CSR & Philanthropy program ({title}). Direct grant & scholarship application details available on tatatrusts.org.",
+                "tags": ["Tata Trusts", "India CSR", title],
+                "location": "India",
+            })
+        return items
+
+
+# =========================================================================
+# 3. TOP TECH COMPANIES: GREENHOUSE, ASHBY & LEVER CAREER APIs (2.3)
+# =========================================================================
+
+INTERN_FELLOW_WORD_RE = re.compile(
+    r"\b(intern|internship|fellows?|fellowship|co-op|apprentice|university\s+grad|new\s+grad|student\s+worker)\b",
+    re.I,
+)
+
+
 class TopCompaniesGreenhouseScraper(BaseLiveScraper):
-    """Fetches live official internships & research fellowships directly from top tech company career boards."""
-    source_name = "Top Tech Companies (Official Careers)"
+    """Fetches live official internships & research fellowships from top tech companies via Greenhouse API."""
+    source_name = "Top Tech Companies (Greenhouse Boards)"
     default_category = OpportunityCategory.INTERNSHIP
     source_type = "Company / Corporate"
 
@@ -423,8 +585,6 @@ class TopCompaniesGreenhouseScraper(BaseLiveScraper):
         ("robinhood", "Robinhood"),
     ]
 
-    INTERN_WORD_RE = re.compile(r"\b(intern|internship|fellows?|co-op|apprentice|university\s+grad)\b", re.I)
-
     async def fetch_raw(self, client: httpx.AsyncClient) -> List[Dict[str, Any]]:
         items: List[Dict[str, Any]] = []
 
@@ -439,9 +599,7 @@ class TopCompaniesGreenhouseScraper(BaseLiveScraper):
                 for j in jobs:
                     title = (j.get("title") or "").strip()
                     abs_url = (j.get("absolute_url") or "").strip()
-                    if not title or not abs_url:
-                        continue
-                    if not self.INTERN_WORD_RE.search(title):
+                    if not title or not abs_url or not INTERN_FELLOW_WORD_RE.search(title):
                         continue
                     loc = ((j.get("location") or {}).get("name") or "Global / Hybrid").strip()
                     low = title.lower()
@@ -464,17 +622,151 @@ class TopCompaniesGreenhouseScraper(BaseLiveScraper):
                         "funding_type": "Paid / Stipend",
                         "source_url": abs_url,
                         "summary": f"Official {company_name} listing: {title} ({loc}). Direct application hosted on {company_name}'s verified career board.",
-                        "tags": [company_name, domain, "Direct Company Portal"],
+                        "tags": [company_name, domain, "Greenhouse Direct"],
+                        "location": loc,
+                    })
+                    if len(matched) >= 2:
+                        break
+                return matched
+            except Exception as exc:
+                logger.debug(f"Greenhouse board {board_slug} failed: {exc}")
+                return []
+
+        batches = await asyncio.gather(*(_fetch_company(slug, name) for slug, name in self.COMPANIES))
+        for b in batches:
+            items.extend(b)
+        return items
+
+
+class AshbyCompaniesScraper(BaseLiveScraper):
+    """Fetches live AI & engineering internships/fellowships from Perplexity, Notion, Ramp, Cohere, Modal & Baseten via Ashby API."""
+    source_name = "AI & Tech Leaders (Ashby Boards)"
+    default_category = OpportunityCategory.INTERNSHIP
+    source_type = "Company / Corporate"
+
+    COMPANIES: List[Tuple[str, str]] = [
+        ("perplexity", "Perplexity AI"),
+        ("notion", "Notion"),
+        ("ramp", "Ramp"),
+        ("cohere", "Cohere AI"),
+        ("modal", "Modal Labs"),
+        ("baseten", "Baseten"),
+    ]
+
+    async def fetch_raw(self, client: httpx.AsyncClient) -> List[Dict[str, Any]]:
+        items: List[Dict[str, Any]] = []
+
+        async def _fetch_ashby(slug: str, company_name: str):
+            url = f"https://api.ashbyhq.com/posting-api/job-board/{slug}"
+            try:
+                resp = await client.get(url, timeout=9.0)
+                if resp.status_code != 200:
+                    return []
+                jobs = resp.json().get("jobs", [])
+                matched = []
+                for j in jobs:
+                    title = (j.get("title") or "").strip()
+                    job_url = (j.get("jobUrl") or j.get("applyUrl") or "").strip()
+                    if not title or not job_url or not INTERN_FELLOW_WORD_RE.search(title):
+                        continue
+                    loc = (j.get("location") or "Global / Hybrid").strip()
+                    low = title.lower()
+                    is_fellow = "fellow" in low
+                    cat = OpportunityCategory.SCHOLARSHIP if is_fellow else OpportunityCategory.INTERNSHIP
+                    domain = infer_domain(f"{title} {company_name}")
+                    degree = "PhD / Faculty" if ("phd" in low or "research" in low or is_fellow) else "Undergraduate"
+
+                    matched.append({
+                        "title": f"{company_name} — {title}",
+                        "organization": company_name,
+                        "category": cat,
+                        "source_type": "Company / Corporate",
+                        "domain": domain,
+                        "eligibility": f"{degree} candidates ({loc})",
+                        "degree_level": degree,
+                        "deadline": None,
+                        "is_rolling": True,
+                        "stipend_or_amount": "Paid AI/Tech Internship or Fellowship",
+                        "funding_type": "Paid / Stipend",
+                        "source_url": job_url,
+                        "summary": f"Official {company_name} opportunity: {title} ({loc}). Direct application on {company_name}'s official Ashby career portal.",
+                        "tags": [company_name, domain, "Ashby Direct"],
                         "location": loc,
                     })
                     if len(matched) >= 3:
                         break
                 return matched
             except Exception as exc:
-                logger.debug(f"Company board {board_slug} failed: {exc}")
+                logger.debug(f"Ashby board {slug} failed: {exc}")
                 return []
 
-        batches = await asyncio.gather(*(_fetch_company(slug, name) for slug, name in self.COMPANIES))
+        batches = await asyncio.gather(*(_fetch_ashby(slug, name) for slug, name in self.COMPANIES))
+        for b in batches:
+            items.extend(b)
+        return items
+
+
+class LeverCompaniesScraper(BaseLiveScraper):
+    """Fetches live internships & fellowships from Palantir and Zoox via Lever public postings API."""
+    source_name = "Enterprise & Robotics Leaders (Lever Boards)"
+    default_category = OpportunityCategory.INTERNSHIP
+    source_type = "Company / Corporate"
+
+    COMPANIES: List[Tuple[str, str]] = [
+        ("palantir", "Palantir Technologies"),
+        ("zoox", "Zoox (Autonomous Mobility)"),
+    ]
+
+    async def fetch_raw(self, client: httpx.AsyncClient) -> List[Dict[str, Any]]:
+        items: List[Dict[str, Any]] = []
+
+        async def _fetch_lever(slug: str, company_name: str):
+            url = f"https://api.lever.co/v0/postings/{slug}?mode=json"
+            try:
+                resp = await client.get(url, timeout=9.0)
+                if resp.status_code != 200 or not isinstance(resp.json(), list):
+                    return []
+                jobs = resp.json()
+                matched = []
+                for j in jobs:
+                    title = (j.get("text") or "").strip()
+                    hosted_url = (j.get("hostedUrl") or j.get("applyUrl") or "").strip()
+                    if not title or not hosted_url or not INTERN_FELLOW_WORD_RE.search(title):
+                        continue
+                    cats = j.get("categories") or {}
+                    loc = (cats.get("location") or "Global / Hybrid").strip()
+                    team = (cats.get("team") or "").strip()
+                    low = title.lower()
+                    is_fellow = "fellow" in low or "scholarship" in low
+                    cat = OpportunityCategory.SCHOLARSHIP if is_fellow else OpportunityCategory.INTERNSHIP
+                    domain = infer_domain(f"{title} {team} {company_name}")
+                    degree = "Undergraduate"
+
+                    matched.append({
+                        "title": f"{company_name} — {title}",
+                        "organization": company_name,
+                        "category": cat,
+                        "source_type": "Company / Corporate",
+                        "domain": domain,
+                        "eligibility": f"Students & early-career engineers ({loc})",
+                        "degree_level": degree,
+                        "deadline": None,
+                        "is_rolling": True,
+                        "stipend_or_amount": "Paid Engineering Internship / Fellowship",
+                        "funding_type": "Paid / Stipend",
+                        "source_url": hosted_url,
+                        "summary": f"Official {company_name} opening: {title} ({loc}). Team: {team or domain}. Apply directly on {company_name}'s Lever portal.",
+                        "tags": [company_name, domain, "Lever Direct"],
+                        "location": loc,
+                    })
+                    if len(matched) >= 4:
+                        break
+                return matched
+            except Exception as exc:
+                logger.debug(f"Lever board {slug} failed: {exc}")
+                return []
+
+        batches = await asyncio.gather(*(_fetch_lever(slug, name) for slug, name in self.COMPANIES))
         for b in batches:
             items.extend(b)
         return items
@@ -501,7 +793,7 @@ class InternshalaScraper(BaseLiveScraper):
             soup = BeautifulSoup(resp.text, "html.parser")
             cards = soup.select("div.individual_internship")
 
-            for card in cards[:12]:
+            for card in cards[:10]:
                 title_el = card.select_one("a.job-title-href, h3.job-internship-name a, .profile a")
                 if not title_el:
                     continue
@@ -556,7 +848,7 @@ class RSSOpportunityScraper(BaseLiveScraper):
         feed_url: str,
         default_category: OpportunityCategory,
         source_type: str = "Foundation / University",
-        max_items: int = 12,
+        max_items: int = 10,
     ):
         self.source_name = source_name
         self.feed_url = feed_url
@@ -651,9 +943,11 @@ class RSSOpportunityScraper(BaseLiveScraper):
 
 
 def build_live_scrapers() -> List[BaseLiveScraper]:
-    """Returns all verified live async scrapers across Government Portals, Top Companies, and Foundations."""
+    """Returns all verified live async scrapers across Government Portals, CSR Foundations, and Tech Companies."""
     return [
-        # Indian Government Portals
+        # 2.1 Indian Government & Statutory Portals
+        AICTEIndiaInternshipScraper(),
+        ISRORespondScraper(),
         ANRFIndiaScraper(),
         UGCIndiaScraper(),
         ICMRIndiaScraper(),
@@ -667,10 +961,14 @@ def build_live_scrapers() -> List[BaseLiveScraper]:
             source_type="Government",
             max_items=10,
         ),
-        # Companies Offering Internships & Fellowships
+        # 2.2 India Corporate CSR & Foundation Portals
+        TataTrustsCSRScraper(),
+        # 2.3 Top Tech Companies (Greenhouse + Ashby + Lever + Internshala)
         TopCompaniesGreenhouseScraper(),
+        AshbyCompaniesScraper(),
+        LeverCompaniesScraper(),
         InternshalaScraper(),
-        # Live Scholarships & Corporate/University Fellowships
+        # Global Scholarships & Fellowships
         RSSOpportunityScraper(
             source_name="OpportunitiesCircle",
             feed_url="https://www.opportunitiescircle.com/feed/",

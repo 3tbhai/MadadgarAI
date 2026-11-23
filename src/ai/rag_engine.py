@@ -348,11 +348,16 @@ class SaralSamjhautiRAG:
             rrf = (1.0 / (RRF_K_CONSTANT + r_b)) + (1.0 / (RRF_K_CONSTANT + r_d))
             norm_score = min(1.0, rrf / max_rrf)
 
-            # Semantic Reranker boost for exact topic hits
+            # Semantic Cross-Attention / Pairwise Late-Interaction Reranker
+            norm_score = self.embedder.rerank_score(
+                query=augmented_query,
+                candidate_text=f"{item['title']} {item['authority']} {item['raw_text'][:500]}",
+                base_rrf_score=norm_score,
+            )
             title_low = item["title"].lower()
             if item["kind"] == "policy" and is_policy_question:
                 if any(w in title_low for w in q_lower.split() if len(w) >= 3):
-                    norm_score = min(1.0, norm_score + 0.18)
+                    norm_score = min(1.0, norm_score + 0.14)
             if item["source_id"].lower() in q_lower:
                 norm_score = 1.0
 
