@@ -57,6 +57,12 @@ class HybridSearchEngine:
     ) -> List[Tuple[FundingOpportunity, float, float, float]]:
         """
         Executes hybrid search via Reciprocal Rank Fusion (RRF).
+        
+        Mathematical Formulation:
+            Score_RRF(d) = sum_{m in {BM25, Dense}} 1 / (k + Rank_m(d))
+            Where k = 60 (RRF_K_CONSTANT) prevents top-ranked outliers from
+            disproportionately skewing combined ranking.
+            
         Returns list of (FundingOpportunity, rrf_score, bm25_raw_score, dense_sim_score).
         """
         if not self.opportunities:
