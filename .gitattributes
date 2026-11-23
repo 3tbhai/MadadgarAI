@@ -1,0 +1,28 @@
+# Auto detect text files and perform LF normalization on checkout/commit
+* text=auto
+
+# Source code files
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Windows scripts must keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Shell scripts must keep LF
+*.sh text eol=lf
+
+# Binary files
+*.db binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.pptx binary
