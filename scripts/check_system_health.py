@@ -24,10 +24,15 @@ REQUIRED_PACKAGES = [
     "uvicorn",
     "pydantic",
     "numpy",
+    "rank_bm25",
+    "httpx",
+    "bs4",
+    "pytest",
+]
+
+OPTIONAL_PACKAGES = [
     "sentence_transformers",
     "torch",
-    "rank_bm25",
-    "pytest",
 ]
 
 def check_python_version() -> bool:
@@ -48,6 +53,10 @@ def check_dependencies() -> bool:
         else:
             print(f"    • {pkg.ljust(25)}: [MISSING]", flush=True)
             all_ok = False
+    for pkg in OPTIONAL_PACKAGES:
+        spec = importlib.util.find_spec(pkg)
+        status = "[OK]" if spec is not None else "[OPTIONAL - deterministic 384d fallback active]"
+        print(f"    • {pkg.ljust(25)}: {status}", flush=True)
     return all_ok
 
 def check_database() -> bool:

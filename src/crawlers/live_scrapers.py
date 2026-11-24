@@ -147,15 +147,16 @@ class AICTEIndiaInternshipScraper(BaseLiveScraper):
         items: List[Dict[str, Any]] = []
         seen_urls = set()
 
+        candidates: List[Tuple[int, str, str]] = []
         for a in soup.select("a[href]"):
             text = " ".join(a.get_text(" ", strip=True).split())
             href = (a.get("href") or "").strip()
-            if len(text) < 14 or len(text) > 160 or not href or href.startswith("#") or href.lower().startswith("javascript"):
+            if len(text) < 12 or len(text) > 160 or not href or href.startswith("#") or href.lower().startswith("javascript"):
                 continue
             low = (text + " " + href).lower()
-            if not any(k in low for k in ["/dashboards/", "internship-details.php", "internship"]):
+            if not any(k in low for k in ["/dashboards/", "internship-details.php"]):
                 continue
-            if any(skip in low for skip in ["login", "register", "post internship", "forgot", "terms", "privacy", "contact", "all internships live"]):
+            if any(skip in low for skip in ["login", "register", "post internship", "forgot", "terms", "privacy", "contact", "super-admin", "state-admin"]):
                 continue
 
             full_url = urljoin("https://internship.aicte-india.org/", href)
@@ -163,9 +164,17 @@ class AICTEIndiaInternshipScraper(BaseLiveScraper):
                 continue
             seen_urls.add(full_url)
 
+            # Strip UI badge tokens ("Hot", "New") injected next to link labels
+            cleaned_text = re.sub(r"\b(?:New|Hot)\b", "", text).strip(" —-")
+            cleaned_text = " ".join(cleaned_text.split())
+            priority = 0 if "/dashboards/" in href.lower() else 1
+            candidates.append((priority, cleaned_text, full_url))
+
+        candidates.sort(key=lambda x: x[0])
+        for _, text, full_url in candidates[:10]:
             domain = infer_domain(text)
             items.append({
-                "title": f"AICTE Bharat Portal — {text[:110]}",
+                "title": f"AICTE Govt. Portal — {text[:105]}",
                 "organization": "AICTE & Participating Ministries, Govt. of India",
                 "category": OpportunityCategory.INTERNSHIP,
                 "source_type": "Government",
@@ -177,12 +186,10 @@ class AICTEIndiaInternshipScraper(BaseLiveScraper):
                 "stipend_or_amount": "Govt. of India / Ministry Stipend & Certificate",
                 "funding_type": "Paid / Stipend",
                 "source_url": full_url,
-                "summary": f"Official Government of India National Internship Portal program: {text}. Hosted directly on internship.aicte-india.org.",
+                "summary": f"Official Government of India Ministry Internship Board on AICTE National Internship Portal: {text}.",
                 "tags": ["AICTE India", "Govt. of India", domain],
                 "location": "India",
             })
-            if len(items) >= 10:
-                break
         return items
 
 
@@ -206,7 +213,7 @@ class ISRORespondScraper(BaseLiveScraper):
             if len(title) < 12 or len(title) > 130 or not href or href.startswith("#") or href.lower().startswith("javascript"):
                 continue
             low = (title + " " + href).lower()
-            if not any(k in low for k in ["researchfellowships", "researchgrants", "submissionofresearchproposal", "supportedareasofresearch", "respondforms"]):
+            if not any(k in low for k in ["researchfellowships", "researchgrants", "submissionofresearchproposal", "supportedareasofresearch"]):
                 continue
 
             full_url = urljoin("https://www.isro.gov.in/", href)
@@ -217,7 +224,7 @@ class ISRORespondScraper(BaseLiveScraper):
             is_fellowship = "fellowship" in low
             cat = OpportunityCategory.SCHOLARSHIP if is_fellowship else OpportunityCategory.FUNDING
             items.append({
-                "title": f"ISRO Dept. of Space — {title}",
+                "title": f"ISRO RESPOND — {title}",
                 "organization": "Indian Space Research Organisation (ISRO), Govt. of India",
                 "category": cat,
                 "source_type": "Government",
@@ -401,7 +408,7 @@ class ICMRIndiaScraper(BaseLiveScraper):
 
 
 class BIRACIndiaScraper(BaseLiveScraper):
-    """Scrapes live Calls for Proposals from India's DBT-BIRAC portal (birac.nic.in/cfp.php)."""
+    """Scrapes live Calls for Proposals & Active Schemes from India's DBT-BIRAC portal (birac.nic.in/cfp.php)."""
     source_name = "DBT-BIRAC (Govt. of India)"
     default_category = OpportunityCategory.FUNDING
     source_type = "Government"
@@ -413,26 +420,39 @@ class BIRACIndiaScraper(BaseLiveScraper):
         soup = BeautifulSoup(resp.text, "html.parser")
         items: List[Dict[str, Any]] = []
         seen_urls = set()
+        today = date.today()
 
+        flagship_keywords = ["big", "sitare", "bipp", "sbiri", "pace", "assistive", "soch", "jancare", "biotech"]
         for a in soup.select("a[href]"):
             text = " ".join(a.get_text(" ", strip=True).split())
             href = (a.get("href") or "").strip()
-            if len(text) < 18 or not href or href.startswith("#") or href.lower().startswith("javascript"):
+            if len(text) < 3 or not href or href.startswith("#") or href.lower().startswith("javascript"):
                 continue
             low = text.lower()
-            if not any(k in low for k in ["call", "proposal", "grant", "fellowship", "ignition", "scheme", "biotech", "funding", "rfp"]):
+            is_cfp_call = "cfp_view.php" in href and any(
+                k in low for k in ["call", "proposal", "grant", "fellowship", "ignition", "scheme", "biotech", "funding", "rfp", "applications", "patent"]
+            )
+            is_flagship_scheme = "desc_new.php" in href and (
+                len(text) >= 18 or any(fk in low for fk in flagship_keywords)
+            )
+            if not (is_cfp_call or is_flagship_scheme):
                 continue
+
             full_url = urljoin("https://birac.nic.in/", href)
             if full_url in seen_urls or full_url.rstrip("/") == "https://birac.nic.in" or full_url.lower().endswith("/index.php"):
                 continue
-            seen_urls.add(full_url)
 
             parent_txt = a.parent.get_text(" ", strip=True) if a.parent else text
-            deadline = parse_deadline_from_text(parent_txt)
+            deadline = parse_deadline_from_text(f"{text} {parent_txt}")
+            if deadline and deadline < today:
+                continue
+
+            seen_urls.add(full_url)
             domain = infer_domain(f"{text} biotechnology healthcare")
+            clean_title = text[:160] if len(text) >= 12 else f"DBT-BIRAC {text} Biotech Funding Programme"
 
             items.append({
-                "title": text[:160],
+                "title": clean_title,
                 "organization": "DBT-BIRAC (Dept. of Biotechnology, Govt. of India)",
                 "category": OpportunityCategory.FUNDING,
                 "source_type": "Government",
@@ -444,7 +464,7 @@ class BIRACIndiaScraper(BaseLiveScraper):
                 "stipend_or_amount": "DBT-BIRAC Grant-in-Aid (See Official Call)",
                 "funding_type": "Grant-in-Aid",
                 "source_url": full_url,
-                "summary": f"Live Indian Government Biotechnology Call for Proposals: {text[:260]}",
+                "summary": f"Live Indian Government Biotechnology Call / Scheme: {clean_title}.",
                 "tags": ["DBT-BIRAC", "Govt. of India", domain],
                 "location": "India",
             })
@@ -520,12 +540,14 @@ class TataTrustsCSRScraper(BaseLiveScraper):
         seen_urls = set()
 
         for a in soup.select("a[href]"):
-            title = " ".join(a.get_text(" ", strip=True).split())
+            raw_title = " ".join(a.get_text(" ", strip=True).split())
             href = (a.get("href") or "").strip()
-            if len(title) < 6 or len(title) > 100 or not href or href.startswith("#") or href.lower().startswith("javascript"):
+            if not href or href.startswith("#") or href.lower().startswith("javascript"):
                 continue
-            low = (title + " " + href).lower()
-            if not any(k in low for k in ["individual-grants", "enabling-human-potential/education", "enabling-human-potential/healthcare", "fluxx.io"]):
+            low = (raw_title + " " + href).lower()
+            if any(skip in low for skip in ["user_sessions", "impact-stories", "news", "contact"]):
+                continue
+            if not any(k in low for k in ["individual-grants", "enabling-human-potential/education", "enabling-human-potential/healthcare", "means-grant", "merit-scholarship"]):
                 continue
 
             full_url = urljoin("https://www.tatatrusts.org/", href)
@@ -533,22 +555,30 @@ class TataTrustsCSRScraper(BaseLiveScraper):
                 continue
             seen_urls.add(full_url)
 
+            clean_title = raw_title.strip(" .")
+            if clean_title.lower() in ("click here", "read more", "apply now", "here", ""):
+                slug = href.rstrip("/").split("/")[-1].rsplit(".", 1)[0]
+                clean_title = " ".join(w.capitalize() if not w.isdigit() else w for w in re.split(r"[-_]+", slug))
+            if len(clean_title) < 4:
+                continue
+
             cat = OpportunityCategory.FUNDING if "healthcare" in low else OpportunityCategory.SCHOLARSHIP
+            dl = parse_deadline_from_text(clean_title)
             items.append({
-                "title": f"Tata Trusts Philanthropy — {title} Program",
+                "title": f"Tata Trusts — {clean_title}",
                 "organization": "Tata Trusts (Sir Ratan Tata Trust & Allied Trusts)",
                 "category": cat,
                 "source_type": "Foundation / University",
-                "domain": infer_domain(title),
-                "eligibility": "Indian Undergraduate, Postgraduate & Research Students / Grantees",
+                "domain": infer_domain(clean_title),
+                "eligibility": "Indian Undergraduate, Postgraduate & Research Students / Individual Grantees",
                 "degree_level": "All Levels",
-                "deadline": None,
-                "is_rolling": True,
-                "stipend_or_amount": "Tata Trusts Merit & Need-Based Educational / Research Grant",
+                "deadline": dl,
+                "is_rolling": dl is None,
+                "stipend_or_amount": "Tata Trusts Merit & Means-Based Educational / Medical Grant",
                 "funding_type": "Merit / Competitive",
                 "source_url": full_url,
-                "summary": f"Official Tata Trusts India CSR & Philanthropy program ({title}). Direct grant & scholarship application details available on tatatrusts.org.",
-                "tags": ["Tata Trusts", "India CSR", title],
+                "summary": f"Official Tata Trusts India CSR & Philanthropy program ({clean_title}). View official circular and eligibility guidelines on tatatrusts.org.",
+                "tags": ["Tata Trusts", "India CSR", clean_title[:40]],
                 "location": "India",
             })
         return items
@@ -818,9 +848,10 @@ class InternshalaScraper(BaseLiveScraper):
                 card_text = card.get_text(" ", strip=True)
                 domain = infer_domain(f"{title} {company} {card_text}")
                 funding_type = "Unpaid" if "unpaid" in stipend.lower() else "Paid / Stipend"
+                display_title = title if "intern" in title.lower() else f"{title} Internship"
 
                 items.append({
-                    "title": title,
+                    "title": f"{display_title} — {company}",
                     "organization": company,
                     "category": OpportunityCategory.INTERNSHIP,
                     "source_type": "Company / Corporate",

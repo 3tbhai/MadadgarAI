@@ -43,7 +43,7 @@ class ProfileGrantMatcher:
             top_k=max(profile.top_k + 4, 10),
         )
 
-        ref_today = date(2026, 10, 15)
+        ref_today = date.today()
         match_results: List[MatchResult] = []
 
         for foa, rrf_score, bm25_score, dense_sim in raw_results:

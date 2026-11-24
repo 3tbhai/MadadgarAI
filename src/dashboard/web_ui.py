@@ -378,7 +378,9 @@ def render_dashboard_html() -> str:
   let visibleCount = 18;
   let searchDebounce = null;
   let facetsInitialized = false;
+  let lastTotalInStore = 0;
   let currentModalIdx = null;
+  let currentModalOpp = null;
   let kanbanItems = [];
   const KANBAN_STAGES = ['Saved', 'Preparing Docs', 'Applied', 'Result'];
   let activeSessionId = localStorage.getItem('madadgaar_session_id') || '';
@@ -579,6 +581,7 @@ def render_dashboard_html() -> str:
       const data = await res.json();
       populateFacets(data.facets);
       allFetchedItems = data.items || [];
+      lastTotalInStore = data.total_in_store || 0;
       visibleCount = 18;
 
       document.getElementById('resultsSummaryText').innerHTML =
@@ -710,6 +713,7 @@ def render_dashboard_html() -> str:
     const opp = allFetchedItems[idx];
     if (!opp) return;
     currentModalIdx = idx;
+    currentModalOpp = opp;
     document.getElementById('dmBadges').innerHTML = `
       <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-ink bg-accent">${escapeHtml(opp.category)}</span>
       <span class="px-2 py-0.5 text-[10px] font-mono font-semibold border border-ink bg-white">${escapeHtml(opp.source_type)}</span>
@@ -766,18 +770,22 @@ def render_dashboard_html() -> str:
       const docsHtml = (d.required_documents || []).map(doc =>
         `<span class="px-2 py-1 bg-white border border-ink text-[11px] font-mono font-semibold">📄 ${escapeHtml(doc)}</span>`
       ).join('');
-      const stepsHtml = (d.application_steps || []).map((st, i) =>
-        `<li class="text-xs"><strong class="font-mono text-ink">${i + 1}.</strong> ${escapeHtml(st)}</li>`
-      ).join('');
-      const pdfLinksHtml = (d.direct_pdf_urls || []).map(u =>
+      const stepsHtml = (d.application_steps || []).map((st, i) => {
+        const cleanStep = String(st || '').replace(/^\s*\d+\.\s*/, '');
+        return `<li class="text-xs"><strong class="font-mono text-ink">${i + 1}.</strong> ${escapeHtml(cleanStep)}</li>`;
+      }).join('');
+      const attachmentsList = d.direct_attachments || d.direct_pdf_urls || [];
+      const pdfLinksHtml = attachmentsList.map(u =>
         `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-white border border-ink hover:bg-accent text-[11px] font-mono font-bold text-cobalt inline-flex items-center gap-1">📎 Official PDF / Circular ↗</a>`
       ).join('');
+      const deadlineDisplay = d.extracted_deadline || d.extracted_deadline_text || 'Check Official Page';
+      const statusBadge = d.http_status ? `HTTP ${escapeHtml(d.http_status)} · ` : '';
 
       box.innerHTML = `
         <div class="p-4 bg-sand/70 border-2 border-ink space-y-3 text-xs">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ink/20 pb-2">
             <span class="font-display font-bold text-sm text-ink">Deep-Page Official Circular Intelligence</span>
-            <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">HTTP ${d.http_status} · ${escapeHtml(d.content_type)}</span>
+            <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">${statusBadge}${escapeHtml(d.content_type || 'text/html')}${d.word_count ? ` · ${d.word_count} words` : ''}</span>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div class="p-2.5 bg-white border border-ink">
@@ -786,9 +794,10 @@ def render_dashboard_html() -> str:
             </div>
             <div class="p-2.5 bg-white border border-ink">
               <span class="text-[10px] font-mono text-neutral-500 block">EXTRACTED DEADLINE</span>
-              <strong class="text-ink">${escapeHtml(d.extracted_deadline_text)}</strong>
+              <strong class="text-ink">${escapeHtml(deadlineDisplay)}</strong>
             </div>
           </div>
+          ${d.key_excerpt ? `<p class="text-[11px] text-neutral-700 bg-white/80 p-2 border border-ink/30 leading-relaxed">${escapeHtml(d.key_excerpt)}</p>` : ''}
           <div>
             <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Key Eligibility &amp; Guidelines From Page</span>
             <ul class="space-y-1 text-neutral-800">${eligHtml}</ul>
@@ -851,7 +860,7 @@ def render_dashboard_html() -> str:
         const data = await res.json();
         kanbanItems = data.items || [];
         updateTrackerBadge();
-        renderVisibleCards(allFetchedItems.length);
+        renderVisibleCards(lastTotalInStore);
         showToast(`Saved "${opp.title.slice(0, 38)}..." to My Tracker!`, 'success');
       } catch (e) {
         showToast('Could not save opportunity to tracker.', 'error');
@@ -860,12 +869,26 @@ def render_dashboard_html() -> str:
   }
 
   async function toggleSaveCurrentModalOpp() {
-    if (currentModalIdx === null) return;
-    await toggleSaveOpportunity(currentModalIdx);
-    const opp = allFetchedItems[currentModalIdx];
-    if (opp) {
-      document.getElementById('dmSaveLabel').innerText = isOppSaved(opp.id) ? '★ Saved in Tracker' : '+ Save to Tracker';
+    if (!currentModalOpp) return;
+    if (isOppSaved(currentModalOpp.id)) {
+      await removeKanbanItem(currentModalOpp.id);
+    } else if (currentModalIdx !== null && allFetchedItems[currentModalIdx] && allFetchedItems[currentModalIdx].id === currentModalOpp.id) {
+      await toggleSaveOpportunity(currentModalIdx);
+    } else {
+      try {
+        const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ opp_id: currentModalOpp.id, stage: 'Saved' })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        kanbanItems = data.items || [];
+        updateTrackerBadge();
+        renderVisibleCards(lastTotalInStore);
+      } catch (e) {}
     }
+    document.getElementById('dmSaveLabel').innerText = isOppSaved(currentModalOpp.id) ? '★ Saved in Tracker' : '+ Save to Tracker';
   }
 
   async function moveKanbanStage(oppId, newStage) {
@@ -886,6 +909,22 @@ def render_dashboard_html() -> str:
     }
   }
 
+  async function saveKanbanNote(oppId, stage, noteText) {
+    try {
+      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage, notes: noteText })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      kanbanItems = data.items || [];
+      showToast('Note saved to tracker.', 'success');
+    } catch (e) {
+      showToast('Could not save note.', 'error');
+    }
+  }
+
   async function removeKanbanItem(oppId) {
     try {
       const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
@@ -896,7 +935,7 @@ def render_dashboard_html() -> str:
       kanbanItems = data.items || [];
       updateTrackerBadge();
       renderKanbanBoard();
-      renderVisibleCards(allFetchedItems.length);
+      renderVisibleCards(lastTotalInStore);
       showToast('Removed from tracker.', 'info');
     } catch (e) {
       showToast('Failed to remove item.', 'error');
@@ -938,6 +977,7 @@ def render_dashboard_html() -> str:
                 <span class="truncate max-w-[110px]">💰 ${escapeHtml(item.stipend_or_amount)}</span>
                 <span class="font-semibold">${item.deadline ? escapeHtml(item.deadline) : 'Rolling'}</span>
               </div>
+              <input type="text" value="${escapeHtml(item.notes || '')}" placeholder="Add note (e.g. pending NOC)..." onchange="saveKanbanNote('${escapeHtml(item.opp_id)}', '${escapeHtml(item.stage)}', this.value)" class="w-full bg-white border border-ink/40 px-2 py-1 text-[11px] focus:outline-none focus:border-ink"/>
               <div class="pt-2 border-t border-neutral-300 flex items-center justify-between gap-1">
                 <label class="text-[10px] font-mono text-neutral-500">Stage:</label>
                 <select onchange="moveKanbanStage('${escapeHtml(item.opp_id)}', this.value)" class="bg-white border border-ink px-1.5 py-0.5 text-[11px] font-semibold">
@@ -1016,7 +1056,12 @@ def render_dashboard_html() -> str:
       });
       const data = await res.json();
       if (data.session_id) { activeSessionId = data.session_id; localStorage.setItem('madadgaar_session_id', activeSessionId); }
-      const htmlAns = escapeHtml(data.answer || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+      const htmlAns = escapeHtml(data.answer || '')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*\n]+)\*/g, '<em class="text-neutral-600">$1</em>')
+        .replace(/`([^`\n]+)`/g, '<code class="px-1 py-0.5 bg-sand font-mono text-[11px]">$1</code>')
+        .replace(/(https?:\/\/[^\s<)]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-cobalt underline break-all">$1</a>')
+        .replace(/\n/g, '<br/>');
       const cites = (data.citations || []).slice(0, 3).map((c, i) =>
         `<div class="text-[11px] font-mono flex justify-between gap-2 pt-1"><span class="truncate">[${i+1}] ${escapeHtml(c.title)}</span><a href="${escapeHtml(c.official_url)}" target="_blank" class="text-cobalt font-bold shrink-0 hover:underline">Source ↗</a></div>`
       ).join('');

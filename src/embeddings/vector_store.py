@@ -22,6 +22,12 @@ class VectorStore:
         self.metadata_map: Dict[str, Dict[str, Any]] = {}
         self.load_index()
 
+    def clear(self):
+        """Resets in-memory vectors and metadata before a clean full re-index."""
+        self.doc_ids = []
+        self.embeddings = np.empty((0, self.embedder.dimension), dtype=np.float32)
+        self.metadata_map = {}
+
     def add_document(self, doc_id: str, text: str, metadata: Optional[Dict[str, Any]] = None):
         """Indexes a document text with its metadata."""
         emb = self.embedder.embed_text(text)

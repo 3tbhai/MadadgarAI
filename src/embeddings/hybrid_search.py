@@ -27,9 +27,10 @@ class HybridSearchEngine:
         self.rebuild_index()
 
     def rebuild_index(self):
-        """Indexes all current opportunities into BM25 and VectorStore."""
+        """Rebuilds BM25 and VectorStore cleanly from current active opportunities (purging stale IDs)."""
         self.opportunities = self.normalizer.load_all_opportunities()
         self.corpus_tokens = []
+        self.vector_store.clear()
 
         for foa in self.opportunities:
             # Document text representation

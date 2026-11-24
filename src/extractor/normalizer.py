@@ -1,4 +1,5 @@
 """Database Persistence, Schema Normalizer, and JSON/CSV Exporter."""
+from datetime import date
 import csv
 import json
 import logging
@@ -141,7 +142,7 @@ class DatasetNormalizer:
                         foa.renewal_requirements,
                         json.dumps(foa.common_mistakes),
                         json.dumps(foa.official_source_references),
-                        foa.last_verified_date.isoformat() if foa.last_verified_date else "2026-10-15",
+                        foa.last_verified_date.isoformat() if foa.last_verified_date else date.today().isoformat(),
                         foa.full_text_content,
                         1 if foa.is_ocr_extracted else 0,
                         foa.ingested_at.isoformat(),
@@ -172,7 +173,7 @@ class DatasetNormalizer:
                     renewal_req = r["renewal_requirements"] if "renewal_requirements" in keys else None
                     common_err = json.loads(r["common_mistakes_json"] or "[]") if "common_mistakes_json" in keys and r["common_mistakes_json"] else []
                     source_refs = json.loads(r["official_source_references_json"] or "[]") if "official_source_references_json" in keys and r["official_source_references_json"] else []
-                    verified_dt = r["last_verified_date"] if "last_verified_date" in keys and r["last_verified_date"] else "2026-10-15"
+                    verified_dt = r["last_verified_date"] if "last_verified_date" in keys and r["last_verified_date"] else date.today().isoformat()
 
                     foa_dict = {
                         "foa_id": r["foa_id"],

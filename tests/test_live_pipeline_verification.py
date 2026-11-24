@@ -187,9 +187,13 @@ def test_6_deep_page_analyzer_and_kanban_tracker_and_reranker(client):
     assert r_deep.status_code == 200
     deep_data = r_deep.json()
     assert deep_data["opp_id"] == target_opp["id"]
+    assert "http_status" in deep_data
+    assert "extracted_deadline" in deep_data
+    assert "direct_attachments" in deep_data
     assert len(deep_data["eligibility_highlights"]) >= 1
     assert len(deep_data["required_documents"]) >= 1
     assert len(deep_data["application_steps"]) >= 1
+    assert not re.match(r"^\d+\.\s", deep_data["application_steps"][0]), "Steps should not double-number inside <ol>"
 
     # 4. Verify Personal Application Kanban Tracker & Saved Deadlines .ics Export (1.5)
     test_sid = "pytest-kanban-session-001"
