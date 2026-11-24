@@ -158,6 +158,8 @@ def test_5_frontend_html_and_health_endpoints(client):
     assert r_ics.status_code == 200
     assert b"BEGIN:VCALENDAR" in r_ics.content
     assert h["background_cron_active"] is True
+    assert "llm_synthesis_backend" in h
+    assert "playwright_fallback_available" in h
 
 
 def test_6_deep_page_analyzer_and_kanban_tracker_and_reranker(client):
@@ -258,7 +260,14 @@ def test_6_deep_page_analyzer_and_kanban_tracker_and_reranker(client):
     r_rem_del = client.delete(f"/api/tracker/{test_sid}/reminders/{rem_id}")
     assert r_rem_del.status_code == 200
 
-    # 8. Verify legacy unused crawler files remain deleted (3.3)
+    # 8. Verify Optional LLM Synthesis Adapter (Part 6)
+    from src.ai.llm_adapter import LLMSynthesisAdapter
+    llm = LLMSynthesisAdapter()
+    assert isinstance(llm.active_backend, str) and len(llm.active_backend) > 0
+    prompt = llm.build_grounded_prompt("What is DST INSPIRE?", "en", [], {})
+    assert "STRICT GROUNDING RULES" in prompt
+
+    # 9. Verify legacy unused crawler files remain deleted (3.3)
     project_root = Path(__file__).resolve().parent.parent
     for legacy_file in ("aicte_crawler.py", "anrf_crawler.py", "csir_crawler.py", "dst_crawler.py", "nsp_crawler.py"):
         assert not (project_root / "src" / "crawlers" / legacy_file).exists()

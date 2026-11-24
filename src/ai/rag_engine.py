@@ -4,6 +4,7 @@ import re
 from typing import Any, Dict, List, Optional, Tuple
 from rank_bm25 import BM25Okapi
 
+from src.ai.llm_adapter import LLMSynthesisAdapter
 from src.ai.session_store import ConversationalMemoryStore
 from src.config import RRF_K_CONSTANT
 from src.embeddings.embedder import TextEmbedder
@@ -196,10 +197,12 @@ class SaralSamjhautiRAG:
         normalizer: Optional[DatasetNormalizer] = None,
         session_store: Optional[ConversationalMemoryStore] = None,
         embedder: Optional[TextEmbedder] = None,
+        llm_adapter: Optional[LLMSynthesisAdapter] = None,
     ):
         self.normalizer = normalizer or DatasetNormalizer()
         self.session_store = session_store or ConversationalMemoryStore()
         self.embedder = embedder or TextEmbedder()
+        self.llm_adapter = llm_adapter or LLMSynthesisAdapter()
         self.kb_items: List[Dict[str, Any]] = []
         self.bm25: Optional[BM25Okapi] = None
         self.dense_vectors: List[List[float]] = []
@@ -489,6 +492,16 @@ class SaralSamjhautiRAG:
                 if lang == "en"
                 else "क्षमा करें, मुझे इस विषय पर कोई सत्यापित सरकारी सर्कुलर नहीं मिला। कृपया आधिकारिक पोर्टल scholarships.gov.in की जाँच करें।"
             )
+
+        # Optional LLM synthesis (Gemini / OpenAI / Ollama) when configured via environment variable
+        llm_answer = self.llm_adapter.synthesize_grounded(
+            query=query,
+            lang=lang,
+            retrieved=retrieved,
+            student_profile=student_profile,
+        )
+        if llm_answer:
+            return llm_answer
 
         primary_item, _ = retrieved[0]
         secondary_items = [item for item, _ in retrieved[1:3]]

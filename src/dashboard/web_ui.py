@@ -488,7 +488,10 @@ def render_dashboard_html() -> str:
     <div class="lg:col-span-7 nb-card flex flex-col h-[600px]">
       <div class="px-4 py-3 border-b-2 border-ink bg-accent flex items-center justify-between gap-2">
         <div>
-          <h2 class="font-display font-bold text-base">Saral Samjhauti AI</h2>
+          <div class="flex items-center gap-2">
+            <h2 class="font-display font-bold text-base">Saral Samjhauti AI</h2>
+            <span id="ragBackendBadge" class="px-1.5 py-0.5 bg-ink text-accent font-mono text-[9px] font-bold">Grounded RAG</span>
+          </div>
           <p class="text-[11px] text-neutral-800">Ask in English or Hinglish about certificates, DBT seeding, or live schemes.</p>
         </div>
         <select id="ragLang" class="bg-white border-2 border-ink px-2 py-1 text-xs font-semibold">
@@ -1027,14 +1030,20 @@ def render_dashboard_html() -> str:
 
   async function updateStatsCounters() {
     try {
-      const res = await fetch('/api/stats');
-      if (!res.ok) return;
-      const s = await res.json();
-      const sb = s.source_type_breakdown || {};
-      document.getElementById('statAll').innerText = s.total_opportunities || 0;
-      document.getElementById('statGovt').innerText = sb['Government'] || 0;
-      document.getElementById('statCompany').innerText = sb['Company / Corporate'] || 0;
-      document.getElementById('statFound').innerText = sb['Foundation / University'] || 0;
+      const [res, hRes] = await Promise.all([fetch('/api/stats'), fetch('/api/health')]);
+      if (res.ok) {
+        const s = await res.json();
+        const sb = s.source_type_breakdown || {};
+        document.getElementById('statAll').innerText = s.total_opportunities || 0;
+        document.getElementById('statGovt').innerText = sb['Government'] || 0;
+        document.getElementById('statCompany').innerText = sb['Company / Corporate'] || 0;
+        document.getElementById('statFound').innerText = sb['Foundation / University'] || 0;
+      }
+      if (hRes.ok) {
+        const h = await hRes.json();
+        const badge = document.getElementById('ragBackendBadge');
+        if (badge && h.llm_synthesis_backend) badge.innerText = h.llm_synthesis_backend;
+      }
     } catch (e) {}
   }
 

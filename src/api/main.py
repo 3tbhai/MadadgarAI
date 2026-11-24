@@ -16,6 +16,7 @@ from src.ai.document_assistant import IntelligentDocumentAssistant
 from src.ai.rag_engine import SaralSamjhautiRAG
 from src.ai.session_store import ConversationalMemoryStore
 from src.crawlers.deep_analyzer import DeepPageAnalysis, DeepPageAnalyzer
+from src.crawlers.link_verifier import PLAYWRIGHT_AVAILABLE
 from src.crawlers.pipeline import LiveOpportunityStore, LivePipelineOrchestrator, live_opportunity_to_foa
 from src.dashboard.web_ui import render_dashboard_html
 from src.embeddings.hybrid_search import HybridSearchEngine
@@ -232,12 +233,14 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "MadadgaarAI Real-Time Opportunity Intelligence",
-        "version": "3.1.0",
+        "version": "3.2.0",
         "total_opportunities": live_store.count(),
         "last_refreshed_at": last_ts.isoformat() if last_ts else None,
         "cache_ttl_hours": live_store.cache_ttl_hours,
         "background_cron_active": cron_running,
         "embedding_backend": vector_store.embedder.backend_name,
+        "llm_synthesis_backend": rag_engine.llm_adapter.active_backend,
+        "playwright_fallback_available": PLAYWRIGHT_AVAILABLE,
         "zero_mock_data": True,
     }
 
