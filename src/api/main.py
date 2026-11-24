@@ -5,6 +5,7 @@ import csv
 from datetime import date, datetime
 import io
 import logging
+import os
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, Query, Response, UploadFile
@@ -15,6 +16,8 @@ from pydantic import BaseModel, Field
 from src.ai.document_assistant import IntelligentDocumentAssistant
 from src.ai.rag_engine import SaralSamjhautiRAG
 from src.ai.session_store import ConversationalMemoryStore
+from src.api.saral_router import router as saral_v2_router, saral_gemini
+from src.auth.security import get_google_client_id
 from src.crawlers.deep_analyzer import DeepPageAnalysis, DeepPageAnalyzer
 from src.crawlers.link_verifier import PLAYWRIGHT_AVAILABLE
 from src.crawlers.pipeline import LiveOpportunityStore, LivePipelineOrchestrator, live_opportunity_to_foa
@@ -136,13 +139,22 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+_cors_origins_env = (os.getenv("MADADGAAR_CORS_ORIGINS") or "").strip()
+_cors_origins = (
+    [o.strip() for o in _cors_origins_env.split(",") if o.strip()]
+    if _cors_origins_env
+    else ["http://localhost:8000", "http://127.0.0.1:8000", "http://localhost:3000"]
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
 )
+
+app.include_router(saral_v2_router)
 
 
 class SearchRequest(BaseModel):
@@ -233,13 +245,15 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "MadadgaarAI Real-Time Opportunity Intelligence",
-        "version": "3.2.0",
+        "version": "4.0.0",
         "total_opportunities": live_store.count(),
         "last_refreshed_at": last_ts.isoformat() if last_ts else None,
         "cache_ttl_hours": live_store.cache_ttl_hours,
         "background_cron_active": cron_running,
         "embedding_backend": vector_store.embedder.backend_name,
         "llm_synthesis_backend": rag_engine.llm_adapter.active_backend,
+        "saral_multitenant_rag_backend": saral_gemini.backend_label,
+        "google_oauth_configured": bool(get_google_client_id()),
         "playwright_fallback_available": PLAYWRIGHT_AVAILABLE,
         "zero_mock_data": True,
     }
