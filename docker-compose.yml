@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: saral_pgvector
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-saral}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-saral_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-saral_ai}
+    ports:
+      - "5432:5432"
+    volumes:
+      - saral_pg_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-saral} -d ${POSTGRES_DB:-saral_ai}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: madadgaarai_saral_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      MADADGAAR_HOST: 0.0.0.0
+      MADADGAAR_PORT: 8000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-saral}:${POSTGRES_PASSWORD:-saral_dev_password}@postgres:5432/${POSTGRES_DB:-saral_ai}
+    volumes:
+      - ./data:/app/data
+
+volumes:
+  saral_pg_data:
