@@ -1,7 +1,9 @@
 """FastAPI Main REST API Application for MadadgaarAI — Real-Time Live Opportunity Curation Platform."""
 import asyncio
 from contextlib import asynccontextmanager
+import csv
 from datetime import date, datetime
+import io
 import logging
 from typing import Any, Dict, List, Optional
 
@@ -269,6 +271,53 @@ async def refresh_live_opportunities(force: bool = Query(default=True)):
     hybrid_search.rebuild_index()
     rag_engine.rebuild_knowledge_base()
     return report
+
+
+@app.get("/api/opportunities/export.csv")
+async def export_filtered_opportunities_csv(
+    category: Optional[str] = Query(default=None),
+    source_type: Optional[str] = Query(default=None),
+    domain: Optional[str] = Query(default=None),
+    degree_level: Optional[str] = Query(default=None),
+    funding_type: Optional[str] = Query(default=None),
+    deadline_window: Optional[str] = Query(default=None),
+    q: Optional[str] = Query(default=None),
+    sort: str = Query(default="deadline_asc"),
+    limit: int = Query(default=200, ge=1, le=500),
+):
+    """Exports the currently filtered live opportunities as a UTF-8 CSV file."""
+    result = live_store.query(
+        category=category,
+        source_type=source_type,
+        domain=domain,
+        degree_level=degree_level,
+        funding_type=funding_type,
+        deadline_window=deadline_window,
+        q=q,
+        sort=sort,
+        limit=limit,
+    )
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow([
+        "ID", "Title", "Organization", "Category", "Source Type", "Domain",
+        "Degree Level", "Stipend / Amount", "Funding Type", "Deadline",
+        "Is Rolling", "Location", "Eligibility", "HTTP Status", "Source URL",
+    ])
+    for o in result.items:
+        writer.writerow([
+            o.id, o.title, o.organization, o.category.value, o.source_type,
+            o.domain, o.degree_level, o.stipend_or_amount, o.funding_type,
+            o.deadline.isoformat() if o.deadline else "Rolling",
+            "Yes" if o.is_rolling else "No",
+            o.location or "Global / India",
+            o.eligibility, o.http_status, str(o.source_url),
+        ])
+    return Response(
+        content=buf.getvalue().encode("utf-8-sig"),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=madadgaarai_filtered_opportunities.csv"},
+    )
 
 
 @app.get("/api/opportunities/{opp_id}", response_model=LiveOpportunity)

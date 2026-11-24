@@ -220,7 +220,14 @@ def test_6_deep_page_analyzer_and_kanban_tracker_and_reranker(client):
     assert r_del.status_code == 200
     assert all(i["opp_id"] != target_opp["id"] for i in r_del.json()["items"])
 
-    # 5. Verify legacy unused crawler files remain deleted (3.3)
+    # 5. Verify filtered CSV export endpoint (Part 3)
+    r_csv = client.get("/api/opportunities/export.csv?category=Internship")
+    assert r_csv.status_code == 200
+    assert "text/csv" in r_csv.headers.get("content-type", "")
+    assert "Source URL" in r_csv.text
+    assert "Internship" in r_csv.text
+
+    # 6. Verify legacy unused crawler files remain deleted (3.3)
     project_root = Path(__file__).resolve().parent.parent
     for legacy_file in ("aicte_crawler.py", "anrf_crawler.py", "csir_crawler.py", "dst_crawler.py", "nsp_crawler.py"):
         assert not (project_root / "src" / "crawlers" / legacy_file).exists()

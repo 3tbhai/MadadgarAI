@@ -225,9 +225,15 @@ def render_dashboard_html() -> str:
     <!-- Subtle Status Strip -->
     <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-600 px-0.5">
       <div id="resultsSummaryText" class="font-medium">Loading live opportunities...</div>
-      <div class="flex items-center gap-4">
+      <div class="flex flex-wrap items-center gap-3.5">
         <span id="cacheStatusLabel" class="font-mono text-[11px] text-neutral-500"></span>
         <button id="resetFiltersLink" onclick="resetAllFilters()" class="hidden text-vermilion hover:underline font-semibold">Clear filters</button>
+        <button onclick="copyShareableFilterUrl()" class="text-ink hover:text-cobalt hover:underline font-semibold inline-flex items-center gap-1" title="Copy shareable filtered link">
+          <span class="material-symbols-outlined text-[15px]">share</span> Share View
+        </button>
+        <a id="exportCsvLink" href="/api/opportunities/export.csv" download class="text-forest hover:underline font-semibold inline-flex items-center gap-1" title="Download filtered results as CSV">
+          <span class="material-symbols-outlined text-[15px]">download</span> Export CSV
+        </a>
         <a href="/api/calendar/upcoming.ics" download class="text-cobalt hover:underline font-semibold inline-flex items-center gap-1">
           <span class="material-symbols-outlined text-[15px]">calendar_month</span> Export .ics
         </a>
@@ -531,6 +537,61 @@ def render_dashboard_html() -> str:
     return `<span class="text-[11px] font-mono text-neutral-600 font-medium">${deadlineIso}</span>`;
   }
 
+  let pendingDomainFromUrl = null;
+  let pendingFundingFromUrl = null;
+
+  function restoreFiltersFromUrl() {
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get('category')) selectedCategory = sp.get('category');
+    if (sp.get('source_type')) selectedSourceType = sp.get('source_type');
+    if (sp.get('q')) {
+      document.getElementById('filterSearch').value = sp.get('q');
+      document.getElementById('clearSearchBtn').classList.remove('hidden');
+    }
+    if (sp.get('degree_level')) document.getElementById('filterDegree').value = sp.get('degree_level');
+    if (sp.get('deadline_window')) document.getElementById('filterDeadline').value = sp.get('deadline_window');
+    if (sp.get('sort')) document.getElementById('filterSort').value = sp.get('sort');
+    if (sp.get('domain')) pendingDomainFromUrl = sp.get('domain');
+    if (sp.get('funding_type')) pendingFundingFromUrl = sp.get('funding_type');
+
+    document.querySelectorAll('.stype-pill').forEach(btn => {
+      const active = btn.getAttribute('data-stype') === selectedSourceType;
+      btn.className = active
+        ? 'stype-pill px-3 py-1.5 border-2 border-ink bg-ink text-accent font-semibold'
+        : 'stype-pill px-3 py-1.5 border-2 border-ink bg-white hover:bg-sand font-semibold';
+    });
+    document.querySelectorAll('.cat-pill').forEach(btn => {
+      const active = btn.getAttribute('data-cat') === selectedCategory;
+      btn.className = active
+        ? 'cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-accent text-ink'
+        : 'cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-white hover:bg-sand';
+    });
+    if (pendingDomainFromUrl || pendingFundingFromUrl || sp.get('degree_level') || sp.get('deadline_window')) {
+      document.getElementById('advancedFiltersRow').classList.remove('hidden');
+    }
+  }
+
+  function syncFiltersToUrl(params) {
+    const cleanParams = new URLSearchParams(params.toString());
+    if (cleanParams.get('sort') === 'deadline_asc') cleanParams.delete('sort');
+    const qs = cleanParams.toString();
+    const newUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+    window.history.replaceState(null, '', newUrl);
+    const csvLink = document.getElementById('exportCsvLink');
+    if (csvLink) {
+      csvLink.href = qs ? `/api/opportunities/export.csv?${params.toString()}` : '/api/opportunities/export.csv';
+    }
+  }
+
+  async function copyShareableFilterUrl() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showToast('Shareable filtered link copied to clipboard!', 'success');
+    } catch (e) {
+      showToast('URL updated in your address bar — copy it to share.', 'info');
+    }
+  }
+
   function populateFacets(facets) {
     if (!facets || facetsInitialized) return;
     const domSel = document.getElementById('filterDomain');
@@ -542,6 +603,18 @@ def render_dashboard_html() -> str:
       const o = document.createElement('option'); o.value = f; o.textContent = f; ftSel.appendChild(o);
     });
     facetsInitialized = true;
+    let needsRefetch = false;
+    if (pendingDomainFromUrl) {
+      domSel.value = pendingDomainFromUrl;
+      pendingDomainFromUrl = null;
+      needsRefetch = true;
+    }
+    if (pendingFundingFromUrl) {
+      ftSel.value = pendingFundingFromUrl;
+      pendingFundingFromUrl = null;
+      needsRefetch = true;
+    }
+    if (needsRefetch) fetchOpportunities();
   }
 
   async function updateStatsCounters() {
@@ -574,6 +647,7 @@ def render_dashboard_html() -> str:
     const q = document.getElementById('filterSearch').value.trim();
     if (q) params.set('q', q);
     params.set('sort', document.getElementById('filterSort').value);
+    syncFiltersToUrl(params);
 
     try {
       const res = await fetch(`/api/opportunities?${params.toString()}`);
@@ -1114,6 +1188,7 @@ def render_dashboard_html() -> str:
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetailModal(); });
 
   (async function init() {
+    restoreFiltersFromUrl();
     await loadKanbanTracker();
     await updateStatsCounters();
     await fetchOpportunities();
