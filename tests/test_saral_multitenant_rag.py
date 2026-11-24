@@ -1,5 +1,6 @@
 """Integration Tests for Multi-Tenant Saral AI: Google/JWT Auth, RBAC Modes, Cross-User Isolation & Streaming RAG."""
 import json
+import uuid
 import pytest
 from fastapi.testclient import TestClient
 
@@ -25,9 +26,10 @@ def test_1_unauthenticated_requests_strictly_rejected():
 def test_2_jwt_cookies_user_modes_and_refresh_token_rotation():
     """Verify HTTP-only JWT cookie login, default Student mode, mode switching, and refresh token reuse detection."""
     with TestClient(app) as client:
+        unique_email = f"mode_tester_{uuid.uuid4().hex[:8]}@saral.test"
         r_login = client.post(
             "/api/auth/dev-login",
-            json={"email": "mode_tester@saral.test", "full_name": "Mode Tester"},
+            json={"email": unique_email, "full_name": "Mode Tester"},
         )
         assert r_login.status_code == 200
         user = r_login.json()["user"]
