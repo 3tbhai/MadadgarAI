@@ -243,7 +243,20 @@ def test_6_deep_page_analyzer_and_kanban_tracker_and_reranker(client):
     assert len(res_json["matches"]) >= 1
     assert res_json["matches"][0]["fit_score"] > 0
 
-    # 7. Verify legacy unused crawler files remain deleted (3.3)
+    # 7. Verify Deadline Reminder Engine (Part 4)
+    r_rem_add = client.post(
+        f"/api/tracker/{test_sid}/reminders",
+        json={"channel": "browser", "target": "Desktop Alert", "lead_days": 14},
+    )
+    assert r_rem_add.status_code == 200
+    rem_id = r_rem_add.json()["reminders"][0]["id"]
+    r_rem_disp = client.post(f"/api/tracker/{test_sid}/reminders/dispatch")
+    assert r_rem_disp.status_code == 200
+    assert len(r_rem_disp.json()["dispatched"]) >= 1
+    r_rem_del = client.delete(f"/api/tracker/{test_sid}/reminders/{rem_id}")
+    assert r_rem_del.status_code == 200
+
+    # 8. Verify legacy unused crawler files remain deleted (3.3)
     project_root = Path(__file__).resolve().parent.parent
     for legacy_file in ("aicte_crawler.py", "anrf_crawler.py", "csir_crawler.py", "dst_crawler.py", "nsp_crawler.py"):
         assert not (project_root / "src" / "crawlers" / legacy_file).exists()

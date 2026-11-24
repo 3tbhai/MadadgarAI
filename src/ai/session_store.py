@@ -56,6 +56,19 @@ class ConversationalMemoryStore:
                 )
                 """
             )
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS deadline_reminders (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    session_id TEXT NOT NULL,
+                    channel TEXT NOT NULL,
+                    target TEXT NOT NULL,
+                    lead_days INTEGER DEFAULT 7,
+                    active INTEGER DEFAULT 1,
+                    created_at TEXT NOT NULL
+                )
+                """
+            )
             conn.commit()
 
     def get_or_create_session(
@@ -290,6 +303,61 @@ class ConversationalMemoryStore:
             )
             conn.commit()
         return self.get_kanban_items(sid)
+
+    # ------------------------------------------------------------------
+    # Deadline Reminder Subscriptions (Part 4)
+    # ------------------------------------------------------------------
+
+    def list_reminders(self, session_id: str) -> List[Dict[str, Any]]:
+        sid = (session_id or "default-user").strip()
+        items: List[Dict[str, Any]] = []
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT * FROM deadline_reminders WHERE session_id = ? ORDER BY id DESC",
+                (sid,),
+            )
+            for r in cur.fetchall():
+                items.append({
+                    "id": r["id"],
+                    "session_id": r["session_id"],
+                    "channel": r["channel"],
+                    "target": r["target"],
+                    "lead_days": int(r["lead_days"]),
+                    "active": bool(r["active"]),
+                    "created_at": r["created_at"],
+                })
+        return items
+
+    def add_reminder(
+        self, session_id: str, channel: str, target: str, lead_days: int = 7
+    ) -> List[Dict[str, Any]]:
+        sid = (session_id or "default-user").strip()
+        clean_ch = channel if channel in ("webhook", "email", "browser") else "browser"
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with sqlite3.connect(self.db_path) as conn:
+            cur = conn.cursor()
+            cur.execute(
+                """
+                INSERT INTO deadline_reminders (session_id, channel, target, lead_days, active, created_at)
+                VALUES (?, ?, ?, ?, 1, ?)
+                """,
+                (sid, clean_ch, target.strip(), max(1, min(60, int(lead_days))), now_iso),
+            )
+            conn.commit()
+        return self.list_reminders(sid)
+
+    def delete_reminder(self, session_id: str, reminder_id: int) -> List[Dict[str, Any]]:
+        sid = (session_id or "default-user").strip()
+        with sqlite3.connect(self.db_path) as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "DELETE FROM deadline_reminders WHERE session_id = ? AND id = ?",
+                (sid, int(reminder_id)),
+            )
+            conn.commit()
+        return self.list_reminders(sid)
 
     @staticmethod
     def extract_profile_facts_from_message(text: str) -> Dict[str, Any]:

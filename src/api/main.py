@@ -201,6 +201,12 @@ class KanbanStageUpdateRequest(BaseModel):
     notes: Optional[str] = None
 
 
+class ReminderCreateRequest(BaseModel):
+    channel: str = Field(default="browser", description="browser | email | webhook")
+    target: str = Field(default="Browser Notification", description="Email address, webhook URL, or label")
+    lead_days: int = Field(default=7, ge=1, le=60)
+
+
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     """Serves an inline SVG favicon to prevent 404 logs."""
@@ -469,6 +475,102 @@ async def export_saved_kanban_calendar(session_id: str):
         media_type="text/calendar",
         headers={"Content-Disposition": f"attachment; filename=madadgaar_saved_deadlines_{session_id[:8]}.ics"},
     )
+
+
+def _compute_due_kanban_alerts(session_id: str, max_lead_days: int = 14) -> List[Dict[str, Any]]:
+    today = date.today()
+    due: List[Dict[str, Any]] = []
+    for item in session_store.get_kanban_items(session_id):
+        dl_raw = item.get("deadline")
+        if not dl_raw:
+            continue
+        try:
+            dl_date = date.fromisoformat(str(dl_raw)[:10])
+            days_left = (dl_date - today).days
+            if 0 <= days_left <= max_lead_days:
+                due.append({
+                    "opp_id": item["opp_id"],
+                    "title": item["title"],
+                    "organization": item["organization"],
+                    "stage": item["stage"],
+                    "deadline": dl_date.isoformat(),
+                    "days_left": days_left,
+                    "source_url": item["source_url"],
+                })
+        except ValueError:
+            continue
+    due.sort(key=lambda x: x["days_left"])
+    return due
+
+
+@app.get("/api/tracker/{session_id}/reminders")
+async def get_tracker_reminders(session_id: str):
+    """Returns configured reminder subscriptions and currently approaching saved deadlines."""
+    reminders = session_store.list_reminders(session_id)
+    max_lead = max([r["lead_days"] for r in reminders], default=14)
+    return {
+        "session_id": session_id,
+        "reminders": reminders,
+        "due_alerts": _compute_due_kanban_alerts(session_id, max_lead_days=max_lead),
+    }
+
+
+@app.post("/api/tracker/{session_id}/reminders")
+async def add_tracker_reminder(session_id: str, req: ReminderCreateRequest):
+    """Creates a deadline reminder subscription (Browser, Email, or Discord/Slack Webhook)."""
+    reminders = session_store.add_reminder(
+        session_id=session_id,
+        channel=req.channel,
+        target=req.target or "Browser Alert",
+        lead_days=req.lead_days,
+    )
+    return {
+        "session_id": session_id,
+        "reminders": reminders,
+        "due_alerts": _compute_due_kanban_alerts(session_id, max_lead_days=req.lead_days),
+    }
+
+
+@app.delete("/api/tracker/{session_id}/reminders/{reminder_id}")
+async def delete_tracker_reminder(session_id: str, reminder_id: int):
+    reminders = session_store.delete_reminder(session_id=session_id, reminder_id=reminder_id)
+    return {"session_id": session_id, "reminders": reminders}
+
+
+@app.post("/api/tracker/{session_id}/reminders/dispatch")
+async def dispatch_tracker_reminders(session_id: str):
+    """Evaluates approaching deadlines and dispatches webhook alerts (or returns email/browser summary)."""
+    import httpx as _httpx
+
+    reminders = session_store.list_reminders(session_id)
+    dispatched: List[Dict[str, Any]] = []
+    for rem in reminders:
+        due = _compute_due_kanban_alerts(session_id, max_lead_days=rem["lead_days"])
+        summary_lines = [
+            f"- {d['title']} ({d['days_left']}d left, closes {d['deadline']}): {d['source_url']}"
+            for d in due[:5]
+        ]
+        msg_text = (
+            f"MadadgaarAI Deadline Alert ({len(due)} saved opportunities closing within {rem['lead_days']} days):\n"
+            + ("\n".join(summary_lines) if summary_lines else "No saved items closing within your alert window right now.")
+        )
+        status = "queued_preview"
+        if rem["channel"] == "webhook" and rem["target"].startswith(("http://", "https://")):
+            try:
+                async with _httpx.AsyncClient(timeout=6.0) as hc:
+                    wr = await hc.post(rem["target"], json={"content": msg_text, "text": msg_text, "alerts": due})
+                    status = f"webhook_http_{wr.status_code}"
+            except Exception as exc:
+                status = f"webhook_error:{type(exc).__name__}"
+        dispatched.append({
+            "reminder_id": rem["id"],
+            "channel": rem["channel"],
+            "target": rem["target"],
+            "due_count": len(due),
+            "status": status,
+            "preview": msg_text,
+        })
+    return {"session_id": session_id, "dispatched": dispatched}
 
 
 # -------------------------------------------------------------

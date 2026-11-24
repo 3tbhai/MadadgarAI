@@ -424,25 +424,60 @@ def render_dashboard_html() -> str:
   </div>
 
   <!-- ======================================================== -->
-  <!-- VIEW 3: PERSONAL APPLICATION KANBAN TRACKER              -->
+  <!-- VIEW 3: PERSONAL APPLICATION KANBAN TRACKER & TIMELINE   -->
   <!-- ======================================================== -->
   <div id="workspaceTracker" class="hidden space-y-5">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
       <div>
-        <h2 class="font-display font-bold text-2xl tracking-tight text-ink">Personal Application Kanban Tracker</h2>
+        <h2 class="font-display font-bold text-2xl tracking-tight text-ink">Personal Application Tracker &amp; Deadlines</h2>
         <p class="text-xs sm:text-sm text-neutral-600 mt-0.5">
-          Bookmark live opportunities, track your progress from Saved to Applied, and export your personal deadlines.
+          Manage saved opportunities in Kanban or Timeline view, configure deadline reminders, and export `.ics`.
         </p>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="inline-flex border-2 border-ink bg-white">
+          <button id="trackerModeKanban" onclick="switchTrackerView('kanban')" class="px-3 py-1.5 text-xs font-bold bg-ink text-accent">Kanban</button>
+          <button id="trackerModeTimeline" onclick="switchTrackerView('timeline')" class="px-3 py-1.5 text-xs font-bold bg-white text-ink hover:bg-sand">Timeline</button>
+        </div>
         <button onclick="exportSavedKanbanIcs()" class="nb-btn px-3.5 py-2 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
           <span class="material-symbols-outlined text-[16px]">calendar_month</span>
-          <span>Export My Saved Deadlines (.ics)</span>
+          <span>Export Saved (.ics)</span>
         </button>
       </div>
     </div>
 
+    <!-- Deadline Reminder Engine Bar -->
+    <div class="nb-card p-4 bg-cream/60 space-y-3 text-xs">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="font-display font-bold text-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px] text-vermilion">notifications_active</span>
+          <span>Deadline Reminder Engine</span>
+        </div>
+        <button onclick="dispatchTrackerReminders()" class="px-2.5 py-1 bg-white border-2 border-ink hover:bg-accent text-[11px] font-bold">
+          Check / Send Alerts Now
+        </button>
+      </div>
+      <form onsubmit="event.preventDefault(); addTrackerReminder();" class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+        <select id="remChannel" class="sm:col-span-3 bg-white border-2 border-ink px-2.5 py-1.5 font-semibold">
+          <option value="browser">Browser Alert</option>
+          <option value="webhook">Discord / Slack Webhook</option>
+          <option value="email">Email Digest</option>
+        </select>
+        <input id="remTarget" type="text" placeholder="Webhook URL, email, or alert label..." class="sm:col-span-5 bg-white border-2 border-ink px-2.5 py-1.5"/>
+        <select id="remLeadDays" class="sm:col-span-2 bg-white border-2 border-ink px-2 py-1.5 font-semibold">
+          <option value="2">2 days before</option>
+          <option value="7" selected>7 days before</option>
+          <option value="14">14 days before</option>
+        </select>
+        <button type="submit" class="sm:col-span-2 nb-btn py-1.5 bg-ink text-accent hover:bg-accent hover:text-ink font-bold">
+          Add Alert
+        </button>
+      </form>
+      <div id="trackerRemindersList" class="flex flex-wrap gap-2"></div>
+    </div>
+
     <div id="kanbanBoardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start"></div>
+    <div id="timelineBoardView" class="hidden space-y-3"></div>
   </div>
 
   <!-- ======================================================== -->
@@ -600,6 +635,8 @@ def render_dashboard_html() -> str:
     document.getElementById('navAssistant').className = ws === 'assistant' ? act : inact;
     if (ws === 'tracker') {
       renderKanbanBoard();
+      renderTimelineView();
+      loadTrackerReminders();
     }
   }
 
@@ -1438,6 +1475,7 @@ def render_dashboard_html() -> str:
       kanbanItems = data.items || [];
       updateTrackerBadge();
       renderKanbanBoard();
+      renderTimelineView();
       showToast(`Moved to "${newStage}"`, 'info');
     } catch (e) {
       showToast('Failed to update stage.', 'error');
@@ -1470,11 +1508,139 @@ def render_dashboard_html() -> str:
       kanbanItems = data.items || [];
       updateTrackerBadge();
       renderKanbanBoard();
+      renderTimelineView();
       renderVisibleCards(lastTotalInStore);
       showToast('Removed from tracker.', 'info');
     } catch (e) {
       showToast('Failed to remove item.', 'error');
     }
+  }
+
+  let trackerViewMode = 'kanban';
+  let trackerReminders = [];
+
+  function switchTrackerView(mode) {
+    trackerViewMode = mode;
+    const isKanban = mode === 'kanban';
+    document.getElementById('kanbanBoardGrid').classList.toggle('hidden', !isKanban);
+    document.getElementById('timelineBoardView').classList.toggle('hidden', isKanban);
+    document.getElementById('trackerModeKanban').className = isKanban
+      ? 'px-3 py-1.5 text-xs font-bold bg-ink text-accent'
+      : 'px-3 py-1.5 text-xs font-bold bg-white text-ink hover:bg-sand';
+    document.getElementById('trackerModeTimeline').className = !isKanban
+      ? 'px-3 py-1.5 text-xs font-bold bg-ink text-accent'
+      : 'px-3 py-1.5 text-xs font-bold bg-white text-ink hover:bg-sand';
+    if (!isKanban) renderTimelineView();
+  }
+
+  function renderTimelineView() {
+    const el = document.getElementById('timelineBoardView');
+    if (!el) return;
+    if (!kanbanItems.length) {
+      el.innerHTML = '<div class="nb-card p-8 text-center text-xs text-neutral-500">Save opportunities to see them plotted on your chronological deadline timeline.</div>';
+      return;
+    }
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const enriched = kanbanItems.map(item => {
+      let days = 9999;
+      if (item.deadline) {
+        days = Math.ceil((new Date(item.deadline + 'T00:00:00') - today) / 86400000);
+      }
+      return { ...item, days };
+    }).sort((a, b) => a.days - b.days);
+
+    el.innerHTML = enriched.map(item => {
+      const urgCls = item.days <= 7 ? 'bg-vermilion text-white' : (item.days <= 30 ? 'bg-accent text-ink' : 'bg-cobalt text-white');
+      const urgLbl = item.deadline ? (item.days <= 0 ? 'Closes Today' : `${item.days}d left · ${item.deadline}`) : 'Rolling / Ongoing';
+      return `
+        <div class="nb-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="px-2.5 py-1 text-[11px] font-mono font-bold border border-ink shrink-0 ${urgCls}">${escapeHtml(urgLbl)}</span>
+            <div>
+              <a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener noreferrer" class="font-display font-bold text-sm text-ink hover:text-cobalt">${escapeHtml(item.title)} ↗</a>
+              <div class="text-xs text-neutral-600">${escapeHtml(item.organization)} · <span class="font-mono">${escapeHtml(item.stage)}</span>${item.notes ? ` · 📝 ${escapeHtml(item.notes)}` : ''}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <select onchange="moveKanbanStage('${escapeHtml(item.opp_id)}', this.value)" class="bg-cream border-2 border-ink px-2 py-1 text-xs font-semibold">
+              ${KANBAN_STAGES.map(s => `<option value="${s}" ${s === item.stage ? 'selected' : ''}>${s}</option>`).join('')}
+            </select>
+            <button onclick="removeKanbanItem('${escapeHtml(item.opp_id)}')" class="px-2 py-1 border-2 border-ink bg-white hover:bg-vermilion hover:text-white text-xs font-bold">✕</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function loadTrackerReminders() {
+    try {
+      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders`);
+      if (!res.ok) return;
+      const data = await res.json();
+      trackerReminders = data.reminders || [];
+      renderRemindersList(data.due_alerts || []);
+    } catch (e) {}
+  }
+
+  async function addTrackerReminder() {
+    const channel = document.getElementById('remChannel').value;
+    const target = document.getElementById('remTarget').value.trim() || (channel === 'browser' ? 'In-App Browser Alert' : '');
+    const lead_days = parseInt(document.getElementById('remLeadDays').value || '7', 10);
+    if (!target) { showToast('Enter a webhook URL or email address.', 'warning'); return; }
+    try {
+      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channel, target, lead_days })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      trackerReminders = data.reminders || [];
+      document.getElementById('remTarget').value = '';
+      renderRemindersList(data.due_alerts || []);
+      showToast(`Saved ${lead_days}-day ${channel} reminder!`, 'success');
+    } catch (e) { showToast('Could not save reminder.', 'error'); }
+  }
+
+  async function deleteTrackerReminder(remId) {
+    try {
+      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders/${remId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      trackerReminders = data.reminders || [];
+      renderRemindersList([]);
+      showToast('Reminder removed.', 'info');
+    } catch (e) {}
+  }
+
+  async function dispatchTrackerReminders() {
+    try {
+      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders/dispatch`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const list = data.dispatched || [];
+      if (!list.length) {
+        showToast('Add a reminder rule above first to test deadline alerts.', 'warning');
+        return;
+      }
+      const totalDue = list.reduce((acc, x) => acc + (x.due_count || 0), 0);
+      showToast(`Checked ${list.length} reminder rule(s): ${totalDue} approaching saved deadline(s).`, totalDue > 0 ? 'warning' : 'success');
+    } catch (e) { showToast('Alert check failed.', 'error'); }
+  }
+
+  function renderRemindersList(dueAlerts) {
+    const box = document.getElementById('trackerRemindersList');
+    if (!box) return;
+    const pills = trackerReminders.map(r => `
+      <span class="px-2.5 py-1 bg-white border border-ink font-mono text-[11px] inline-flex items-center gap-1.5">
+        <strong>${escapeHtml(r.channel.toUpperCase())}</strong> (${r.lead_days}d): ${escapeHtml(r.target.slice(0, 32))}
+        <button onclick="deleteTrackerReminder(${r.id})" class="text-vermilion font-bold ml-1">✕</button>
+      </span>
+    `).join('');
+    const dueBadge = (dueAlerts && dueAlerts.length)
+      ? `<span class="px-2.5 py-1 bg-vermilion text-white border border-ink font-mono text-[11px] font-bold">⏰ ${dueAlerts.length} closing soon</span>`
+      : '';
+    box.innerHTML = pills + dueBadge;
   }
 
   function exportSavedKanbanIcs() {
