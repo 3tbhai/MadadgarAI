@@ -4,6 +4,27 @@ from pathlib import Path
 
 # Base Paths
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _load_dotenv_file(env_path: Path) -> None:
+    """Loads key=value pairs from .env into os.environ without overriding already-set variables."""
+    if not env_path.exists():
+        return
+    try:
+        for raw_line in env_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, val = line.split("=", 1)
+            key = key.strip()
+            val = val.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = val
+    except Exception:
+        pass
+
+
+_load_dotenv_file(PROJECT_ROOT / ".env")
 DATA_DIR = PROJECT_ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
