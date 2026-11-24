@@ -54,11 +54,12 @@ def test_2_jwt_cookies_user_modes_and_refresh_token_rotation():
         rotated_refresh = client.cookies.get(REFRESH_COOKIE_NAME)
         assert rotated_refresh and rotated_refresh != latest_refresh
 
-        # Replaying a revoked refresh token is strictly rejected with 401
-        with TestClient(app) as replay_client:
-            replay_client.cookies.set(REFRESH_COOKIE_NAME, old_refresh)
-            r_replay = replay_client.post("/api/auth/refresh")
-            assert r_replay.status_code == 401
+        # Replaying either the superseded login refresh token OR the rotated refresh token is strictly rejected with 401
+        for revoked_tok in (old_refresh, latest_refresh):
+            with TestClient(app) as replay_client:
+                replay_client.cookies.set(REFRESH_COOKIE_NAME, revoked_tok)
+                r_replay = replay_client.post("/api/auth/refresh")
+                assert r_replay.status_code == 401
 
 
 def test_3_strict_cross_user_vector_and_document_isolation():

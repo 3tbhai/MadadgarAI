@@ -226,14 +226,25 @@ async def get_authenticated_profile(current_user: Dict[str, Any] = Depends(get_c
 @router.patch("/api/auth/mode")
 async def switch_user_mode(
     req: ModeSwitchRequest,
+    request: Request,
     response: Response,
     current_user: Dict[str, Any] = Depends(get_current_user),
 ):
-    """Switches the authenticated user's role mode (student / researcher / educator)."""
+    """Switches the authenticated user's role mode (student / researcher / educator) and rotates session cookies."""
     updated = saral_db.update_user_mode(current_user["id"], req.user_mode)
     if not updated:
         raise HTTPException(status_code=404, detail="User not found.")
-    access_tok, refresh_tok, _ = create_token_pair(saral_db, updated)
+    old_refresh = request.cookies.get(REFRESH_COOKIE_NAME)
+    access_tok, refresh_tok, new_jti = create_token_pair(saral_db, updated)
+    if old_refresh:
+        try:
+            import jwt
+            from src.auth.security import JWT_ALGORITHM, get_jwt_secret
+            old_payload = jwt.decode(old_refresh, get_jwt_secret(), algorithms=[JWT_ALGORITHM])
+            if old_payload.get("jti"):
+                saral_db.revoke_refresh_token(old_payload["jti"], replaced_by=new_jti)
+        except Exception:
+            pass
     set_auth_cookies(response, access_tok, refresh_tok)
     return {"authenticated": True, "user": _format_user_response(updated)}
 
