@@ -12,6 +12,9 @@ def render_dashboard_html() -> str:
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -102,11 +105,43 @@ def render_dashboard_html() -> str:
       </button>
     </nav>
 
-    <!-- Refresh Live Button -->
-    <button id="refreshLiveBtn" onclick="triggerLiveRefresh()" class="nb-btn px-3 py-1.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-60" title="Crawl live Government & Company portals now">
-      <span id="refreshIcon" class="material-symbols-outlined text-[16px]">sync</span>
-      <span id="refreshBtnLabel" class="hidden sm:inline">Refresh Live Data</span>
-    </button>
+    <!-- Auth, User Mode & Refresh Controls -->
+    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <!-- Active User Mode Selector Badge (Visible when signed in) -->
+      <select id="headerModeSelect" onchange="handleModeSwitch(this.value)" class="hidden px-2 py-1 text-[11px] font-mono font-bold border-2 border-ink bg-accent text-ink cursor-pointer" title="Switch active Saral AI User Mode">
+        <option value="student">Student Mode</option>
+        <option value="researcher">Researcher Mode</option>
+        <option value="educator">Educator Mode</option>
+      </select>
+
+      <!-- Sign In Button (Logged out) -->
+      <button id="authSignInBtn" onclick="openAuthModal()" class="nb-btn px-2.5 py-1.5 bg-white hover:bg-accent text-ink text-xs font-bold inline-flex items-center gap-1.5" title="Sign in with Google for Private Multi-Tenant Saral AI">
+        <span class="material-symbols-outlined text-[15px]">login</span>
+        <span class="hidden md:inline">Sign In</span>
+      </button>
+
+      <!-- Authenticated User Avatar Menu (Logged in) -->
+      <div id="authUserMenu" class="hidden relative">
+        <button onclick="toggleUserDropdown()" class="nb-btn px-2 py-1 bg-white hover:bg-sand text-xs font-bold inline-flex items-center gap-1.5">
+          <span id="authUserAvatar" class="w-5 h-5 bg-ink text-accent font-mono text-[10px] font-bold flex items-center justify-center rounded-none">U</span>
+          <span id="authUserName" class="hidden lg:inline max-w-[90px] truncate">User</span>
+        </button>
+        <div id="authUserDropdown" class="hidden absolute right-0 mt-1.5 w-52 bg-white border-2 border-ink shadow-[4px_4px_0px_#18181b] p-3 text-xs space-y-2 z-50">
+          <div class="border-b border-neutral-200 pb-2">
+            <div id="authDropName" class="font-display font-bold text-ink truncate"></div>
+            <div id="authDropEmail" class="text-[11px] text-neutral-500 font-mono truncate"></div>
+          </div>
+          <button onclick="switchWorkspace('assistant'); switchAssistantSubmode('private'); toggleUserDropdown();" class="w-full text-left px-2 py-1.5 hover:bg-sand font-semibold">My Private Knowledge Base</button>
+          <button onclick="logoutUser()" class="w-full text-left px-2 py-1.5 text-vermilion hover:bg-red-50 font-bold">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- Refresh Live Button -->
+      <button id="refreshLiveBtn" onclick="triggerLiveRefresh()" class="nb-btn px-2.5 sm:px-3 py-1.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-60" title="Crawl live Government & Company portals now">
+        <span id="refreshIcon" class="material-symbols-outlined text-[16px]">sync</span>
+        <span id="refreshBtnLabel" class="hidden sm:inline">Refresh Live Data</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -481,9 +516,105 @@ def render_dashboard_html() -> str:
   </div>
 
   <!-- ======================================================== -->
-  <!-- VIEW 3: SARAL SAMJHAUTI AI & DOCUMENT CHECKER            -->
+  <!-- VIEW 4: SARAL AI (PRIVATE GEMINI RAG + PUBLIC SCHEMES)   -->
   <!-- ======================================================== -->
-  <div id="workspaceAssistant" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  <div id="workspaceAssistant" class="hidden space-y-5">
+    <!-- Sub-mode Switcher Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="inline-flex border-2 border-ink bg-white self-start">
+        <button id="submodePrivateBtn" onclick="switchAssistantSubmode('private')" class="px-3.5 py-2 text-xs font-bold bg-ink text-accent">
+          Private Knowledge Base (Gemini RAG)
+        </button>
+        <button id="submodePublicBtn" onclick="switchAssistantSubmode('public')" class="px-3.5 py-2 text-xs font-bold bg-white text-ink hover:bg-sand">
+          Public Schemes &amp; Doc Checker
+        </button>
+      </div>
+      <div id="saralV2BackendBadge" class="text-[11px] font-mono text-neutral-600 font-semibold"></div>
+    </div>
+
+    <!-- SUB-VIEW A: MULTI-TENANT PRIVATE KNOWLEDGE BASE & STREAMING GEMINI RAG -->
+    <div id="assistantPrivatePanel" class="space-y-4">
+      <!-- Login Gate (Shown when unauthenticated) -->
+      <div id="privateAuthGate" class="nb-card p-8 text-center space-y-4">
+        <div class="w-12 h-12 mx-auto bg-accent border-2 border-ink flex items-center justify-center shadow-[3px_3px_0px_#18181b]">
+          <span class="material-symbols-outlined text-2xl text-ink">lock_person</span>
+        </div>
+        <div class="space-y-1 max-w-lg mx-auto">
+          <h2 class="font-display font-bold text-xl text-ink">Sign In for Your Private Multi-Tenant Saral AI</h2>
+          <p class="text-xs text-neutral-600 leading-relaxed">
+            Upload PDFs, lecture notes, Markdown files, or arXiv papers into your isolated knowledge base. Switch between <strong>Student</strong>, <strong>Researcher</strong>, and <strong>Educator</strong> modes with streamed Gemini responses, LaTeX math, and clickable page-level citations.
+          </p>
+        </div>
+        <button onclick="openAuthModal()" class="nb-btn px-5 py-2.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-bold inline-flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">passkey</span>
+          <span>Continue with Google / Sign In</span>
+        </button>
+      </div>
+
+      <!-- Authenticated Private Workspace -->
+      <div id="privateWorkspaceGrid" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <!-- Left: Document Library & Chat Sessions -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="nb-card p-4 space-y-3 text-xs">
+            <div class="flex items-center justify-between border-b-2 border-ink pb-2">
+              <h3 class="font-display font-bold text-sm">Private Document Library</h3>
+              <span id="privateDocCount" class="px-2 py-0.5 bg-cream border border-ink font-mono text-[10px] font-bold">0 docs</span>
+            </div>
+
+            <!-- Upload PDF/MD/TXT -->
+            <div class="flex items-center gap-2 p-2 bg-cream/70 border-2 border-ink">
+              <input type="file" id="privateDocFile" accept=".pdf,.md,.markdown,.txt" class="flex-1 text-[11px]"/>
+              <button type="button" onclick="uploadPrivateDocument()" class="nb-btn px-3 py-1 bg-ink text-accent hover:bg-accent hover:text-ink text-[11px] font-bold shrink-0">Upload</button>
+            </div>
+
+            <!-- Ingest URL / arXiv -->
+            <form onsubmit="event.preventDefault(); ingestPrivateUrl();" class="flex gap-1.5">
+              <input id="privateUrlInput" type="url" placeholder="Paste web or arXiv URL (https://arxiv.org/abs/...)" class="flex-1 bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-[11px]"/>
+              <button type="submit" class="nb-btn px-3 py-1.5 bg-white hover:bg-accent text-[11px] font-bold shrink-0">Ingest URL</button>
+            </form>
+
+            <!-- Document Status List -->
+            <div id="privateDocsList" class="space-y-2 max-h-60 overflow-y-auto"></div>
+          </div>
+
+          <!-- Persisted Multi-Turn Sessions -->
+          <div class="nb-card p-4 space-y-2.5 text-xs">
+            <div class="flex items-center justify-between border-b-2 border-ink pb-2">
+              <h3 class="font-display font-bold text-sm">Study &amp; Chat Sessions</h3>
+              <button onclick="startNewPrivateSession()" class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold hover:bg-ink hover:text-accent">+ New Chat</button>
+            </div>
+            <div id="privateSessionsList" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
+          </div>
+        </div>
+
+        <!-- Right: Streaming Grounded Chat -->
+        <div class="lg:col-span-7 nb-card flex flex-col h-[620px]">
+          <div id="privateChatHeader" class="px-4 py-3 border-b-2 border-ink bg-accent flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="font-display font-bold text-base">Saral AI Private Tutor</h2>
+                <span id="privateModeBadge" class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">Student Mode</span>
+              </div>
+              <p id="privateModeDesc" class="text-[11px] text-neutral-800 mt-0.5">Step-by-step conceptual explanations with strict inline citations.</p>
+            </div>
+          </div>
+
+          <div id="privateChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm bg-cream/50">
+            <div class="p-3.5 bg-white border-2 border-ink text-xs text-neutral-700 leading-relaxed">
+              Upload a PDF, Markdown note, text file, or arXiv link on the left, then ask any question here. Answers stream live with LaTeX math and clickable <strong>[Source: Document, Page]</strong> citations.
+            </div>
+          </div>
+
+          <form onsubmit="event.preventDefault(); sendPrivateRagStream();" class="p-3 border-t-2 border-ink bg-white flex gap-2">
+            <input id="privateChatInput" type="text" placeholder="Ask about your uploaded notes, formulas, or research papers..." class="flex-1 bg-cream/60 border-2 border-ink px-3 py-2 text-sm focus:outline-none focus:bg-white"/>
+            <button id="privateChatSendBtn" type="submit" class="nb-btn px-4 py-2 bg-ink text-accent text-xs font-bold hover:bg-accent hover:text-ink">Stream</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW B: EXISTING PUBLIC SARAL SAMJHAUTI & DOCUMENT CHECKER -->
+    <div id="assistantPublicPanel" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
     <!-- Chat -->
     <div class="lg:col-span-7 nb-card flex flex-col h-[600px]">
       <div class="px-4 py-3 border-b-2 border-ink bg-accent flex items-center justify-between gap-2">
@@ -539,9 +670,56 @@ def render_dashboard_html() -> str:
 
       <div id="docOutput" class="space-y-2 text-xs"></div>
     </div>
+    </div>
   </div>
 
 </main>
+
+<!-- ================= AUTH SIGN-IN MODAL ================= -->
+<div id="authModal" class="hidden fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeAuthModal()">
+  <div class="bg-white border-2 border-ink shadow-[6px_6px_0px_#18181b] max-w-md w-full overflow-hidden">
+    <div class="p-4 border-b-2 border-ink bg-accent flex items-center justify-between">
+      <h3 class="font-display font-bold text-base text-ink">Sign In to Saral AI</h3>
+      <button onclick="closeAuthModal()" class="p-1 border-2 border-ink bg-white hover:bg-sand"><span class="material-symbols-outlined text-[16px] block">close</span></button>
+    </div>
+    <div class="p-5 space-y-4 text-xs">
+      <p class="text-neutral-600 leading-relaxed">
+        Sign in to unlock your isolated private Knowledge Base, persistent multi-turn chat sessions, and role-based <strong>Student / Researcher / Educator</strong> modes.
+      </p>
+      <a id="googleOAuthBtn" href="/api/auth/google/login" class="nb-btn w-full py-2.5 bg-white hover:bg-cream text-ink font-bold inline-flex items-center justify-center gap-2">
+        <span class="font-display font-bold text-base text-cobalt">G</span>
+        <span>Continue with Google (OAuth 2.0)</span>
+      </a>
+      <div id="googleOAuthHint" class="hidden p-2 bg-cream border border-ink/40 text-[11px] font-mono text-neutral-600">
+        Configure GOOGLE_CLIENT_ID &amp; GOOGLE_CLIENT_SECRET in .env to enable Google OAuth redirect.
+      </div>
+      <div id="devLoginSection" class="pt-3 border-t-2 border-ink/15 space-y-2.5">
+        <div class="font-mono text-[10px] font-bold uppercase text-neutral-500">Local Sandbox Sign-In (HTTP-only JWT Cookies)</div>
+        <form onsubmit="event.preventDefault(); submitDevLogin();" class="space-y-2">
+          <input id="devLoginName" type="text" value="Aarav Student" placeholder="Full Name" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+          <input id="devLoginEmail" type="email" value="student@madadgaarai.local" placeholder="Email Address" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+          <button type="submit" class="nb-btn w-full py-2 bg-ink text-accent hover:bg-accent hover:text-ink font-bold">
+            Sign In to Private Workspace
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CITATION CHUNK INSPECTOR DRAWER ================= -->
+<div id="citationModal" class="hidden fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeCitationModal()">
+  <div class="bg-white border-2 border-ink shadow-[6px_6px_0px_#18181b] max-w-xl w-full max-h-[82vh] flex flex-col overflow-hidden">
+    <div class="p-4 border-b-2 border-ink bg-cream flex items-start justify-between gap-2">
+      <div>
+        <div id="citMetaBadges" class="flex flex-wrap gap-1.5 mb-1"></div>
+        <h3 id="citDocTitle" class="font-display font-bold text-base text-ink">Source Chunk</h3>
+      </div>
+      <button onclick="closeCitationModal()" class="p-1 border-2 border-ink bg-white hover:bg-accent"><span class="material-symbols-outlined text-[16px] block">close</span></button>
+    </div>
+    <div id="citChunkBody" class="p-5 overflow-y-auto text-xs leading-relaxed text-neutral-800 whitespace-pre-wrap bg-cream/40"></div>
+  </div>
+</div>
 
 <!-- ================= DETAIL MODAL ================= -->
 <div id="detailModal" class="hidden fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeDetailModal()">
@@ -1821,10 +1999,420 @@ def render_dashboard_html() -> str:
     `;
   }
 
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetailModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDetailModal();
+      closeAuthModal();
+      closeCitationModal();
+    }
+  });
+
+  // =================================================================
+  // Google OAuth 2.0 + JWT Auth, User Mode Switcher & Private KB RAG
+  // =================================================================
+  let authConfig = null;
+  let currentUser = null;
+  let activePrivateSessionId = null;
+  let docPollTimer = null;
+
+  function openAuthModal() {
+    document.getElementById('authModal').classList.remove('hidden');
+  }
+  function closeAuthModal() {
+    document.getElementById('authModal').classList.add('hidden');
+  }
+  function closeCitationModal() {
+    document.getElementById('citationModal').classList.add('hidden');
+  }
+  function toggleUserDropdown() {
+    document.getElementById('authUserDropdown').classList.toggle('hidden');
+  }
+
+  function switchAssistantSubmode(mode) {
+    const isPriv = mode === 'private';
+    document.getElementById('assistantPrivatePanel').classList.toggle('hidden', !isPriv);
+    document.getElementById('assistantPublicPanel').classList.toggle('hidden', isPriv);
+    document.getElementById('submodePrivateBtn').className = isPriv
+      ? 'px-3.5 py-2 text-xs font-bold bg-ink text-accent'
+      : 'px-3.5 py-2 text-xs font-bold bg-white text-ink hover:bg-sand';
+    document.getElementById('submodePublicBtn').className = !isPriv
+      ? 'px-3.5 py-2 text-xs font-bold bg-ink text-accent'
+      : 'px-3.5 py-2 text-xs font-bold bg-white text-ink hover:bg-sand';
+  }
+
+  function applyAuthUIState() {
+    const loggedIn = Boolean(currentUser);
+    document.getElementById('authSignInBtn').classList.toggle('hidden', loggedIn);
+    document.getElementById('authUserMenu').classList.toggle('hidden', !loggedIn);
+    document.getElementById('headerModeSelect').classList.toggle('hidden', !loggedIn);
+    document.getElementById('privateAuthGate').classList.toggle('hidden', loggedIn);
+    document.getElementById('privateWorkspaceGrid').classList.toggle('hidden', !loggedIn);
+
+    if (loggedIn) {
+      const mc = currentUser.mode_config || {};
+      const sel = document.getElementById('headerModeSelect');
+      sel.value = currentUser.user_mode || 'student';
+      sel.style.backgroundColor = mc.badge_bg || '#ffcc00';
+      sel.style.color = mc.badge_text || '#18181b';
+
+      document.getElementById('authUserName').innerText = currentUser.full_name || 'User';
+      document.getElementById('authUserAvatar').innerText = (currentUser.full_name || 'U').charAt(0).toUpperCase();
+      document.getElementById('authDropName').innerText = currentUser.full_name || '';
+      document.getElementById('authDropEmail').innerText = currentUser.email || '';
+
+      const pBadge = document.getElementById('privateModeBadge');
+      pBadge.innerText = mc.display_name || 'Student Mode';
+      pBadge.style.backgroundColor = mc.badge_bg || '#ffcc00';
+      pBadge.style.color = mc.badge_text || '#18181b';
+      document.getElementById('privateModeDesc').innerText = mc.description || '';
+    }
+  }
+
+  async function initAuthAndModes() {
+    try {
+      const cfgRes = await fetch('/api/auth/config');
+      if (cfgRes.ok) {
+        authConfig = await cfgRes.json();
+        const b = document.getElementById('saralV2BackendBadge');
+        if (b && authConfig.gemini_rag_backend) b.innerText = `Engine: ${authConfig.gemini_rag_backend}`;
+        if (!authConfig.google_oauth_code_flow_enabled) {
+          document.getElementById('googleOAuthBtn').classList.add('opacity-50', 'pointer-events-none');
+          document.getElementById('googleOAuthHint').classList.remove('hidden');
+        }
+        if (!authConfig.dev_auth_allowed) {
+          document.getElementById('devLoginSection').classList.add('hidden');
+        }
+      }
+      const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+      if (meRes.ok) {
+        const me = await meRes.json();
+        currentUser = me.user;
+        applyAuthUIState();
+        await loadPrivateDocuments();
+        await loadPrivateSessions();
+      } else {
+        currentUser = null;
+        applyAuthUIState();
+      }
+    } catch (e) {}
+  }
+
+  async function submitDevLogin() {
+    const full_name = document.getElementById('devLoginName').value.trim();
+    const email = document.getElementById('devLoginEmail').value.trim();
+    try {
+      const res = await fetch('/api/auth/dev-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, full_name })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      currentUser = data.user;
+      closeAuthModal();
+      applyAuthUIState();
+      await loadPrivateDocuments();
+      await loadPrivateSessions();
+      showToast(`Signed in as ${currentUser.full_name} (${currentUser.mode_config?.display_name || 'Student Mode'})`, 'success');
+    } catch (e) {
+      showToast('Sign-in failed. Check email and try again.', 'error');
+    }
+  }
+
+  async function handleModeSwitch(newMode) {
+    try {
+      const res = await fetch('/api/auth/mode', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ user_mode: newMode })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      currentUser = data.user;
+      applyAuthUIState();
+      showToast(`Switched to ${currentUser.mode_config?.display_name || newMode}!`, 'info');
+    } catch (e) {
+      showToast('Could not switch User Mode.', 'error');
+    }
+  }
+
+  async function logoutUser() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch (e) {}
+    currentUser = null;
+    activePrivateSessionId = null;
+    document.getElementById('authUserDropdown').classList.add('hidden');
+    applyAuthUIState();
+    showToast('Signed out cleanly.', 'info');
+  }
+
+  async function loadPrivateDocuments() {
+    if (!currentUser) return;
+    try {
+      const res = await fetch('/api/saral/documents', { credentials: 'include' });
+      if (!res.ok) return;
+      const data = await res.json();
+      const docs = data.documents || [];
+      document.getElementById('privateDocCount').innerText = `${docs.length} doc${docs.length === 1 ? '' : 's'}`;
+      const listEl = document.getElementById('privateDocsList');
+      if (!docs.length) {
+        listEl.innerHTML = '<div class="p-3 border border-dashed border-neutral-300 text-center text-[11px] text-neutral-500">No private documents uploaded yet.</div>';
+        return;
+      }
+      const badgeStyles = {
+        indexed: 'bg-forest text-white',
+        processing: 'bg-cobalt text-white animate-pulse',
+        pending: 'bg-accent text-ink',
+        failed: 'bg-vermilion text-white'
+      };
+      listEl.innerHTML = docs.map(d => `
+        <div class="p-2.5 bg-cream/60 border border-ink flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div class="font-bold text-ink truncate" title="${escapeHtml(d.title)}">${escapeHtml(d.title)}</div>
+            <div class="flex items-center gap-1.5 mt-0.5 font-mono text-[10px]">
+              <span class="px-1.5 py-0.2 border border-ink font-bold uppercase ${badgeStyles[d.status] || 'bg-sand'}">${escapeHtml(d.status)}</span>
+              <span class="text-neutral-600">${d.chunk_count} chunks · ${escapeHtml(d.source_type)}</span>
+            </div>
+          </div>
+          <button onclick="deletePrivateDocument('${escapeHtml(d.id)}')" class="px-2 py-1 border border-ink bg-white hover:bg-vermilion hover:text-white text-[10px] font-bold shrink-0" title="Delete document and vector chunks">✕</button>
+        </div>
+      `).join('');
+
+      const anyPending = docs.some(d => d.status === 'pending' || d.status === 'processing');
+      clearTimeout(docPollTimer);
+      if (anyPending) {
+        docPollTimer = setTimeout(loadPrivateDocuments, 1800);
+      }
+    } catch (e) {}
+  }
+
+  async function uploadPrivateDocument() {
+    const inp = document.getElementById('privateDocFile');
+    if (!inp.files || !inp.files.length) { showToast('Select a PDF, Markdown, or TXT file first.', 'warning'); return; }
+    const fd = new FormData();
+    fd.append('file', inp.files[0]);
+    try {
+      const res = await fetch('/api/saral/documents/upload', { method: 'POST', credentials: 'include', body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+      inp.value = '';
+      showToast(data.deduplicated ? 'Document already indexed in your library.' : 'Document queued for indexing!', 'success');
+      await loadPrivateDocuments();
+    } catch (e) { showToast(`Upload failed: ${e.message}`, 'error'); }
+  }
+
+  async function ingestPrivateUrl() {
+    const inp = document.getElementById('privateUrlInput');
+    const url = inp.value.trim();
+    if (!url) return;
+    showToast('Fetching & indexing URL into your private library...', 'info');
+    try {
+      const res = await fetch('/api/saral/documents/ingest-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ url })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+      inp.value = '';
+      showToast(`Indexed "${data.document?.title || 'URL'}" (${data.document?.chunk_count || 0} chunks)!`, 'success');
+      await loadPrivateDocuments();
+    } catch (e) { showToast(`URL ingestion failed: ${e.message}`, 'error'); }
+  }
+
+  async function deletePrivateDocument(docId) {
+    try {
+      const res = await fetch(`/api/saral/documents/${encodeURIComponent(docId)}`, { method: 'DELETE', credentials: 'include' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      showToast('Document & embeddings deleted.', 'info');
+      await loadPrivateDocuments();
+    } catch (e) { showToast('Could not delete document.', 'error'); }
+  }
+
+  async function loadPrivateSessions() {
+    if (!currentUser) return;
+    try {
+      const res = await fetch('/api/saral/sessions', { credentials: 'include' });
+      if (!res.ok) return;
+      const data = await res.json();
+      const list = data.sessions || [];
+      const el = document.getElementById('privateSessionsList');
+      if (!list.length) {
+        el.innerHTML = '<div class="text-[11px] text-neutral-500">Start asking questions to save study sessions.</div>';
+        return;
+      }
+      el.innerHTML = list.map(s => `
+        <button onclick="openPrivateSession('${escapeHtml(s.id)}')" class="w-full text-left px-2.5 py-1.5 border border-ink ${s.id === activePrivateSessionId ? 'bg-accent font-bold' : 'bg-cream/50 hover:bg-sand'} flex items-center justify-between gap-2">
+          <span class="truncate">${escapeHtml(s.title)}</span>
+          <span class="font-mono text-[9px] uppercase text-neutral-600 shrink-0">${escapeHtml(s.user_mode)}</span>
+        </button>
+      `).join('');
+    } catch (e) {}
+  }
+
+  function startNewPrivateSession() {
+    activePrivateSessionId = null;
+    document.getElementById('privateChatMessages').innerHTML = `
+      <div class="p-3.5 bg-white border-2 border-ink text-xs text-neutral-700 leading-relaxed">
+        Started a fresh private study session. Ask anything grounded in your uploaded library.
+      </div>
+    `;
+    loadPrivateSessions();
+  }
+
+  async function openPrivateSession(sid) {
+    activePrivateSessionId = sid;
+    try {
+      const res = await fetch(`/api/saral/sessions/${encodeURIComponent(sid)}/messages`, { credentials: 'include' });
+      if (!res.ok) return;
+      const data = await res.json();
+      const box = document.getElementById('privateChatMessages');
+      box.innerHTML = '';
+      (data.messages || []).forEach(m => {
+        if (m.role === 'user') {
+          box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[82%] px-3 py-2 bg-ink text-accent border-2 border-ink text-xs font-semibold">${escapeHtml(m.content)}</div></div>`);
+        } else {
+          const wrap = document.createElement('div');
+          wrap.className = 'p-3.5 bg-white border-2 border-ink text-xs sm:text-sm space-y-2';
+          wrap.innerHTML = `<div class="private-md-body">${formatMarkdownHtml(m.content)}</div>${renderCitationPillsHtml(m.citations || [])}`;
+          box.appendChild(wrap);
+          renderMathSafe(wrap);
+        }
+      });
+      box.scrollTop = box.scrollHeight;
+      loadPrivateSessions();
+    } catch (e) {}
+  }
+
+  function formatMarkdownHtml(raw) {
+    return escapeHtml(raw || '')
+      .replace(/^###\s+(.*)$/gm, '<div class="font-display font-bold text-sm text-ink mt-1">$1</div>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*\n]+)\*/g, '<em class="text-neutral-600">$1</em>')
+      .replace(/`([^`\n]+)`/g, '<code class="px-1 py-0.5 bg-sand font-mono text-[11px]">$1</code>')
+      .replace(/\n/g, '<br/>');
+  }
+
+  function renderMathSafe(el) {
+    try {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(el, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    } catch (e) {}
+  }
+
+  function renderCitationPillsHtml(citations) {
+    if (!citations || !citations.length) return '';
+    const pills = citations.map((c, idx) => `
+      <button onclick="openCitationChunk('${escapeHtml(c.doc_id)}', '${escapeHtml(c.chunk_id)}')" class="px-2 py-1 bg-cream hover:bg-accent border border-ink font-mono text-[10px] font-bold text-cobalt inline-flex items-center gap-1">
+        <span>[${idx + 1}] ${escapeHtml(c.doc_title.slice(0, 26))} · p.${c.page_number}</span>
+      </button>
+    `).join('');
+    return `<div class="pt-2 border-t border-neutral-200 flex flex-wrap gap-1.5">${pills}</div>`;
+  }
+
+  async function openCitationChunk(docId, chunkId) {
+    try {
+      const res = await fetch(`/api/saral/documents/${encodeURIComponent(docId)}/chunks/${encodeURIComponent(chunkId)}`, { credentials: 'include' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const ch = data.chunk;
+      document.getElementById('citMetaBadges').innerHTML = `
+        <span class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold">Page ${ch.page_number}</span>
+        <span class="px-2 py-0.5 bg-white border border-ink font-mono text-[10px] font-semibold">${escapeHtml(ch.section_header)}</span>
+        <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">${ch.token_count} tokens</span>
+      `;
+      document.getElementById('citDocTitle').innerText = ch.doc_title;
+      const body = document.getElementById('citChunkBody');
+      body.innerText = ch.content;
+      renderMathSafe(body);
+      document.getElementById('citationModal').classList.remove('hidden');
+    } catch (e) {
+      showToast('Could not load source chunk.', 'error');
+    }
+  }
+
+  async function sendPrivateRagStream() {
+    const inp = document.getElementById('privateChatInput');
+    const btn = document.getElementById('privateChatSendBtn');
+    const box = document.getElementById('privateChatMessages');
+    const query = inp.value.trim();
+    if (!query || !currentUser) return;
+    inp.value = '';
+    btn.disabled = true;
+
+    box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[82%] px-3 py-2 bg-ink text-accent border-2 border-ink text-xs font-semibold">${escapeHtml(query)}</div></div>`);
+    const respCard = document.createElement('div');
+    respCard.className = 'p-3.5 bg-white border-2 border-ink text-xs sm:text-sm space-y-2';
+    respCard.innerHTML = '<div class="private-md-body font-mono text-xs animate-pulse">Retrieving grounded chunks &amp; streaming...</div><div class="private-cites"></div>';
+    box.appendChild(respCard);
+    box.scrollTop = box.scrollHeight;
+
+    let accText = '';
+    let latestCitations = [];
+
+    try {
+      const res = await fetch('/api/saral/chat/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ query, session_id: activePrivateSessionId })
+      });
+      if (!res.ok) {
+        const errJ = await res.json().catch(() => ({}));
+        throw new Error(errJ.detail || `HTTP ${res.status}`);
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      const bodyNode = respCard.querySelector('.private-md-body');
+      const citesNode = respCard.querySelector('.private-cites');
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() || '';
+        for (const rawEvt of events) {
+          const line = rawEvt.trim();
+          if (!line.startsWith('data:')) continue;
+          const payload = JSON.parse(line.slice(5).trim());
+          if (payload.type === 'meta') {
+            if (payload.session_id) activePrivateSessionId = payload.session_id;
+            latestCitations = payload.citations || [];
+            citesNode.innerHTML = renderCitationPillsHtml(latestCitations);
+            bodyNode.className = 'private-md-body leading-relaxed';
+          } else if (payload.type === 'delta') {
+            accText += payload.text || '';
+            bodyNode.innerHTML = formatMarkdownHtml(accText);
+            box.scrollTop = box.scrollHeight;
+          } else if (payload.type === 'done') {
+            renderMathSafe(bodyNode);
+          }
+        }
+      }
+      await loadPrivateSessions();
+    } catch (e) {
+      respCard.innerHTML = `<div class="text-vermilion font-semibold text-xs">Streaming failed: ${escapeHtml(e.message)}</div>`;
+    } finally {
+      btn.disabled = false;
+    }
+  }
 
   (async function init() {
     restoreFiltersFromUrl();
+    await initAuthAndModes();
     await loadKanbanTracker();
     await updateStatsCounters();
     await fetchOpportunities();
