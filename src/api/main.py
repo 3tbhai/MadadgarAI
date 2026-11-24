@@ -568,6 +568,11 @@ async def get_upcoming_deadlines():
 async def draft_proposal_skeleton(foa_id: str, req: ProposalDraftRequest):
     foa = normalizer.get_opportunity_by_id(foa_id)
     if not foa:
+        for opp in live_store.load_all(exclude_expired=False):
+            if opp.id == foa_id:
+                foa = live_opportunity_to_foa(opp)
+                break
+    if not foa:
         raise HTTPException(status_code=404, detail=f"FOA '{foa_id}' not found")
     return proposal_drafter.draft_proposal_skeleton(
         foa=foa,

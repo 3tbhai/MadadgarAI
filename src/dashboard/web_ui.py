@@ -85,16 +85,19 @@ def render_dashboard_html() -> str:
       </div>
     </button>
 
-    <!-- Primary 3-Tab Navigation -->
-    <nav class="flex items-center gap-1.5">
-      <button id="navOpportunities" onclick="switchWorkspace('opportunities')" class="px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b]">
+    <!-- Primary 4-Tab Navigation -->
+    <nav class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto">
+      <button id="navOpportunities" onclick="switchWorkspace('opportunities')" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b] shrink-0">
         Opportunities
       </button>
-      <button id="navTracker" onclick="switchWorkspace('tracker')" class="px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink inline-flex items-center gap-1.5">
+      <button id="navMatcher" onclick="switchWorkspace('matcher')" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink shrink-0">
+        Match &amp; Resume
+      </button>
+      <button id="navTracker" onclick="switchWorkspace('tracker')" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink inline-flex items-center gap-1.5 shrink-0">
         <span>My Tracker</span>
         <span id="navTrackerCount" class="px-1.5 py-0.2 bg-ink text-accent font-mono text-[10px] font-bold">0</span>
       </button>
-      <button id="navAssistant" onclick="switchWorkspace('assistant')" class="px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink">
+      <button id="navAssistant" onclick="switchWorkspace('assistant')" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink shrink-0">
         Saral AI &amp; Docs
       </button>
     </nav>
@@ -252,7 +255,155 @@ def render_dashboard_html() -> str:
   </div>
 
   <!-- ======================================================== -->
-  <!-- VIEW 2: PERSONAL APPLICATION KANBAN TRACKER              -->
+  <!-- VIEW 2: ELIGIBILITY MATCHER & RESUME MATCHER             -->
+  <!-- ======================================================== -->
+  <div id="workspaceMatcher" class="hidden space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <h2 class="font-display font-bold text-2xl tracking-tight text-ink">Eligibility &amp; Resume Matcher</h2>
+        <p class="text-xs sm:text-sm text-neutral-600 mt-0.5">
+          Check your exact eligibility for scholarships &amp; research grants with explainable compliance checks, or upload your CV for instant semantic matching.
+        </p>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button id="matchModeStudent" onclick="switchMatcherMode('student')" class="px-3 py-1.5 text-xs font-bold border-2 border-ink bg-ink text-accent">Student Profile</button>
+        <button id="matchModeResearcher" onclick="switchMatcherMode('researcher')" class="px-3 py-1.5 text-xs font-bold border-2 border-ink bg-white hover:bg-sand">Researcher / PI</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- Left Column: Profile Form (Student or Researcher) -->
+      <div class="lg:col-span-5 space-y-5">
+        <!-- Student Eligibility Form -->
+        <form id="studentMatcherForm" onsubmit="event.preventDefault(); runStudentEligibilityMatch();" class="nb-card p-5 space-y-3.5 text-xs">
+          <div class="flex items-center justify-between border-b-2 border-ink pb-2">
+            <h3 class="font-display font-bold text-sm">Student Eligibility Profile</h3>
+            <span class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold">XAI CHECKER</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Full Name</label>
+              <input id="smName" type="text" value="Aarav Sharma" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+            </div>
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Gender</label>
+              <select id="smGender" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5">
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Transgender">Transgender</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">State Domicile</label>
+              <select id="smState" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5">
+                <option value="All India">All India</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Delhi NCR">Delhi NCR</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Assam / North Eastern States">Assam / North Eastern States</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Social Category</label>
+              <select id="smCategory" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5">
+                <option value="General / Open">General / Open</option>
+                <option value="OBC (Non-Creamy Layer)">OBC (Non-Creamy Layer)</option>
+                <option value="SC (Scheduled Caste)">SC (Scheduled Caste)</option>
+                <option value="ST (Scheduled Tribe)">ST (Scheduled Tribe)</option>
+                <option value="EWS (Economically Weaker Section)">EWS (Economically Weaker Section)</option>
+                <option value="Minority (Muslim/Christian/Sikh/Buddhist/Jain/Parsi)">Minority</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-neutral-600 mb-1">Education Level</label>
+            <select id="smEdu" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5">
+              <option value="UG - Engineering / Technology (B.Tech/B.E.)">UG - Engineering / B.Tech / B.E.</option>
+              <option value="UG - General (B.Sc / B.Com / B.A. / BBA / BCA)">UG - General (B.Sc / B.A / B.Com)</option>
+              <option value="UG - Medical / Paramedical (MBBS/BDS/B.Pharm/Nursing)">UG - Medical / Nursing</option>
+              <option value="Postgraduate (M.Tech / M.Sc / M.Com / M.A. / MBA / MCA)">Postgraduate (M.Tech / M.Sc / MBA)</option>
+              <option value="PhD / Doctoral Research">PhD / Doctoral Research</option>
+              <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Family Income (INR / yr)</label>
+              <input id="smIncome" type="number" value="250000" min="0" step="25000" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+            </div>
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Marks / % (Optional)</label>
+              <input id="smPct" type="number" value="86" min="0" max="100" step="0.5" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-4 pt-1">
+            <label class="inline-flex items-center gap-1.5 font-medium"><input id="smSingleGirl" type="checkbox" class="accent-ink"/> Single Girl Child</label>
+            <label class="inline-flex items-center gap-1.5 font-medium"><input id="smPwd" type="checkbox" class="accent-ink"/> PwD (&ge;40%)</label>
+          </div>
+          <button type="submit" class="nb-btn w-full py-2.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-bold">
+            Find Eligible Scholarships &amp; Internships
+          </button>
+        </form>
+
+        <!-- Researcher / PI Grant Compliance Form -->
+        <form id="researcherMatcherForm" onsubmit="event.preventDefault(); runResearcherGrantMatch();" class="hidden nb-card p-5 space-y-3.5 text-xs">
+          <div class="flex items-center justify-between border-b-2 border-ink pb-2">
+            <h3 class="font-display font-bold text-sm">Researcher / Faculty Grant Matcher</h3>
+            <span class="px-2 py-0.5 bg-cobalt text-white border border-ink font-mono text-[10px] font-bold">HYBRID RRF</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Researcher / PI Name</label>
+              <input id="rmName" type="text" value="Dr. Priya Nair" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+            </div>
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Highest Degree</label>
+              <input id="rmDegree" type="text" value="Ph.D. in Computer Science" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Institution</label>
+              <input id="rmInst" type="text" value="Recognized Indian University" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+            </div>
+            <div>
+              <label class="block font-semibold text-neutral-600 mb-1">Age (Optional)</label>
+              <input id="rmAge" type="number" value="34" min="18" max="75" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-neutral-600 mb-1">Research Focus &amp; Proposal Abstract</label>
+            <textarea id="rmSummary" rows="3" class="w-full bg-cream/60 border-2 border-ink p-2.5" placeholder="e.g. Indigenous AI diagnostics for healthcare biotech, robotics, or space propulsion...">Artificial intelligence and edge computing for affordable medical diagnostics and climate-resilient biotechnology</textarea>
+          </div>
+          <button type="submit" class="nb-btn w-full py-2.5 bg-cobalt text-white hover:bg-ink hover:text-accent text-xs font-bold">
+            Match Research Grants &amp; Verify Compliance
+          </button>
+        </form>
+
+        <!-- Placeholder mount point for Resume Upload Semantic Matcher (Part 2) -->
+        <div id="resumeMatcherMount"></div>
+      </div>
+
+      <!-- Right Column: Explainable Match Results -->
+      <div class="lg:col-span-7 space-y-4">
+        <div id="matcherResultsContainer" class="nb-card p-6 text-center space-y-2">
+          <span class="material-symbols-outlined text-4xl text-neutral-400">fact_check</span>
+          <h3 class="font-display font-bold text-base">Ready to Check Eligibility</h3>
+          <p class="text-xs text-neutral-600 max-w-md mx-auto">
+            Fill in your Student or Researcher profile on the left to get ranked live opportunities with explainable eligibility reasons and 1-click proposal/SOP drafting.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- VIEW 3: PERSONAL APPLICATION KANBAN TRACKER              -->
   <!-- ======================================================== -->
   <div id="workspaceTracker" class="hidden space-y-5">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -417,15 +568,146 @@ def render_dashboard_html() -> str:
 
   function switchWorkspace(ws) {
     document.getElementById('workspaceOpportunities').classList.toggle('hidden', ws !== 'opportunities');
+    document.getElementById('workspaceMatcher').classList.toggle('hidden', ws !== 'matcher');
     document.getElementById('workspaceTracker').classList.toggle('hidden', ws !== 'tracker');
     document.getElementById('workspaceAssistant').classList.toggle('hidden', ws !== 'assistant');
-    const act = 'px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b] inline-flex items-center gap-1.5';
-    const inact = 'px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink inline-flex items-center gap-1.5';
+    const act = 'px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b] inline-flex items-center gap-1.5 shrink-0';
+    const inact = 'px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink inline-flex items-center gap-1.5 shrink-0';
     document.getElementById('navOpportunities').className = ws === 'opportunities' ? act : inact;
+    document.getElementById('navMatcher').className = ws === 'matcher' ? act : inact;
     document.getElementById('navTracker').className = ws === 'tracker' ? act : inact;
     document.getElementById('navAssistant').className = ws === 'assistant' ? act : inact;
     if (ws === 'tracker') {
       renderKanbanBoard();
+    }
+  }
+
+  function switchMatcherMode(mode) {
+    const isStu = mode === 'student';
+    document.getElementById('studentMatcherForm').classList.toggle('hidden', !isStu);
+    document.getElementById('researcherMatcherForm').classList.toggle('hidden', isStu);
+    document.getElementById('matchModeStudent').className = isStu
+      ? 'px-3 py-1.5 text-xs font-bold border-2 border-ink bg-ink text-accent'
+      : 'px-3 py-1.5 text-xs font-bold border-2 border-ink bg-white hover:bg-sand';
+    document.getElementById('matchModeResearcher').className = !isStu
+      ? 'px-3 py-1.5 text-xs font-bold border-2 border-ink bg-ink text-accent'
+      : 'px-3 py-1.5 text-xs font-bold border-2 border-ink bg-white hover:bg-sand';
+  }
+
+  async function runStudentEligibilityMatch() {
+    const out = document.getElementById('matcherResultsContainer');
+    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Evaluating live opportunities against your student profile...</div>';
+    const payload = {
+      full_name: document.getElementById('smName').value.trim() || 'Student',
+      gender: document.getElementById('smGender').value,
+      state_domicile: document.getElementById('smState').value,
+      education_level: document.getElementById('smEdu').value,
+      social_category: document.getElementById('smCategory').value,
+      family_annual_income_inr: parseFloat(document.getElementById('smIncome').value || '0'),
+      academic_percentage: parseFloat(document.getElementById('smPct').value || '0') || null,
+      is_single_girl_child: document.getElementById('smSingleGirl').checked,
+      is_differently_abled_pwd: document.getElementById('smPwd').checked,
+      top_k: 12
+    };
+    try {
+      const res = await fetch('/api/student/match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const results = await res.json();
+      if (!results.length) {
+        out.innerHTML = '<div class="nb-card p-6 text-xs text-neutral-600">No matching student opportunities found in the current live dataset.</div>';
+        return;
+      }
+      out.innerHTML = `<div class="space-y-3 text-left">` + results.map(r => {
+        const badgeCls = r.eligibility_status === 'ELIGIBLE'
+          ? 'bg-forest text-white'
+          : (r.eligibility_status === 'HIGH_PROBABILITY' ? 'bg-accent text-ink' : 'bg-vermilion text-white');
+        const reasons = (r.match_reasons || []).slice(0, 3).map(x => `<li class="text-[11px] text-neutral-700">${escapeHtml(x)}</li>`).join('');
+        const disq = (r.disqualifying_conditions || []).slice(0, 2).map(x => `<li class="text-[11px] text-vermilion font-medium">${escapeHtml(x)}</li>`).join('');
+        return `
+          <div class="nb-card p-4 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold border border-ink ${badgeCls}">${escapeHtml(r.eligibility_status)}</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-cream border border-ink">${Math.round(r.match_percentage || 0)}% Fit</span>
+              </div>
+              <span class="text-[11px] font-mono text-neutral-500">${escapeHtml(r.foa.agency)}</span>
+            </div>
+            <h4 class="font-display font-bold text-sm text-ink">${escapeHtml(r.foa.title)}</h4>
+            <p class="text-xs text-neutral-600 line-clamp-2">${escapeHtml(r.foa.brief_summary)}</p>
+            <ul class="space-y-0.5">${reasons}${disq}</ul>
+            <div class="pt-2 border-t border-neutral-200 flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[11px] font-mono font-semibold text-neutral-700">💰 ${escapeHtml(r.foa.financials?.raw_budget_text || 'See official notice')}</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="openDraftModalForFoa('${escapeHtml(r.foa.foa_id)}', '${escapeHtml(r.foa.title).replace(/'/g, '')}')" class="px-2.5 py-1 text-[11px] font-bold border-2 border-ink bg-accent hover:bg-ink hover:text-accent">Draft SOP / Proposal</button>
+                <a href="${escapeHtml(r.foa.direct_apply_url || r.foa.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1 bg-ink text-white text-[11px] font-bold">Apply ↗</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('') + `</div>`;
+      showToast(`Matched ${results.length} live student opportunities!`, 'success');
+    } catch (e) {
+      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Student matcher failed: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  async function runResearcherGrantMatch() {
+    const out = document.getElementById('matcherResultsContainer');
+    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Running Hybrid BM25 + Dense Vector RRF + Compliance evaluation...</div>';
+    const payload = {
+      researcher_name: document.getElementById('rmName').value.trim() || 'Dr. Principal Investigator',
+      highest_degree: document.getElementById('rmDegree').value.trim() || 'Ph.D.',
+      institution_name: document.getElementById('rmInst').value.trim() || 'University',
+      applicant_age: parseInt(document.getElementById('rmAge').value || '35', 10) || null,
+      research_summary: document.getElementById('rmSummary').value.trim() || 'AI and scientific research',
+      top_k: 10
+    };
+    try {
+      const res = await fetch('/api/match-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const results = await res.json();
+      if (!results.length) {
+        out.innerHTML = '<div class="nb-card p-6 text-xs text-neutral-600">No matching research grants found.</div>';
+        return;
+      }
+      out.innerHTML = `<div class="space-y-3 text-left">` + results.map(m => {
+        const st = m.compliance?.status || 'ELIGIBLE';
+        const badgeCls = st === 'ELIGIBLE' ? 'bg-forest text-white' : (st === 'WARNING' ? 'bg-accent text-ink' : 'bg-vermilion text-white');
+        const kws = (m.matching_keywords || []).slice(0, 4).map(k => `<span class="px-1.5 py-0.5 bg-cream border border-ink/50 font-mono text-[10px]">${escapeHtml(k)}</span>`).join('');
+        return `
+          <div class="nb-card p-4 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold border border-ink ${badgeCls}">${escapeHtml(st)}</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-cream border border-ink">Score ${(m.relevance_score * 100).toFixed(0)}%</span>
+                <span class="text-[10px] font-mono text-cobalt font-semibold">${escapeHtml(m.deadline_status || 'OPEN')}</span>
+              </div>
+              <span class="text-[11px] font-mono text-neutral-500">${escapeHtml(m.foa.agency)}</span>
+            </div>
+            <h4 class="font-display font-bold text-sm text-ink">${escapeHtml(m.foa.title)}</h4>
+            <p class="text-xs text-neutral-700 leading-relaxed">${escapeHtml(m.explanation?.why_grant_matches || m.foa.brief_summary)}</p>
+            <div class="flex flex-wrap gap-1">${kws}</div>
+            <div class="pt-2 border-t border-neutral-200 flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[11px] font-mono font-semibold text-neutral-700">💰 ${escapeHtml(m.foa.financials?.raw_budget_text || 'See call ceiling')}</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="openDraftModalForFoa('${escapeHtml(m.foa.foa_id)}', '${escapeHtml(m.foa.title).replace(/'/g, '')}')" class="px-2.5 py-1 text-[11px] font-bold border-2 border-ink bg-accent hover:bg-ink hover:text-accent">📝 Draft Proposal</button>
+                <a href="${escapeHtml(m.foa.direct_apply_url || m.foa.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1 bg-ink text-white text-[11px] font-bold">Official Call ↗</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('') + `</div>`;
+      showToast(`Found ${results.length} matched research grants!`, 'success');
+    } catch (e) {
+      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Researcher matcher failed: ${escapeHtml(e.message)}</div>`;
     }
   }
 
@@ -810,12 +1092,19 @@ def render_dashboard_html() -> str:
         <div class="text-[11px] font-mono text-forest font-semibold">
           ✓ Link HTTP ${opp.http_status} verified (${formatRelativeTime(opp.last_verified_at)})
         </div>
-        <button id="deepAnalyzeBtn" onclick="runDeepPageAnalysis('${escapeHtml(opp.id)}')" class="nb-btn px-3 py-1.5 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-[15px]">plumbing</span>
-          <span>Deep Analyze Official Page / Circular</span>
-        </button>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="deepAnalyzeBtn" onclick="runDeepPageAnalysis('${escapeHtml(opp.id)}')" class="nb-btn px-3 py-1.5 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px]">plumbing</span>
+            <span>Deep Analyze Page</span>
+          </button>
+          <button id="draftProposalBtn" onclick="runProposalDraft('${escapeHtml(opp.id)}')" class="nb-btn px-3 py-1.5 bg-white text-ink hover:bg-cobalt hover:text-white text-xs font-bold inline-flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px]">edit_note</span>
+            <span>Draft Proposal / SOP</span>
+          </button>
+        </div>
       </div>
       <div id="deepAnalysisContainer" class="hidden pt-2"></div>
+      <div id="proposalDraftContainer" class="hidden pt-2"></div>
     `;
     document.getElementById('dmCal').href = `/api/opportunities/${encodeURIComponent(opp.id)}/calendar`;
     document.getElementById('dmApply').href = opp.source_url;
@@ -896,6 +1185,89 @@ def render_dashboard_html() -> str:
         btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">check_circle</span><span>Re-Run Deep Analysis</span>';
       }
     }
+  }
+
+  let lastDraftPlainText = '';
+
+  async function runProposalDraft(oppId) {
+    const btn = document.getElementById('draftProposalBtn');
+    const box = document.getElementById('proposalDraftContainer');
+    if (!box) return;
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">sync</span><span>Drafting...</span>';
+    }
+    box.classList.remove('hidden');
+    box.innerHTML = '<div class="p-3.5 bg-cream border-2 border-ink font-mono text-xs animate-pulse">Generating structured Proposal / SOP skeleton &amp; MoF budget norms...</div>';
+
+    try {
+      const res = await fetch(`/api/foas/${encodeURIComponent(oppId)}/draft-proposal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const d = await res.json();
+      const sections = (d.sections || []).slice(0, 5);
+      lastDraftPlainText = (d.sections || []).map(s => `${s.section_title}\n${s.drafted_content}`).join('\n\n');
+      const secHtml = sections.map(s => `
+        <div class="p-2.5 bg-white border border-ink space-y-1">
+          <div class="font-display font-bold text-xs text-ink">${escapeHtml(s.section_title)}</div>
+          <div class="text-[11px] text-neutral-700 whitespace-pre-line leading-relaxed">${escapeHtml(s.drafted_content)}</div>
+        </div>
+      `).join('');
+      const chkHtml = (d.compliance_checklist || []).slice(0, 4).map(c => `<li class="text-[11px]">✓ ${escapeHtml(c)}</li>`).join('');
+
+      box.innerHTML = `
+        <div class="p-4 bg-cream border-2 border-ink space-y-3 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ink/20 pb-2">
+            <span class="font-display font-bold text-sm text-ink">Starter Proposal / SOP Blueprint (${(d.sections || []).length} Sections)</span>
+            <button onclick="copyDraftToClipboard()" class="px-2.5 py-1 bg-ink text-accent border border-ink font-mono text-[10px] font-bold hover:bg-accent hover:text-ink">Copy Full Draft</button>
+          </div>
+          <div class="space-y-2">${secHtml}</div>
+          <div>
+            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Compliance Checklist</span>
+            <ul class="space-y-0.5 text-neutral-800">${chkHtml}</ul>
+          </div>
+        </div>
+      `;
+      showToast('Proposal / SOP blueprint generated!', 'success');
+    } catch (err) {
+      box.innerHTML = `<div class="p-3 bg-red-50 border-2 border-vermilion text-vermilion text-xs font-semibold">Draft generation failed (${escapeHtml(err.message)}).</div>`;
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">edit_note</span><span>Re-Draft Proposal / SOP</span>';
+      }
+    }
+  }
+
+  async function copyDraftToClipboard() {
+    if (!lastDraftPlainText) return;
+    try {
+      await navigator.clipboard.writeText(lastDraftPlainText);
+      showToast('Full 11-section draft copied to clipboard!', 'success');
+    } catch (e) {
+      showToast('Copy failed — select and copy text manually.', 'warning');
+    }
+  }
+
+  function openDraftModalForFoa(foaId, title) {
+    const idx = allFetchedItems.findIndex(o => o.id === foaId);
+    if (idx >= 0) {
+      openDetailModal(idx);
+      runProposalDraft(foaId);
+      return;
+    }
+    currentModalOpp = { id: foaId, title: title || foaId };
+    document.getElementById('dmBadges').innerHTML = '<span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-ink bg-accent">Proposal Blueprint</span>';
+    document.getElementById('dmTitle').innerText = title || foaId;
+    document.getElementById('dmOrg').innerText = 'Automated Proposal / SOP Generator';
+    document.getElementById('dmBody').innerHTML = '<div id="proposalDraftContainer"></div>';
+    document.getElementById('dmCal').href = `/api/foas/${encodeURIComponent(foaId)}/calendar`;
+    document.getElementById('dmApply').href = '#';
+    document.getElementById('detailModal').classList.remove('hidden');
+    runProposalDraft(foaId);
   }
 
   // Personal Kanban Application Tracker
