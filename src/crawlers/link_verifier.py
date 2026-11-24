@@ -1,12 +1,39 @@
-"""Async Anti-404 & Anti-Homepage Link Verification Guard for MadadgaarAI."""
+"""Async Anti-404, Anti-Homepage & Optional Playwright Headless Fallback Link Verification Guard."""
 import asyncio
 from datetime import datetime, timezone
+import importlib.util
 import logging
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 import httpx
 
 logger = logging.getLogger("MadadgaarAI.Crawlers.LinkVerifier")
+
+PLAYWRIGHT_AVAILABLE = importlib.util.find_spec("playwright") is not None
+
+
+async def playwright_fetch_page(url: str, timeout_ms: int = 12000) -> Tuple[int, str, str]:
+    """
+    Optional headless Chromium fallback for JS-rendered or anti-bot portals.
+    Returns (status_code, final_url, html_content). Safely returns (0, url, '') if Playwright is not installed.
+    """
+    if not PLAYWRIGHT_AVAILABLE:
+        return (0, url, "")
+    try:
+        from playwright.async_api import async_playwright
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context(user_agent=DEFAULT_HEADERS["User-Agent"])
+            page = await context.new_page()
+            resp = await page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+            status = resp.status if resp else 0
+            final_url = page.url or url
+            html = await page.content()
+            await browser.close()
+            return (status, final_url, html)
+    except Exception as exc:
+        logger.debug(f"Playwright fallback skipped for {url}: {exc}")
+        return (0, url, "")
 
 TRACKING_PARAMS = {
     "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
@@ -80,6 +107,13 @@ class AsyncLinkVerifier:
                     async with client.stream("GET", url, timeout=self.timeout_seconds, follow_redirects=True) as get_resp:
                         status = get_resp.status_code
                         final_url = str(get_resp.url)
+
+                # Optional Playwright headless fallback when installed and anti-bot 403/503 is encountered
+                if status in (403, 503) and PLAYWRIGHT_AVAILABLE:
+                    pw_status, pw_url, _ = await playwright_fetch_page(url, timeout_ms=int(self.timeout_seconds * 1000))
+                    if 200 <= pw_status <= 399:
+                        status = pw_status
+                        final_url = pw_url
 
                 is_ok = 200 <= status <= 399
                 return (url, is_ok, status, final_url, datetime.now(timezone.utc))

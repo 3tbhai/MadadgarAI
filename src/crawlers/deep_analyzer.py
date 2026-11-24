@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import httpx
 from pydantic import BaseModel, Field
 
-from src.crawlers.link_verifier import DEFAULT_HEADERS
+from src.crawlers.link_verifier import DEFAULT_HEADERS, PLAYWRIGHT_AVAILABLE, playwright_fetch_page
 from src.crawlers.live_scrapers import parse_deadline_from_text, strip_html
 from src.extractor.entity_extractor import FOAEntityExtractor
 from src.parser.pdf_parser import PDFLayoutParser
@@ -159,6 +159,13 @@ class DeepPageAnalyzer:
                         )
                         dom_text = main_node.get_text(separator="\n", strip=True)
                         raw_text = "\n".join([dom_text] + ld_snippets).strip()
+                        if len(raw_text) < 80 and PLAYWRIGHT_AVAILABLE:
+                            pw_status, _, pw_html = await playwright_fetch_page(url)
+                            if 200 <= pw_status <= 399 and pw_html:
+                                pw_soup = BeautifulSoup(pw_html, "html.parser")
+                                for tag in pw_soup(["script", "style", "noscript", "svg", "nav", "footer", "header"]):
+                                    tag.decompose()
+                                raw_text = (pw_soup.body or pw_soup).get_text(separator="\n", strip=True)
         except Exception as exc:
             logger.warning(f"Deep page fetch fallback for {url}: {exc}")
 

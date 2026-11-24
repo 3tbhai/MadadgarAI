@@ -165,8 +165,10 @@ def test_6_deep_page_analyzer_and_kanban_tracker_and_reranker(client):
     from src.crawlers.live_scrapers import build_live_scrapers
     from src.embeddings.embedder import TextEmbedder
 
-    # 1. Verify all 15 live scrapers are registered (including AICTE, ISRO, Tata Trusts, Ashby, Lever)
+    # 1. Verify all 17 live scrapers are registered (including DST INSPIRE, ISTI, AICTE, ISRO, Tata Trusts, Ashby, Lever)
     scraper_classes = {s.__class__.__name__ for s in build_live_scrapers()}
+    assert "DSTInspireScraper" in scraper_classes
+    assert "ISTIIndiaFundingScraper" in scraper_classes
     assert "AICTEIndiaInternshipScraper" in scraper_classes
     assert "ISRORespondScraper" in scraper_classes
     assert "TataTrustsCSRScraper" in scraper_classes

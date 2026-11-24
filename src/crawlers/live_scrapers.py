@@ -133,6 +133,111 @@ class BaseLiveScraper(ABC):
 # 1. INDIAN & INTERNATIONAL GOVERNMENT PORTALS (2.1)
 # =========================================================================
 
+class DSTInspireScraper(BaseLiveScraper):
+    """Scrapes live DST INSPIRE Scholarships (SHE), Doctoral Fellowships & Faculty Fellowships (online-inspire.gov.in)."""
+    source_name = "DST INSPIRE (Dept. of Science & Tech, Govt. of India)"
+    default_category = OpportunityCategory.SCHOLARSHIP
+    source_type = "Government"
+    URL = "https://online-inspire.gov.in/"
+
+    async def fetch_raw(self, client: httpx.AsyncClient) -> List[Dict[str, Any]]:
+        resp = await client.get(self.URL, timeout=12.0, follow_redirects=True)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        items: List[Dict[str, Any]] = []
+        seen_urls = set()
+
+        for a in soup.select("a[href]"):
+            title = " ".join(a.get_text(" ", strip=True).split())
+            href = (a.get("href") or "").strip()
+            if len(title) < 6 or len(title) > 130 or not href or href.startswith("#") or href.lower().startswith("javascript"):
+                continue
+            low = (title + " " + href).lower()
+            if not any(k in low for k in ["inspireprogramme", "shefaq", "fellowshipfaq", "facultyfellowship", "scholarship", "fellowship"]):
+                continue
+            if any(skip in low for skip in ["login", "register", "forgot", "contact", "feedback"]):
+                continue
+
+            full_url = urljoin("https://online-inspire.gov.in/", href)
+            if full_url in seen_urls or full_url.rstrip("/") == "https://online-inspire.gov.in":
+                continue
+            seen_urls.add(full_url)
+
+            is_faculty = "faculty" in low
+            cat = OpportunityCategory.FUNDING if is_faculty else OpportunityCategory.SCHOLARSHIP
+            deg = "PhD / Faculty" if (is_faculty or "fellowship" in low) else "Undergraduate"
+            items.append({
+                "title": f"DST INSPIRE — {title}",
+                "organization": "Department of Science & Technology (DST), Govt. of India",
+                "category": cat,
+                "source_type": "Government",
+                "domain": "Science & Research",
+                "eligibility": "Meritorious Indian Science Students (Top 1% Class 12), Doctoral & Early-Career Faculty",
+                "degree_level": deg,
+                "deadline": None,
+                "is_rolling": True,
+                "stipend_or_amount": "₹80,000/yr (SHE) or ₹37,000+/mo + Research Grant",
+                "funding_type": "Fully Funded" if cat == OpportunityCategory.SCHOLARSHIP else "Grant-in-Aid",
+                "source_url": full_url,
+                "summary": f"Official DST INSPIRE Government of India program: {title}. Hosted on online-inspire.gov.in.",
+                "tags": ["DST INSPIRE", "Govt. of India", "Science & Research"],
+                "location": "India",
+            })
+            if len(items) >= 6:
+                break
+        return items
+
+
+class ISTIIndiaFundingScraper(BaseLiveScraper):
+    """Scrapes live research grant categories from the India Science, Technology & Innovation Portal (indiascienceandtechnology.gov.in)."""
+    source_name = "India Science, Tech & Innovation (Govt. of India)"
+    default_category = OpportunityCategory.FUNDING
+    source_type = "Government"
+    URL = "https://www.indiascienceandtechnology.gov.in/"
+
+    async def fetch_raw(self, client: httpx.AsyncClient) -> List[Dict[str, Any]]:
+        resp = await client.get(self.URL, timeout=14.0, follow_redirects=True)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        items: List[Dict[str, Any]] = []
+        seen_urls = set()
+
+        for a in soup.select("a[href]"):
+            title = " ".join(a.get_text(" ", strip=True).split())
+            href = (a.get("href") or "").strip()
+            if len(title) < 6 or len(title) > 130 or not href or href.startswith("#") or href.lower().startswith("javascript"):
+                continue
+            low = href.lower()
+            if not any(k in low for k in ["/funding-opportunities/", "/nurturing-minds/scholarships/", "/fellowships/"]):
+                continue
+            full_url = urljoin("https://www.indiascienceandtechnology.gov.in/", href)
+            if full_url in seen_urls:
+                continue
+            seen_urls.add(full_url)
+
+            cat = OpportunityCategory.SCHOLARSHIP if ("scholar" in low or "fellow" in low) else OpportunityCategory.FUNDING
+            items.append({
+                "title": f"ISTI Govt. of India — {title} Opportunities",
+                "organization": "India Science, Technology & Innovation Portal (Vigyan Prasar / DST, Govt. of India)",
+                "category": cat,
+                "source_type": "Government",
+                "domain": "Science & Research",
+                "eligibility": "Indian Students, Scientists, Academic Institutions & R&D Collaborators",
+                "degree_level": "PhD / Faculty" if cat == OpportunityCategory.FUNDING else "All Levels",
+                "deadline": None,
+                "is_rolling": True,
+                "stipend_or_amount": "Govt. of India Statutory Science & Tech Funding",
+                "funding_type": "Grant-in-Aid" if cat == OpportunityCategory.FUNDING else "Fully Funded",
+                "source_url": full_url,
+                "summary": f"Official India Science, Technology & Innovation (ISTI) funding directory: {title}.",
+                "tags": ["ISTI India", "DST", "Govt. of India"],
+                "location": "India",
+            })
+            if len(items) >= 6:
+                break
+        return items
+
+
 class AICTEIndiaInternshipScraper(BaseLiveScraper):
     """Scrapes live Government of India & Ministry internships from the AICTE National Internship Portal (internship.aicte-india.org)."""
     source_name = "AICTE National Internship Portal (Govt. of India)"
@@ -606,6 +711,9 @@ class TopCompaniesGreenhouseScraper(BaseLiveScraper):
         ("anthropic", "Anthropic"),
         ("figma", "Figma"),
         ("mongodb", "MongoDB"),
+        ("cloudflare", "Cloudflare"),
+        ("discord", "Discord"),
+        ("scaleai", "Scale AI"),
         ("pinterest", "Pinterest"),
         ("coinbase", "Coinbase"),
         ("duolingo", "Duolingo"),
@@ -675,8 +783,10 @@ class AshbyCompaniesScraper(BaseLiveScraper):
     source_type = "Company / Corporate"
 
     COMPANIES: List[Tuple[str, str]] = [
+        ("openai", "OpenAI"),
         ("perplexity", "Perplexity AI"),
         ("notion", "Notion"),
+        ("linear", "Linear"),
         ("ramp", "Ramp"),
         ("cohere", "Cohere AI"),
         ("modal", "Modal Labs"),
@@ -977,6 +1087,8 @@ def build_live_scrapers() -> List[BaseLiveScraper]:
     """Returns all verified live async scrapers across Government Portals, CSR Foundations, and Tech Companies."""
     return [
         # 2.1 Indian Government & Statutory Portals
+        DSTInspireScraper(),
+        ISTIIndiaFundingScraper(),
         AICTEIndiaInternshipScraper(),
         ISRORespondScraper(),
         ANRFIndiaScraper(),
