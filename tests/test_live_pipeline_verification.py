@@ -227,7 +227,23 @@ def test_6_deep_page_analyzer_and_kanban_tracker_and_reranker(client):
     assert "Source URL" in r_csv.text
     assert "Internship" in r_csv.text
 
-    # 6. Verify legacy unused crawler files remain deleted (3.3)
+    # 6. Verify Resume / CV Semantic Opportunity Matcher (Part 2)
+    r_res = client.post(
+        "/api/resume/match",
+        data={
+            "raw_text": "B.Tech Computer Science student skilled in Python, Machine Learning, PyTorch, FastAPI, React, Data Science.",
+            "category": "Internship",
+            "top_k": "5",
+        },
+    )
+    assert r_res.status_code == 200
+    res_json = r_res.json()
+    assert res_json["detected_degree"] == "Undergraduate"
+    assert "Python" in res_json["detected_skills"]
+    assert len(res_json["matches"]) >= 1
+    assert res_json["matches"][0]["fit_score"] > 0
+
+    # 7. Verify legacy unused crawler files remain deleted (3.3)
     project_root = Path(__file__).resolve().parent.parent
     for legacy_file in ("aicte_crawler.py", "anrf_crawler.py", "csir_crawler.py", "dst_crawler.py", "nsp_crawler.py"):
         assert not (project_root / "src" / "crawlers" / legacy_file).exists()

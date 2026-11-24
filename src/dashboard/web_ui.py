@@ -385,8 +385,29 @@ def render_dashboard_html() -> str:
           </button>
         </form>
 
-        <!-- Placeholder mount point for Resume Upload Semantic Matcher (Part 2) -->
-        <div id="resumeMatcherMount"></div>
+        <!-- Resume / CV Upload Semantic Opportunity Matcher -->
+        <div id="resumeMatcherMount" class="nb-card p-5 space-y-3.5 text-xs">
+          <div class="flex items-center justify-between border-b-2 border-ink pb-2">
+            <h3 class="font-display font-bold text-sm">Resume / CV Semantic Matcher</h3>
+            <span class="px-2 py-0.5 bg-forest text-white border border-ink font-mono text-[10px] font-bold">CV → LIVE MATCH</span>
+          </div>
+          <p class="text-[11px] text-neutral-600">
+            Upload your PDF/DOCX/TXT resume or paste skills below to rank all live opportunities by skill &amp; degree fit.
+          </p>
+          <div class="flex items-center gap-2 p-2 bg-cream/70 border-2 border-ink">
+            <input type="file" id="resumeFile" accept=".pdf,.docx,.txt,.md" class="flex-1 text-xs"/>
+            <select id="resumeCatFilter" class="bg-white border border-ink px-2 py-1 text-[11px] font-semibold">
+              <option value="All">All Types</option>
+              <option value="Internship">Internships</option>
+              <option value="Scholarship">Scholarships</option>
+              <option value="Funding">Grants</option>
+            </select>
+          </div>
+          <textarea id="resumeRawText" rows="3" placeholder="Or paste your resume / skills / research keywords (e.g. B.Tech CSE, Python, PyTorch, FastAPI, Machine Learning, Robotics)..." class="w-full bg-cream/60 border-2 border-ink p-2.5 text-xs font-mono focus:outline-none focus:bg-white"></textarea>
+          <button type="button" onclick="runResumeSemanticMatch()" class="nb-btn w-full py-2.5 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold">
+            Match Resume to Live Opportunities
+          </button>
+        </div>
       </div>
 
       <!-- Right Column: Explainable Match Results -->
@@ -708,6 +729,74 @@ def render_dashboard_html() -> str:
       showToast(`Found ${results.length} matched research grants!`, 'success');
     } catch (e) {
       out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Researcher matcher failed: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  async function runResumeSemanticMatch() {
+    const fileInp = document.getElementById('resumeFile');
+    const rawTxt = document.getElementById('resumeRawText').value.trim();
+    const cat = document.getElementById('resumeCatFilter').value;
+    if ((!fileInp.files || !fileInp.files.length) && !rawTxt) {
+      showToast('Upload a resume file or paste resume text first.', 'warning');
+      return;
+    }
+    const out = document.getElementById('matcherResultsContainer');
+    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Parsing resume &amp; ranking live opportunities semantically...</div>';
+
+    const fd = new FormData();
+    if (fileInp.files && fileInp.files.length) fd.append('file', fileInp.files[0]);
+    if (rawTxt) fd.append('raw_text', rawTxt);
+    fd.append('category', cat);
+    fd.append('top_k', '10');
+
+    try {
+      const res = await fetch('/api/resume/match', { method: 'POST', body: fd });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const skillsHtml = (data.detected_skills || []).map(s => `<span class="px-2 py-0.5 bg-accent/70 border border-ink font-mono text-[10px] font-bold">${escapeHtml(s)}</span>`).join('');
+      const headerHtml = `
+        <div class="nb-card p-4 bg-cream/70 text-left space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-display font-bold text-sm">Resume Intelligence (${escapeHtml(data.extraction_method)})</span>
+            <span class="font-mono text-[11px] font-bold text-cobalt">${escapeHtml(data.detected_degree)} · ${(data.detected_domains || []).join(', ')}</span>
+          </div>
+          ${skillsHtml ? `<div class="flex flex-wrap gap-1">${skillsHtml}</div>` : '<div class="text-[11px] text-neutral-500">General academic profile detected.</div>'}
+        </div>
+      `;
+
+      const cardsHtml = (data.matches || []).map(m => {
+        const opp = m.opportunity;
+        const matchedChips = (m.matched_skills || []).map(s => `<span class="px-1.5 py-0.5 bg-forest/15 text-forest border border-forest/40 font-mono text-[10px] font-bold">✓ ${escapeHtml(s)}</span>`).join('');
+        const gapChips = (m.missing_prerequisites || []).map(g => `<li class="text-[11px] text-vermilion">⚠ ${escapeHtml(g)}</li>`).join('');
+        return `
+          <div class="nb-card p-4 text-left space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold border border-ink">${m.fit_score}% Fit</span>
+                <span class="px-2 py-0.5 bg-cream border border-ink font-mono text-[10px] font-bold">${escapeHtml(opp.category)}</span>
+                <span class="text-[10px] font-mono text-neutral-500">${escapeHtml(opp.source_domain)}</span>
+              </div>
+              <span class="text-[11px] font-mono font-semibold text-cobalt">${opp.deadline ? escapeHtml(opp.deadline) : 'Rolling'}</span>
+            </div>
+            <h4 class="font-display font-bold text-sm text-ink">${escapeHtml(opp.title)}</h4>
+            <p class="text-xs text-neutral-600">${escapeHtml(m.match_summary)}</p>
+            ${matchedChips ? `<div class="flex flex-wrap gap-1">${matchedChips}</div>` : ''}
+            ${gapChips ? `<ul class="space-y-0.5">${gapChips}</ul>` : ''}
+            <div class="pt-2 border-t border-neutral-200 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-mono font-semibold">💰 ${escapeHtml(opp.stipend_or_amount)}</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="openDraftModalForFoa('${escapeHtml(opp.id)}', '${escapeHtml(opp.title).replace(/'/g, '')}')" class="px-2.5 py-1 text-[11px] font-bold border-2 border-ink bg-white hover:bg-accent">Draft SOP</button>
+                <a href="${escapeHtml(opp.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1 bg-ink text-white text-[11px] font-bold">Apply ↗</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      out.innerHTML = `<div class="space-y-3">${headerHtml}${cardsHtml || '<div class="nb-card p-5 text-xs">No matching live opportunities found for this filter.</div>'}</div>`;
+      showToast(`Ranked ${(data.matches || []).length} live opportunities from your resume!`, 'success');
+    } catch (e) {
+      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Resume match failed: ${escapeHtml(e.message)}</div>`;
     }
   }
 

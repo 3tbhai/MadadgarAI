@@ -25,6 +25,7 @@ from src.matcher.calendar_sync import CalendarSyncGenerator
 from src.matcher.compliance_checker import ComplianceChecker
 from src.matcher.profile_matcher import ProfileGrantMatcher
 from src.matcher.proposal_drafter import ProposalDrafter
+from src.matcher.resume_matcher import ResumeMatchResponse, ResumeOpportunityMatcher
 from src.matcher.student_matcher import StudentScholarshipMatcher
 from src.schemas.foa import (
     AgencyType,
@@ -67,6 +68,7 @@ compliance_checker = ComplianceChecker()
 profile_matcher = ProfileGrantMatcher(hybrid_search=hybrid_search, compliance_checker=compliance_checker)
 calendar_generator = CalendarSyncGenerator()
 proposal_drafter = ProposalDrafter()
+resume_matcher = ResumeOpportunityMatcher(live_store=live_store, embedder=vector_store.embedder)
 student_matcher = StudentScholarshipMatcher(normalizer=normalizer)
 session_store = ConversationalMemoryStore()
 rag_engine = SaralSamjhautiRAG(normalizer=normalizer, session_store=session_store)
@@ -724,4 +726,25 @@ async def analyze_uploaded_document(
         file_bytes=file_bytes,
         filename=file.filename,
         document_type_hint=document_type_hint,
+    )
+
+
+@app.post("/api/resume/match", response_model=ResumeMatchResponse)
+async def match_resume_to_live_opportunities(
+    file: Optional[UploadFile] = File(default=None),
+    raw_text: Optional[str] = Form(default=None),
+    category: Optional[str] = Form(default="All"),
+    top_k: int = Form(default=10),
+):
+    """Parses an uploaded PDF/DOCX/TXT resume or pasted CV text and semantically ranks live opportunities."""
+    file_bytes = await file.read() if file else None
+    filename = file.filename if file else None
+    if not file_bytes and not (raw_text and raw_text.strip()):
+        raise HTTPException(status_code=400, detail="Provide a resume file or pasted resume text.")
+    return resume_matcher.match_resume(
+        raw_text=raw_text,
+        file_bytes=file_bytes,
+        filename=filename,
+        category=category,
+        top_k=top_k,
     )
