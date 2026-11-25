@@ -92,3 +92,4 @@ The student scholarship engine prioritizes privacy and accuracy:
    - Actionable document checklists mapped to exact issuing authorities (Tehsildar / Revenue Department, State E-District, College Registrar).
    - Direct active registration deep-links bypassing complex portal homepages.
    - Bilingual Hinglish (*"Saral Samjhauti"*) plain-language summaries for simplified student understanding.
+
