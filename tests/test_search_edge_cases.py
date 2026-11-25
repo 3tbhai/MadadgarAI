@@ -30,3 +30,4 @@ def test_search_with_strict_agency_filter():
     assert isinstance(results, list)
     for foa, _, _, _ in results:
         assert foa.agency == AgencyType.DST
+
