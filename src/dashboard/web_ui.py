@@ -108,14 +108,14 @@ def render_dashboard_html() -> str:
     <!-- Auth, User Mode & Refresh Controls -->
     <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
       <!-- Active User Mode Selector Badge (Visible when signed in) -->
-      <select id="headerModeSelect" onchange="handleModeSwitch(this.value)" class="hidden px-2 py-1 text-[11px] font-mono font-bold border-2 border-ink bg-accent text-ink cursor-pointer" title="Switch active Saral AI User Mode">
+      <select id="headerModeSelect" onchange="handleModeSwitch(this.value)" class="hidden px-2 py-1 text-[11px] font-mono font-bold border-2 border-ink bg-accent text-ink cursor-pointer" title="Switch your study mode">
         <option value="student">Student Mode</option>
         <option value="researcher">Researcher Mode</option>
         <option value="educator">Educator Mode</option>
       </select>
 
       <!-- Sign In Button (Logged out) -->
-      <button id="authSignInBtn" onclick="openAuthModal()" class="nb-btn px-2.5 py-1.5 bg-white hover:bg-accent text-ink text-xs font-bold inline-flex items-center gap-1.5" title="Sign in with Google for Private Multi-Tenant Saral AI">
+      <button id="authSignInBtn" onclick="openAuthModal()" class="nb-btn px-2.5 py-1.5 bg-white hover:bg-accent text-ink text-xs font-bold inline-flex items-center gap-1.5" title="Sign in to access your personal study space">
         <span class="material-symbols-outlined text-[15px]">login</span>
         <span class="hidden md:inline">Sign In</span>
       </button>
@@ -131,13 +131,13 @@ def render_dashboard_html() -> str:
             <div id="authDropName" class="font-display font-bold text-ink truncate"></div>
             <div id="authDropEmail" class="text-[11px] text-neutral-500 font-mono truncate"></div>
           </div>
-          <button onclick="switchWorkspace('assistant'); switchAssistantSubmode('private'); toggleUserDropdown();" class="w-full text-left px-2 py-1.5 hover:bg-sand font-semibold">My Private Knowledge Base</button>
+          <button onclick="switchWorkspace('assistant'); switchAssistantSubmode('private'); toggleUserDropdown();" class="w-full text-left px-2 py-1.5 hover:bg-sand font-semibold">My Study Assistant</button>
           <button onclick="logoutUser()" class="w-full text-left px-2 py-1.5 text-vermilion hover:bg-red-50 font-bold">Sign Out</button>
         </div>
       </div>
 
       <!-- Refresh Live Button -->
-      <button id="refreshLiveBtn" onclick="triggerLiveRefresh()" class="nb-btn px-2.5 sm:px-3 py-1.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-60" title="Crawl live Government & Company portals now">
+      <button id="refreshLiveBtn" onclick="triggerLiveRefresh()" class="nb-btn px-2.5 sm:px-3 py-1.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-60" title="Check for the latest opportunities">
         <span id="refreshIcon" class="material-symbols-outlined text-[16px]">sync</span>
         <span id="refreshBtnLabel" class="hidden sm:inline">Refresh Live Data</span>
       </button>
@@ -160,7 +160,7 @@ def render_dashboard_html() -> str:
           Live Verified Opportunities
         </h1>
         <p class="text-xs sm:text-sm text-neutral-600 mt-1">
-          Real-time internships, scholarships &amp; grants from Government portals and top companies. Every link is HTTP-verified.
+          Up-to-date internships, scholarships &amp; grants from official government portals and leading companies. Every link is verified.
         </p>
       </div>
 
@@ -185,7 +185,7 @@ def render_dashboard_html() -> str:
     <div id="sourceErrorBanner" class="hidden p-3.5 bg-red-50 border-2 border-vermilion text-vermilion text-xs flex items-start gap-2">
       <span class="material-symbols-outlined text-[18px] shrink-0">warning</span>
       <div>
-        <strong>Some live sources could not be reached (no mock fallback shown):</strong>
+        <strong>Some portals are temporarily unavailable:</strong>
         <span id="sourceErrorList" class="font-mono block mt-0.5 text-[11px]"></span>
       </div>
     </div>
@@ -253,7 +253,7 @@ def render_dashboard_html() -> str:
           <label for="filterSort" class="block text-[11px] font-semibold text-neutral-500 mb-1">Sort By</label>
           <select id="filterSort" onchange="onFilterChange()" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-xs font-medium">
             <option value="deadline_asc">Deadline: Soonest</option>
-            <option value="recent_desc">Recently Scraped</option>
+            <option value="recent_desc">Newest First</option>
             <option value="title_asc">Title: A → Z</option>
           </select>
         </div>
@@ -273,7 +273,7 @@ def render_dashboard_html() -> str:
           <span class="material-symbols-outlined text-[15px]">download</span> Export CSV
         </a>
         <a href="/api/calendar/upcoming.ics" download class="text-cobalt hover:underline font-semibold inline-flex items-center gap-1">
-          <span class="material-symbols-outlined text-[15px]">calendar_month</span> Export .ics
+          <span class="material-symbols-outlined text-[15px]">calendar_month</span> Add to Calendar
         </a>
       </div>
     </div>
@@ -297,7 +297,7 @@ def render_dashboard_html() -> str:
       <div>
         <h2 class="font-display font-bold text-2xl tracking-tight text-ink">Eligibility &amp; Resume Matcher</h2>
         <p class="text-xs sm:text-sm text-neutral-600 mt-0.5">
-          Check your exact eligibility for scholarships &amp; research grants with explainable compliance checks, or upload your CV for instant semantic matching.
+          Check your eligibility for scholarships and research grants, or upload your resume to discover your best matches.
         </p>
       </div>
       <div class="flex items-center gap-1.5">
@@ -313,7 +313,7 @@ def render_dashboard_html() -> str:
         <form id="studentMatcherForm" onsubmit="event.preventDefault(); runStudentEligibilityMatch();" class="nb-card p-5 space-y-3.5 text-xs">
           <div class="flex items-center justify-between border-b-2 border-ink pb-2">
             <h3 class="font-display font-bold text-sm">Student Eligibility Profile</h3>
-            <span class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold">XAI CHECKER</span>
+            <span class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold">ELIGIBILITY</span>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -389,7 +389,7 @@ def render_dashboard_html() -> str:
         <form id="researcherMatcherForm" onsubmit="event.preventDefault(); runResearcherGrantMatch();" class="hidden nb-card p-5 space-y-3.5 text-xs">
           <div class="flex items-center justify-between border-b-2 border-ink pb-2">
             <h3 class="font-display font-bold text-sm">Researcher / Faculty Grant Matcher</h3>
-            <span class="px-2 py-0.5 bg-cobalt text-white border border-ink font-mono text-[10px] font-bold">HYBRID RRF</span>
+            <span class="px-2 py-0.5 bg-cobalt text-white border border-ink font-mono text-[10px] font-bold">GRANT MATCH</span>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -420,14 +420,14 @@ def render_dashboard_html() -> str:
           </button>
         </form>
 
-        <!-- Resume / CV Upload Semantic Opportunity Matcher -->
+        <!-- Resume / CV Upload Opportunity Matcher -->
         <div id="resumeMatcherMount" class="nb-card p-5 space-y-3.5 text-xs">
           <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-            <h3 class="font-display font-bold text-sm">Resume / CV Semantic Matcher</h3>
-            <span class="px-2 py-0.5 bg-forest text-white border border-ink font-mono text-[10px] font-bold">CV → LIVE MATCH</span>
+            <h3 class="font-display font-bold text-sm">Resume Matcher</h3>
+            <span class="px-2 py-0.5 bg-forest text-white border border-ink font-mono text-[10px] font-bold">RESUME FIT</span>
           </div>
           <p class="text-[11px] text-neutral-600">
-            Upload your PDF/DOCX/TXT resume or paste skills below to rank all live opportunities by skill &amp; degree fit.
+            Upload your resume or paste your skills below to see the opportunities that fit your background best.
           </p>
           <div class="flex items-center gap-2 p-2 bg-cream/70 border-2 border-ink">
             <input type="file" id="resumeFile" accept=".pdf,.docx,.txt,.md" class="flex-1 text-xs"/>
@@ -440,18 +440,18 @@ def render_dashboard_html() -> str:
           </div>
           <textarea id="resumeRawText" rows="3" placeholder="Or paste your resume / skills / research keywords (e.g. B.Tech CSE, Python, PyTorch, FastAPI, Machine Learning, Robotics)..." class="w-full bg-cream/60 border-2 border-ink p-2.5 text-xs font-mono focus:outline-none focus:bg-white"></textarea>
           <button type="button" onclick="runResumeSemanticMatch()" class="nb-btn w-full py-2.5 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold">
-            Match Resume to Live Opportunities
+            Find Matches From My Resume
           </button>
         </div>
       </div>
 
-      <!-- Right Column: Explainable Match Results -->
+      <!-- Right Column: Match Results -->
       <div class="lg:col-span-7 space-y-4">
         <div id="matcherResultsContainer" class="nb-card p-6 text-center space-y-2">
           <span class="material-symbols-outlined text-4xl text-neutral-400">fact_check</span>
           <h3 class="font-display font-bold text-base">Ready to Check Eligibility</h3>
           <p class="text-xs text-neutral-600 max-w-md mx-auto">
-            Fill in your Student or Researcher profile on the left to get ranked live opportunities with explainable eligibility reasons and 1-click proposal/SOP drafting.
+            Fill in your Student or Researcher profile on the left to see tailored matches, clear eligibility notes, and quick SOP or proposal drafts.
           </p>
         </div>
       </div>
@@ -464,41 +464,41 @@ def render_dashboard_html() -> str:
   <div id="workspaceTracker" class="hidden space-y-5">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
       <div>
-        <h2 class="font-display font-bold text-2xl tracking-tight text-ink">Personal Application Tracker &amp; Deadlines</h2>
+        <h2 class="font-display font-bold text-2xl tracking-tight text-ink">My Applications &amp; Deadlines</h2>
         <p class="text-xs sm:text-sm text-neutral-600 mt-0.5">
-          Manage saved opportunities in Kanban or Timeline view, configure deadline reminders, and export `.ics`.
+          Organize your saved opportunities by stage or deadline, set reminders, and add dates to your calendar.
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <div class="inline-flex border-2 border-ink bg-white">
-          <button id="trackerModeKanban" onclick="switchTrackerView('kanban')" class="px-3 py-1.5 text-xs font-bold bg-ink text-accent">Kanban</button>
+          <button id="trackerModeKanban" onclick="switchTrackerView('kanban')" class="px-3 py-1.5 text-xs font-bold bg-ink text-accent">Board</button>
           <button id="trackerModeTimeline" onclick="switchTrackerView('timeline')" class="px-3 py-1.5 text-xs font-bold bg-white text-ink hover:bg-sand">Timeline</button>
         </div>
         <button onclick="exportSavedKanbanIcs()" class="nb-btn px-3.5 py-2 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
           <span class="material-symbols-outlined text-[16px]">calendar_month</span>
-          <span>Export Saved (.ics)</span>
+          <span>Add Saved to Calendar</span>
         </button>
       </div>
     </div>
 
-    <!-- Deadline Reminder Engine Bar -->
+    <!-- Deadline Reminders Bar -->
     <div class="nb-card p-4 bg-cream/60 space-y-3 text-xs">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="font-display font-bold text-sm flex items-center gap-1.5">
           <span class="material-symbols-outlined text-[18px] text-vermilion">notifications_active</span>
-          <span>Deadline Reminder Engine</span>
+          <span>Deadline Reminders</span>
         </div>
         <button onclick="dispatchTrackerReminders()" class="px-2.5 py-1 bg-white border-2 border-ink hover:bg-accent text-[11px] font-bold">
-          Check / Send Alerts Now
+          Check Reminders
         </button>
       </div>
       <form onsubmit="event.preventDefault(); addTrackerReminder();" class="grid grid-cols-1 sm:grid-cols-12 gap-2">
         <select id="remChannel" class="sm:col-span-3 bg-white border-2 border-ink px-2.5 py-1.5 font-semibold">
           <option value="browser">Browser Alert</option>
-          <option value="webhook">Discord / Slack Webhook</option>
+          <option value="webhook">Slack / Discord Alert</option>
           <option value="email">Email Digest</option>
         </select>
-        <input id="remTarget" type="text" placeholder="Webhook URL, email, or alert label..." class="sm:col-span-5 bg-white border-2 border-ink px-2.5 py-1.5"/>
+        <input id="remTarget" type="text" placeholder="Email address, alert label, or notification link..." class="sm:col-span-5 bg-white border-2 border-ink px-2.5 py-1.5"/>
         <select id="remLeadDays" class="sm:col-span-2 bg-white border-2 border-ink px-2 py-1.5 font-semibold">
           <option value="2">2 days before</option>
           <option value="7" selected>7 days before</option>
@@ -516,23 +516,22 @@ def render_dashboard_html() -> str:
   </div>
 
   <!-- ======================================================== -->
-  <!-- VIEW 4: SARAL AI (PRIVATE GEMINI RAG + PUBLIC SCHEMES)   -->
+  <!-- VIEW 4: SARAL AI STUDY ASSISTANT & DOCUMENT CHECKER      -->
   <!-- ======================================================== -->
   <div id="workspaceAssistant" class="hidden space-y-5">
     <!-- Sub-mode Switcher Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div class="inline-flex border-2 border-ink bg-white self-start">
         <button id="submodePrivateBtn" onclick="switchAssistantSubmode('private')" class="px-3.5 py-2 text-xs font-bold bg-ink text-accent">
-          Private Knowledge Base (Gemini RAG)
+          My Study Assistant
         </button>
         <button id="submodePublicBtn" onclick="switchAssistantSubmode('public')" class="px-3.5 py-2 text-xs font-bold bg-white text-ink hover:bg-sand">
-          Public Schemes &amp; Doc Checker
+          Schemes &amp; Document Check
         </button>
       </div>
-      <div id="saralV2BackendBadge" class="text-[11px] font-mono text-neutral-600 font-semibold"></div>
     </div>
 
-    <!-- SUB-VIEW A: MULTI-TENANT PRIVATE KNOWLEDGE BASE & STREAMING GEMINI RAG -->
+    <!-- SUB-VIEW A: PERSONAL STUDY SPACE -->
     <div id="assistantPrivatePanel" class="space-y-4">
       <!-- Login Gate (Shown when unauthenticated) -->
       <div id="privateAuthGate" class="nb-card p-8 text-center space-y-4">
@@ -540,14 +539,14 @@ def render_dashboard_html() -> str:
           <span class="material-symbols-outlined text-2xl text-ink">lock_person</span>
         </div>
         <div class="space-y-1 max-w-lg mx-auto">
-          <h2 class="font-display font-bold text-xl text-ink">Sign In for Your Private Multi-Tenant Saral AI</h2>
+          <h2 class="font-display font-bold text-xl text-ink">Sign In to Your Personal Study Space</h2>
           <p class="text-xs text-neutral-600 leading-relaxed">
-            Upload PDFs, lecture notes, Markdown files, or arXiv papers into your isolated knowledge base. Switch between <strong>Student</strong>, <strong>Researcher</strong>, and <strong>Educator</strong> modes with streamed Gemini responses, LaTeX math, and clickable page-level citations.
+            Upload your PDFs, lecture notes, or research papers to get clear, cited answers tailored to <strong>Student</strong>, <strong>Researcher</strong>, or <strong>Educator</strong> mode.
           </p>
         </div>
         <button onclick="openAuthModal()" class="nb-btn px-5 py-2.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-bold inline-flex items-center gap-2">
           <span class="material-symbols-outlined text-[18px]">passkey</span>
-          <span>Continue with Google / Sign In</span>
+          <span>Continue with Google</span>
         </button>
       </div>
 
@@ -557,7 +556,7 @@ def render_dashboard_html() -> str:
         <div class="lg:col-span-5 space-y-4">
           <div class="nb-card p-4 space-y-3 text-xs">
             <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-              <h3 class="font-display font-bold text-sm">Private Document Library</h3>
+              <h3 class="font-display font-bold text-sm">My Documents</h3>
               <span id="privateDocCount" class="px-2 py-0.5 bg-cream border border-ink font-mono text-[10px] font-bold">0 docs</span>
             </div>
 
@@ -567,10 +566,10 @@ def render_dashboard_html() -> str:
               <button type="button" onclick="uploadPrivateDocument()" class="nb-btn px-3 py-1 bg-ink text-accent hover:bg-accent hover:text-ink text-[11px] font-bold shrink-0">Upload</button>
             </div>
 
-            <!-- Ingest URL / arXiv -->
+            <!-- Add Link / Paper -->
             <form onsubmit="event.preventDefault(); ingestPrivateUrl();" class="flex gap-1.5">
-              <input id="privateUrlInput" type="url" placeholder="Paste web or arXiv URL (https://arxiv.org/abs/...)" class="flex-1 bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-[11px]"/>
-              <button type="submit" class="nb-btn px-3 py-1.5 bg-white hover:bg-accent text-[11px] font-bold shrink-0">Ingest URL</button>
+              <input id="privateUrlInput" type="url" placeholder="Paste an article or paper link (https://...)" class="flex-1 bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-[11px]"/>
+              <button type="submit" class="nb-btn px-3 py-1.5 bg-white hover:bg-accent text-[11px] font-bold shrink-0">Add Link</button>
             </form>
 
             <!-- Document Status List -->
@@ -580,34 +579,34 @@ def render_dashboard_html() -> str:
           <!-- Persisted Multi-Turn Sessions -->
           <div class="nb-card p-4 space-y-2.5 text-xs">
             <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-              <h3 class="font-display font-bold text-sm">Study &amp; Chat Sessions</h3>
+              <h3 class="font-display font-bold text-sm">Recent Chats</h3>
               <button onclick="startNewPrivateSession()" class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold hover:bg-ink hover:text-accent">+ New Chat</button>
             </div>
             <div id="privateSessionsList" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
           </div>
         </div>
 
-        <!-- Right: Streaming Grounded Chat -->
+        <!-- Right: Study Assistant Chat -->
         <div class="lg:col-span-7 nb-card flex flex-col h-[620px]">
           <div id="privateChatHeader" class="px-4 py-3 border-b-2 border-ink bg-accent flex flex-wrap items-center justify-between gap-2">
             <div>
               <div class="flex items-center gap-2">
-                <h2 class="font-display font-bold text-base">Saral AI Private Tutor</h2>
+                <h2 class="font-display font-bold text-base">Saral AI</h2>
                 <span id="privateModeBadge" class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">Student Mode</span>
               </div>
-              <p id="privateModeDesc" class="text-[11px] text-neutral-800 mt-0.5">Step-by-step conceptual explanations with strict inline citations.</p>
+              <p id="privateModeDesc" class="text-[11px] text-neutral-800 mt-0.5">Step-by-step explanations with clickable page citations.</p>
             </div>
           </div>
 
           <div id="privateChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm bg-cream/50">
             <div class="p-3.5 bg-white border-2 border-ink text-xs text-neutral-700 leading-relaxed">
-              Upload a PDF, Markdown note, text file, or arXiv link on the left, then ask any question here. Answers stream live with LaTeX math and clickable <strong>[Source: Document, Page]</strong> citations.
+              Upload your notes, PDFs, or links on the left, then ask any question here. Click any citation badge to inspect the exact source passage.
             </div>
           </div>
 
           <form onsubmit="event.preventDefault(); sendPrivateRagStream();" class="p-3 border-t-2 border-ink bg-white flex gap-2">
             <input id="privateChatInput" type="text" placeholder="Ask about your uploaded notes, formulas, or research papers..." class="flex-1 bg-cream/60 border-2 border-ink px-3 py-2 text-sm focus:outline-none focus:bg-white"/>
-            <button id="privateChatSendBtn" type="submit" class="nb-btn px-4 py-2 bg-ink text-accent text-xs font-bold hover:bg-accent hover:text-ink">Stream</button>
+            <button id="privateChatSendBtn" type="submit" class="nb-btn px-4 py-2 bg-ink text-accent text-xs font-bold hover:bg-accent hover:text-ink">Ask</button>
           </form>
         </div>
       </div>
@@ -621,7 +620,7 @@ def render_dashboard_html() -> str:
         <div>
           <div class="flex items-center gap-2">
             <h2 class="font-display font-bold text-base">Saral Samjhauti AI</h2>
-            <span id="ragBackendBadge" class="px-1.5 py-0.5 bg-ink text-accent font-mono text-[9px] font-bold">Grounded RAG</span>
+            <span class="px-1.5 py-0.5 bg-ink text-accent font-mono text-[9px] font-bold">BILINGUAL</span>
           </div>
           <p class="text-[11px] text-neutral-800">Ask in English or Hinglish about certificates, DBT seeding, or live schemes.</p>
         </div>
@@ -684,22 +683,22 @@ def render_dashboard_html() -> str:
     </div>
     <div class="p-5 space-y-4 text-xs">
       <p class="text-neutral-600 leading-relaxed">
-        Sign in to unlock your isolated private Knowledge Base, persistent multi-turn chat sessions, and role-based <strong>Student / Researcher / Educator</strong> modes.
+        Sign in to save your study documents, keep your chat history, and switch between <strong>Student</strong>, <strong>Researcher</strong>, and <strong>Educator</strong> modes.
       </p>
       <a id="googleOAuthBtn" href="/api/auth/google/login" class="nb-btn w-full py-2.5 bg-white hover:bg-cream text-ink font-bold inline-flex items-center justify-center gap-2">
         <span class="font-display font-bold text-base text-cobalt">G</span>
-        <span>Continue with Google (OAuth 2.0)</span>
+        <span>Continue with Google</span>
       </a>
-      <div id="googleOAuthHint" class="hidden p-2 bg-cream border border-ink/40 text-[11px] font-mono text-neutral-600">
-        Configure GOOGLE_CLIENT_ID &amp; GOOGLE_CLIENT_SECRET in .env to enable Google OAuth redirect.
+      <div id="googleOAuthHint" class="hidden p-2 bg-cream border border-ink/40 text-[11px] text-neutral-600">
+        Google sign-in is currently unavailable. You can continue with Guest Access below.
       </div>
       <div id="devLoginSection" class="pt-3 border-t-2 border-ink/15 space-y-2.5">
-        <div class="font-mono text-[10px] font-bold uppercase text-neutral-500">Local Sandbox Sign-In (HTTP-only JWT Cookies)</div>
+        <div class="font-mono text-[10px] font-bold uppercase text-neutral-500">Quick Guest Sign-In</div>
         <form onsubmit="event.preventDefault(); submitDevLogin();" class="space-y-2">
           <input id="devLoginName" type="text" value="Aarav Student" placeholder="Full Name" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
           <input id="devLoginEmail" type="email" value="student@madadgaarai.local" placeholder="Email Address" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
           <button type="submit" class="nb-btn w-full py-2 bg-ink text-accent hover:bg-accent hover:text-ink font-bold">
-            Sign In to Private Workspace
+            Continue as Guest
           </button>
         </form>
       </div>
@@ -707,13 +706,13 @@ def render_dashboard_html() -> str:
   </div>
 </div>
 
-<!-- ================= CITATION CHUNK INSPECTOR DRAWER ================= -->
+<!-- ================= CITATION PASSAGE DRAWER ================= -->
 <div id="citationModal" class="hidden fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeCitationModal()">
   <div class="bg-white border-2 border-ink shadow-[6px_6px_0px_#18181b] max-w-xl w-full max-h-[82vh] flex flex-col overflow-hidden">
     <div class="p-4 border-b-2 border-ink bg-cream flex items-start justify-between gap-2">
       <div>
         <div id="citMetaBadges" class="flex flex-wrap gap-1.5 mb-1"></div>
-        <h3 id="citDocTitle" class="font-display font-bold text-base text-ink">Source Chunk</h3>
+        <h3 id="citDocTitle" class="font-display font-bold text-base text-ink">Source Passage</h3>
       </div>
       <button onclick="closeCitationModal()" class="p-1 border-2 border-ink bg-white hover:bg-accent"><span class="material-symbols-outlined text-[16px] block">close</span></button>
     </div>
@@ -742,7 +741,7 @@ def render_dashboard_html() -> str:
           <span id="dmSaveLabel">Save to Tracker</span>
         </button>
         <a id="dmCal" href="#" download class="nb-btn px-3 py-2 bg-white hover:bg-sand text-xs font-semibold inline-flex items-center gap-1">
-          <span class="material-symbols-outlined text-[16px]">calendar_month</span> .ics
+          <span class="material-symbols-outlined text-[16px]">calendar_month</span> Calendar
         </a>
       </div>
       <a id="dmApply" href="#" target="_blank" rel="noopener noreferrer" class="nb-btn px-5 py-2 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-bold inline-flex items-center gap-1.5">
@@ -756,12 +755,8 @@ def render_dashboard_html() -> str:
 <!-- ================= FOOTER ================= -->
 <footer class="border-t-2 border-ink bg-sand/60 py-4 text-xs text-neutral-600">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-    <div><strong class="text-ink">MadadgaarAI</strong> — Live Government, Company &amp; Research Opportunities</div>
-    <div class="flex items-center gap-3 font-mono text-[11px]">
-      <a href="/docs" target="_blank" class="hover:underline text-ink">API Docs</a>
-      <span>·</span>
-      <a href="/api/health" target="_blank" class="hover:underline text-ink">Health</a>
-    </div>
+    <div><strong class="text-ink">MadadgaarAI</strong> — Verified Scholarships, Internships &amp; Research Grants</div>
+    <div class="text-[11px] text-neutral-500">Official Sources · Updated Regularly</div>
   </div>
 </footer>
 
@@ -864,13 +859,15 @@ def render_dashboard_html() -> str:
         const badgeCls = r.eligibility_status === 'ELIGIBLE'
           ? 'bg-forest text-white'
           : (r.eligibility_status === 'HIGH_PROBABILITY' ? 'bg-accent text-ink' : 'bg-vermilion text-white');
+        const statusLabels = { ELIGIBLE: 'Eligible', HIGH_PROBABILITY: 'Strong Match', INELIGIBLE: 'Not Eligible' };
+        const friendlyStatus = statusLabels[r.eligibility_status] || r.eligibility_status;
         const reasons = (r.match_reasons || []).slice(0, 3).map(x => `<li class="text-[11px] text-neutral-700">${escapeHtml(x)}</li>`).join('');
         const disq = (r.disqualifying_conditions || []).slice(0, 2).map(x => `<li class="text-[11px] text-vermilion font-medium">${escapeHtml(x)}</li>`).join('');
         return `
           <div class="nb-card p-4 space-y-2">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-1.5">
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold border border-ink ${badgeCls}">${escapeHtml(r.eligibility_status)}</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold border border-ink ${badgeCls}">${escapeHtml(friendlyStatus)}</span>
                 <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-cream border border-ink">${Math.round(r.match_percentage || 0)}% Fit</span>
               </div>
               <span class="text-[11px] font-mono text-neutral-500">${escapeHtml(r.foa.agency)}</span>
@@ -888,15 +885,15 @@ def render_dashboard_html() -> str:
           </div>
         `;
       }).join('') + `</div>`;
-      showToast(`Matched ${results.length} live student opportunities!`, 'success');
+      showToast(`Found ${results.length} matching opportunities for your profile!`, 'success');
     } catch (e) {
-      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Student matcher failed: ${escapeHtml(e.message)}</div>`;
+      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Could not check eligibility right now. Please try again.</div>`;
     }
   }
 
   async function runResearcherGrantMatch() {
     const out = document.getElementById('matcherResultsContainer');
-    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Running Hybrid BM25 + Dense Vector RRF + Compliance evaluation...</div>';
+    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Finding matching research grants for your profile...</div>';
     const payload = {
       researcher_name: document.getElementById('rmName').value.trim() || 'Dr. Principal Investigator',
       highest_degree: document.getElementById('rmDegree').value.trim() || 'Ph.D.',
@@ -911,7 +908,7 @@ def render_dashboard_html() -> str:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const results = await res.json();
       if (!results.length) {
         out.innerHTML = '<div class="nb-card p-6 text-xs text-neutral-600">No matching research grants found.</div>';
@@ -920,13 +917,15 @@ def render_dashboard_html() -> str:
       out.innerHTML = `<div class="space-y-3 text-left">` + results.map(m => {
         const st = m.compliance?.status || 'ELIGIBLE';
         const badgeCls = st === 'ELIGIBLE' ? 'bg-forest text-white' : (st === 'WARNING' ? 'bg-accent text-ink' : 'bg-vermilion text-white');
+        const stLabels = { ELIGIBLE: 'Eligible', WARNING: 'Check Criteria', INELIGIBLE: 'Not Eligible' };
+        const friendlySt = stLabels[st] || st;
         const kws = (m.matching_keywords || []).slice(0, 4).map(k => `<span class="px-1.5 py-0.5 bg-cream border border-ink/50 font-mono text-[10px]">${escapeHtml(k)}</span>`).join('');
         return `
           <div class="nb-card p-4 space-y-2">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-1.5">
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold border border-ink ${badgeCls}">${escapeHtml(st)}</span>
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-cream border border-ink">Score ${(m.relevance_score * 100).toFixed(0)}%</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold border border-ink ${badgeCls}">${escapeHtml(friendlySt)}</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-cream border border-ink">${(m.relevance_score * 100).toFixed(0)}% Match</span>
                 <span class="text-[10px] font-mono text-cobalt font-semibold">${escapeHtml(m.deadline_status || 'OPEN')}</span>
               </div>
               <span class="text-[11px] font-mono text-neutral-500">${escapeHtml(m.foa.agency)}</span>
@@ -944,9 +943,9 @@ def render_dashboard_html() -> str:
           </div>
         `;
       }).join('') + `</div>`;
-      showToast(`Found ${results.length} matched research grants!`, 'success');
+      showToast(`Found ${results.length} matching research grants!`, 'success');
     } catch (e) {
-      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Researcher matcher failed: ${escapeHtml(e.message)}</div>`;
+      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Could not match research grants right now. Please try again.</div>`;
     }
   }
 
@@ -959,7 +958,7 @@ def render_dashboard_html() -> str:
       return;
     }
     const out = document.getElementById('matcherResultsContainer');
-    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Parsing resume &amp; ranking live opportunities semantically...</div>';
+    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Analyzing your resume and finding best matches...</div>';
 
     const fd = new FormData();
     if (fileInp.files && fileInp.files.length) fd.append('file', fileInp.files[0]);
@@ -969,13 +968,13 @@ def render_dashboard_html() -> str:
 
     try {
       const res = await fetch('/api/resume/match', { method: 'POST', body: fd });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       const skillsHtml = (data.detected_skills || []).map(s => `<span class="px-2 py-0.5 bg-accent/70 border border-ink font-mono text-[10px] font-bold">${escapeHtml(s)}</span>`).join('');
       const headerHtml = `
         <div class="nb-card p-4 bg-cream/70 text-left space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <span class="font-display font-bold text-sm">Resume Intelligence (${escapeHtml(data.extraction_method)})</span>
+            <span class="font-display font-bold text-sm">Your Resume Profile</span>
             <span class="font-mono text-[11px] font-bold text-cobalt">${escapeHtml(data.detected_degree)} · ${(data.detected_domains || []).join(', ')}</span>
           </div>
           ${skillsHtml ? `<div class="flex flex-wrap gap-1">${skillsHtml}</div>` : '<div class="text-[11px] text-neutral-500">General academic profile detected.</div>'}
@@ -1011,10 +1010,10 @@ def render_dashboard_html() -> str:
         `;
       }).join('');
 
-      out.innerHTML = `<div class="space-y-3">${headerHtml}${cardsHtml || '<div class="nb-card p-5 text-xs">No matching live opportunities found for this filter.</div>'}</div>`;
-      showToast(`Ranked ${(data.matches || []).length} live opportunities from your resume!`, 'success');
+      out.innerHTML = `<div class="space-y-3">${headerHtml}${cardsHtml || '<div class="nb-card p-5 text-xs">No matching opportunities found for this filter.</div>'}</div>`;
+      showToast(`Found ${(data.matches || []).length} opportunities matching your resume!`, 'success');
     } catch (e) {
-      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Resume match failed: ${escapeHtml(e.message)}</div>`;
+      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Could not analyze your resume right now. Please try again.</div>`;
     }
   }
 
@@ -1208,7 +1207,7 @@ def render_dashboard_html() -> str:
 
   async function updateStatsCounters() {
     try {
-      const [res, hRes] = await Promise.all([fetch('/api/stats'), fetch('/api/health')]);
+      const res = await fetch('/api/stats');
       if (res.ok) {
         const s = await res.json();
         const sb = s.source_type_breakdown || {};
@@ -1216,11 +1215,6 @@ def render_dashboard_html() -> str:
         document.getElementById('statGovt').innerText = sb['Government'] || 0;
         document.getElementById('statCompany').innerText = sb['Company / Corporate'] || 0;
         document.getElementById('statFound').innerText = sb['Foundation / University'] || 0;
-      }
-      if (hRes.ok) {
-        const h = await hRes.json();
-        const badge = document.getElementById('ragBackendBadge');
-        if (badge && h.llm_synthesis_backend) badge.innerText = h.llm_synthesis_backend;
       }
     } catch (e) {}
   }
@@ -1246,7 +1240,7 @@ def render_dashboard_html() -> str:
 
     try {
       const res = await fetch(`/api/opportunities?${params.toString()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       populateFacets(data.facets);
       allFetchedItems = data.items || [];
@@ -1254,9 +1248,9 @@ def render_dashboard_html() -> str:
       visibleCount = 18;
 
       document.getElementById('resultsSummaryText').innerHTML =
-        `Showing <strong class="text-ink">${allFetchedItems.length}</strong> of ${data.total_in_store} live verified opportunities`;
+        `Showing <strong class="text-ink">${allFetchedItems.length}</strong> of ${data.total_in_store} verified opportunities`;
       document.getElementById('cacheStatusLabel').innerText = data.last_refreshed_at
-        ? `Synced ${formatRelativeTime(data.last_refreshed_at)}`
+        ? `Updated ${formatRelativeTime(data.last_refreshed_at)}`
         : '';
 
       const errBanner = document.getElementById('sourceErrorBanner');
@@ -1272,12 +1266,12 @@ def render_dashboard_html() -> str:
       document.getElementById('opportunitiesGrid').innerHTML = `
         <div class="col-span-full nb-card p-10 text-center space-y-3">
           <span class="material-symbols-outlined text-4xl text-vermilion">cloud_off</span>
-          <h3 class="font-display font-bold text-lg">Unable to Load Live Opportunities</h3>
-          <p class="text-xs text-neutral-600">Backend query failed (${escapeHtml(err.message)}). No mock data shown.</p>
+          <h3 class="font-display font-bold text-lg">Unable to Load Opportunities</h3>
+          <p class="text-xs text-neutral-600">We couldn't load listings right now. Please try again in a moment.</p>
           <button onclick="fetchOpportunities()" class="nb-btn px-4 py-2 bg-ink text-accent text-xs font-bold">Retry</button>
         </div>
       `;
-      showToast('Failed to load live opportunities.', 'error');
+      showToast('Could not load opportunities right now.', 'error');
     }
   }
 
@@ -1298,8 +1292,8 @@ def render_dashboard_html() -> str:
           <h3 class="font-display font-bold text-lg">No Live Results Found</h3>
           <p class="text-xs text-neutral-600 max-w-md mx-auto">
             ${totalInStore === 0
-              ? 'No opportunities cached yet. Click "Refresh Live Data" to fetch from live portals.'
-              : 'No live opportunities match your current filters.'}
+              ? 'No opportunities loaded yet. Click "Refresh Live Data" to check official portals.'
+              : 'No opportunities match your current filters.'}
           </p>
           <div class="flex justify-center gap-2 pt-1">
             <button onclick="resetAllFilters()" class="nb-btn px-4 py-2 bg-white hover:bg-sand text-xs font-bold">Reset Filters</button>
@@ -1356,10 +1350,10 @@ def render_dashboard_html() -> str:
               <span class="truncate block">${escapeHtml(opp.source_domain)}</span>
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
-              <button onclick="toggleSaveOpportunity(${idx})" class="px-2 py-1.5 text-[11px] font-bold border-2 border-ink ${isOppSaved(opp.id) ? 'bg-accent text-ink' : 'bg-white hover:bg-sand text-neutral-700'}" title="Save to Personal Kanban Tracker">
+              <button onclick="toggleSaveOpportunity(${idx})" class="px-2 py-1.5 text-[11px] font-bold border-2 border-ink ${isOppSaved(opp.id) ? 'bg-accent text-ink' : 'bg-white hover:bg-sand text-neutral-700'}" title="Save to My Tracker">
                 ${isOppSaved(opp.id) ? '★ Saved' : '+ Save'}
               </button>
-              <button onclick="openDetailModal(${idx})" class="px-2.5 py-1.5 text-[11px] font-semibold border-2 border-ink bg-cream hover:bg-sand" title="View full details & Deep Analyze">Details</button>
+              <button onclick="openDetailModal(${idx})" class="px-2.5 py-1.5 text-[11px] font-semibold border-2 border-ink bg-cream hover:bg-sand" title="View details & requirements">Details</button>
               <a href="${escapeHtml(opp.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1.5 bg-ink text-white hover:bg-accent hover:text-ink text-[11px] font-bold inline-flex items-center gap-1">
                 <span>Apply</span>
                 <span class="material-symbols-outlined text-[14px]">open_in_new</span>
@@ -1403,12 +1397,12 @@ def render_dashboard_html() -> str:
       </div>
       <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
         <div class="text-[11px] font-mono text-forest font-semibold">
-          ✓ Link HTTP ${opp.http_status} verified (${formatRelativeTime(opp.last_verified_at)})
+          ✓ Official link verified (${formatRelativeTime(opp.last_verified_at)})
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button id="deepAnalyzeBtn" onclick="runDeepPageAnalysis('${escapeHtml(opp.id)}')" class="nb-btn px-3 py-1.5 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[15px]">plumbing</span>
-            <span>Deep Analyze Page</span>
+            <span class="material-symbols-outlined text-[15px]">article</span>
+            <span>Summarize Requirements</span>
           </button>
           <button id="draftProposalBtn" onclick="runProposalDraft('${escapeHtml(opp.id)}')" class="nb-btn px-3 py-1.5 bg-white text-ink hover:bg-cobalt hover:text-white text-xs font-bold inline-flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[15px]">edit_note</span>
@@ -1430,14 +1424,14 @@ def render_dashboard_html() -> str:
     if (!box) return;
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">sync</span><span>Reading Live Official Page...</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">sync</span><span>Reading Official Details...</span>';
     }
     box.classList.remove('hidden');
-    box.innerHTML = '<div class="p-3.5 bg-cream border-2 border-ink font-mono text-xs animate-pulse">Fetching live destination HTML/PDF circular &amp; running layout + entity extraction...</div>';
+    box.innerHTML = '<div class="p-3.5 bg-cream border-2 border-ink font-mono text-xs animate-pulse">Reading the official listing and summarizing key requirements...</div>';
 
     try {
       const res = await fetch(`/api/opportunities/${encodeURIComponent(oppId)}/deep-analyze`, { method: 'POST' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const d = await res.json();
 
       const eligHtml = (d.eligibility_highlights || []).map(item =>
@@ -1455,47 +1449,47 @@ def render_dashboard_html() -> str:
         `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-white border border-ink hover:bg-accent text-[11px] font-mono font-bold text-cobalt inline-flex items-center gap-1">📎 Official PDF / Circular ↗</a>`
       ).join('');
       const deadlineDisplay = d.extracted_deadline || d.extracted_deadline_text || 'Check Official Page';
-      const statusBadge = d.http_status ? `HTTP ${escapeHtml(d.http_status)} · ` : '';
+      const sourceLabel = d.is_pdf_parsed ? 'PDF Circular' : 'Official Source';
 
       box.innerHTML = `
         <div class="p-4 bg-sand/70 border-2 border-ink space-y-3 text-xs">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ink/20 pb-2">
-            <span class="font-display font-bold text-sm text-ink">Deep-Page Official Circular Intelligence</span>
-            <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">${statusBadge}${escapeHtml(d.content_type || 'text/html')}${d.word_count ? ` · ${d.word_count} words` : ''}</span>
+            <span class="font-display font-bold text-sm text-ink">Requirements &amp; Application Summary</span>
+            <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">${sourceLabel}</span>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div class="p-2.5 bg-white border border-ink">
-              <span class="text-[10px] font-mono text-neutral-500 block">EXTRACTED FINANCIALS / STIPEND</span>
+              <span class="text-[10px] font-mono text-neutral-500 block">STIPEND / AWARD</span>
               <strong class="text-ink">${escapeHtml(d.extracted_financials)}</strong>
             </div>
             <div class="p-2.5 bg-white border border-ink">
-              <span class="text-[10px] font-mono text-neutral-500 block">EXTRACTED DEADLINE</span>
+              <span class="text-[10px] font-mono text-neutral-500 block">DEADLINE</span>
               <strong class="text-ink">${escapeHtml(deadlineDisplay)}</strong>
             </div>
           </div>
           ${d.key_excerpt ? `<p class="text-[11px] text-neutral-700 bg-white/80 p-2 border border-ink/30 leading-relaxed">${escapeHtml(d.key_excerpt)}</p>` : ''}
           <div>
-            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Key Eligibility &amp; Guidelines From Page</span>
+            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Eligibility &amp; Key Guidelines</span>
             <ul class="space-y-1 text-neutral-800">${eligHtml}</ul>
           </div>
           <div>
             <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Required Documents Checklist</span>
             <div class="flex flex-wrap gap-1.5">${docsHtml}</div>
           </div>
-          ${pdfLinksHtml ? `<div><span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Direct Circular / Guideline Attachments</span><div class="flex flex-wrap gap-1.5">${pdfLinksHtml}</div></div>` : ''}
+          ${pdfLinksHtml ? `<div><span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Official Guidelines &amp; Attachments</span><div class="flex flex-wrap gap-1.5">${pdfLinksHtml}</div></div>` : ''}
           <div>
             <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Application Steps</span>
             <ol class="space-y-1 text-neutral-800">${stepsHtml}</ol>
           </div>
         </div>
       `;
-      showToast('Deep-page circular analysis complete.', 'success');
+      showToast('Requirements summary ready.', 'success');
     } catch (err) {
-      box.innerHTML = `<div class="p-3 bg-red-50 border-2 border-vermilion text-vermilion text-xs font-semibold">Could not deep-analyze page (${escapeHtml(err.message)}).</div>`;
+      box.innerHTML = `<div class="p-3 bg-red-50 border-2 border-vermilion text-vermilion text-xs font-semibold">Could not read details from the official page right now. Try opening the official link directly.</div>`;
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">check_circle</span><span>Re-Run Deep Analysis</span>';
+        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">check_circle</span><span>Refresh Summary</span>';
       }
     }
   }
@@ -1511,7 +1505,7 @@ def render_dashboard_html() -> str:
       btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">sync</span><span>Drafting...</span>';
     }
     box.classList.remove('hidden');
-    box.innerHTML = '<div class="p-3.5 bg-cream border-2 border-ink font-mono text-xs animate-pulse">Generating structured Proposal / SOP skeleton &amp; MoF budget norms...</div>';
+    box.innerHTML = '<div class="p-3.5 bg-cream border-2 border-ink font-mono text-xs animate-pulse">Preparing your proposal outline and checklist...</div>';
 
     try {
       const res = await fetch(`/api/foas/${encodeURIComponent(oppId)}/draft-proposal`, {
@@ -1519,7 +1513,7 @@ def render_dashboard_html() -> str:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const d = await res.json();
       const sections = (d.sections || []).slice(0, 5);
       lastDraftPlainText = (d.sections || []).map(s => `${s.section_title}\n${s.drafted_content}`).join('\n\n');
@@ -1534,23 +1528,23 @@ def render_dashboard_html() -> str:
       box.innerHTML = `
         <div class="p-4 bg-cream border-2 border-ink space-y-3 text-xs">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ink/20 pb-2">
-            <span class="font-display font-bold text-sm text-ink">Starter Proposal / SOP Blueprint (${(d.sections || []).length} Sections)</span>
+            <span class="font-display font-bold text-sm text-ink">Draft Proposal / SOP Outline (${(d.sections || []).length} Sections)</span>
             <button onclick="copyDraftToClipboard()" class="px-2.5 py-1 bg-ink text-accent border border-ink font-mono text-[10px] font-bold hover:bg-accent hover:text-ink">Copy Full Draft</button>
           </div>
           <div class="space-y-2">${secHtml}</div>
           <div>
-            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Compliance Checklist</span>
+            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Key Checklist</span>
             <ul class="space-y-0.5 text-neutral-800">${chkHtml}</ul>
           </div>
         </div>
       `;
-      showToast('Proposal / SOP blueprint generated!', 'success');
+      showToast('Draft outline ready!', 'success');
     } catch (err) {
-      box.innerHTML = `<div class="p-3 bg-red-50 border-2 border-vermilion text-vermilion text-xs font-semibold">Draft generation failed (${escapeHtml(err.message)}).</div>`;
+      box.innerHTML = `<div class="p-3 bg-red-50 border-2 border-vermilion text-vermilion text-xs font-semibold">Could not prepare the draft right now. Please try again.</div>`;
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">edit_note</span><span>Re-Draft Proposal / SOP</span>';
+        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">edit_note</span><span>Regenerate Draft</span>';
       }
     }
   }
@@ -1559,7 +1553,7 @@ def render_dashboard_html() -> str:
     if (!lastDraftPlainText) return;
     try {
       await navigator.clipboard.writeText(lastDraftPlainText);
-      showToast('Full 11-section draft copied to clipboard!', 'success');
+      showToast('Full draft copied to clipboard!', 'success');
     } catch (e) {
       showToast('Copy failed — select and copy text manually.', 'warning');
     }
@@ -1573,9 +1567,9 @@ def render_dashboard_html() -> str:
       return;
     }
     currentModalOpp = { id: foaId, title: title || foaId };
-    document.getElementById('dmBadges').innerHTML = '<span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-ink bg-accent">Proposal Blueprint</span>';
+    document.getElementById('dmBadges').innerHTML = '<span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-ink bg-accent">Draft Outline</span>';
     document.getElementById('dmTitle').innerText = title || foaId;
-    document.getElementById('dmOrg').innerText = 'Automated Proposal / SOP Generator';
+    document.getElementById('dmOrg').innerText = 'Proposal & SOP Assistant';
     document.getElementById('dmBody').innerHTML = '<div id="proposalDraftContainer"></div>';
     document.getElementById('dmCal').href = `/api/foas/${encodeURIComponent(foaId)}/calendar`;
     document.getElementById('dmApply').href = '#';
@@ -1785,14 +1779,14 @@ def render_dashboard_html() -> str:
       trackerReminders = data.reminders || [];
       document.getElementById('remTarget').value = '';
       renderRemindersList(data.due_alerts || []);
-      showToast(`Saved ${lead_days}-day ${channel} reminder!`, 'success');
+      showToast(`Reminder set for ${lead_days} days before deadline.`, 'success');
     } catch (e) { showToast('Could not save reminder.', 'error'); }
   }
 
   async function deleteTrackerReminder(remId) {
     try {
       const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders/${remId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       trackerReminders = data.reminders || [];
       renderRemindersList([]);
@@ -1803,16 +1797,19 @@ def render_dashboard_html() -> str:
   async function dispatchTrackerReminders() {
     try {
       const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders/dispatch`, { method: 'POST' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       const list = data.dispatched || [];
       if (!list.length) {
-        showToast('Add a reminder rule above first to test deadline alerts.', 'warning');
+        showToast('Add a reminder above first to check upcoming deadlines.', 'warning');
         return;
       }
       const totalDue = list.reduce((acc, x) => acc + (x.due_count || 0), 0);
-      showToast(`Checked ${list.length} reminder rule(s): ${totalDue} approaching saved deadline(s).`, totalDue > 0 ? 'warning' : 'success');
-    } catch (e) { showToast('Alert check failed.', 'error'); }
+      showToast(
+        totalDue > 0 ? `${totalDue} saved deadline(s) closing soon.` : 'All caught up — no urgent deadlines right now.',
+        totalDue > 0 ? 'warning' : 'success'
+      );
+    } catch (e) { showToast('Could not check reminders right now.', 'error'); }
   }
 
   function renderRemindersList(dueAlerts) {
@@ -1898,13 +1895,13 @@ def render_dashboard_html() -> str:
     const label = document.getElementById('refreshBtnLabel');
     btn.disabled = true;
     icon.classList.add('animate-spin');
-    if (label) label.innerText = 'Syncing...';
+    if (label) label.innerText = 'Updating...';
     renderSkeletons(6);
-    showToast('Crawling live Government portals & top company boards...', 'info');
+    showToast('Checking official portals for the latest opportunities...', 'info');
 
     try {
       const res = await fetch('/api/opportunities/refresh?force=true', { method: 'POST' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const report = await res.json();
       facetsInitialized = false;
       document.getElementById('filterDomain').innerHTML = '<option value="All">All Domains</option>';
@@ -1912,11 +1909,11 @@ def render_dashboard_html() -> str:
       await updateStatsCounters();
       await fetchOpportunities();
       showToast(
-        `Synced ${report.total_live_opportunities} live opportunities (${report.broken_links_discarded} broken & ${report.expired_filtered} expired removed).`,
+        `Updated! ${report.total_live_opportunities} active opportunities available.`,
         report.source_errors && report.source_errors.length > 0 ? 'warning' : 'success'
       );
     } catch (err) {
-      showToast(`Live refresh failed: ${err.message}`, 'error');
+      showToast('Could not update opportunities right now. Please try again.', 'error');
       await fetchOpportunities();
     } finally {
       btn.disabled = false;
@@ -1989,11 +1986,15 @@ def render_dashboard_html() -> str:
 
   function renderDocResult(data) {
     const out = document.getElementById('docOutput');
+    const niceDocType = String(data.document_type || 'Document')
+      .replace(/_/g, ' ')
+      .toLowerCase()
+      .replace(/\b\w/g, c => c.toUpperCase());
     const fields = (data.extracted_fields || []).map(f =>
       `<div class="p-2 bg-cream border border-ink flex justify-between gap-2 font-mono text-[11px]"><span><strong>${escapeHtml(f.field_name)}:</strong> ${escapeHtml(f.extracted_value || 'Missing')}</span><span class="font-bold">${escapeHtml(f.status)}</span></div>`
     ).join('');
     out.innerHTML = `
-      <div class="font-mono font-bold text-cobalt">${escapeHtml(data.document_type)} (${escapeHtml(data.extraction_method)})</div>
+      <div class="font-display font-bold text-cobalt text-sm">${escapeHtml(niceDocType)}</div>
       <div class="space-y-1.5">${fields}</div>
       <div class="p-2 bg-accent/60 border border-ink text-[10px] font-medium">${escapeHtml(data.authenticity_disclaimer)}</div>
     `;
@@ -2008,7 +2009,7 @@ def render_dashboard_html() -> str:
   });
 
   // =================================================================
-  // Google OAuth 2.0 + JWT Auth, User Mode Switcher & Private KB RAG
+  // Account Sign-In, Study Mode Switcher & Personal Study Assistant
   // =================================================================
   let authConfig = null;
   let currentUser = null;
@@ -2073,13 +2074,11 @@ def render_dashboard_html() -> str:
       const cfgRes = await fetch('/api/auth/config');
       if (cfgRes.ok) {
         authConfig = await cfgRes.json();
-        const b = document.getElementById('saralV2BackendBadge');
-        if (b && authConfig.gemini_rag_backend) b.innerText = `Engine: ${authConfig.gemini_rag_backend}`;
         if (!authConfig.google_oauth_code_flow_enabled) {
           document.getElementById('googleOAuthBtn').classList.add('opacity-50', 'pointer-events-none');
           document.getElementById('googleOAuthHint').classList.remove('hidden');
         }
-        if (!authConfig.dev_auth_allowed) {
+        if (authConfig.google_oauth_code_flow_enabled || !authConfig.dev_auth_allowed) {
           document.getElementById('devLoginSection').classList.add('hidden');
         }
       }
@@ -2107,7 +2106,7 @@ def render_dashboard_html() -> str:
         credentials: 'include',
         body: JSON.stringify({ email, full_name })
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Sign-in failed');
       const data = await res.json();
       currentUser = data.user;
       closeAuthModal();
@@ -2116,7 +2115,7 @@ def render_dashboard_html() -> str:
       await loadPrivateSessions();
       showToast(`Signed in as ${currentUser.full_name} (${currentUser.mode_config?.display_name || 'Student Mode'})`, 'success');
     } catch (e) {
-      showToast('Sign-in failed. Check email and try again.', 'error');
+      showToast('Sign-in failed. Check your email and try again.', 'error');
     }
   }
 
@@ -2128,13 +2127,13 @@ def render_dashboard_html() -> str:
         credentials: 'include',
         body: JSON.stringify({ user_mode: newMode })
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Mode switch failed');
       const data = await res.json();
       currentUser = data.user;
       applyAuthUIState();
       showToast(`Switched to ${currentUser.mode_config?.display_name || newMode}!`, 'info');
     } catch (e) {
-      showToast('Could not switch User Mode.', 'error');
+      showToast('Could not switch mode right now.', 'error');
     }
   }
 
@@ -2146,7 +2145,7 @@ def render_dashboard_html() -> str:
     activePrivateSessionId = null;
     document.getElementById('authUserDropdown').classList.add('hidden');
     applyAuthUIState();
-    showToast('Signed out cleanly.', 'info');
+    showToast('Signed out.', 'info');
   }
 
   async function loadPrivateDocuments() {
@@ -2159,7 +2158,7 @@ def render_dashboard_html() -> str:
       document.getElementById('privateDocCount').innerText = `${docs.length} doc${docs.length === 1 ? '' : 's'}`;
       const listEl = document.getElementById('privateDocsList');
       if (!docs.length) {
-        listEl.innerHTML = '<div class="p-3 border border-dashed border-neutral-300 text-center text-[11px] text-neutral-500">No private documents uploaded yet.</div>';
+        listEl.innerHTML = '<div class="p-3 border border-dashed border-neutral-300 text-center text-[11px] text-neutral-500">No documents uploaded yet.</div>';
         return;
       }
       const badgeStyles = {
@@ -2168,16 +2167,29 @@ def render_dashboard_html() -> str:
         pending: 'bg-accent text-ink',
         failed: 'bg-vermilion text-white'
       };
+      const statusText = {
+        indexed: 'Ready',
+        processing: 'Reading...',
+        pending: 'Queued',
+        failed: 'Failed'
+      };
+      const typeLabels = {
+        pdf: 'PDF',
+        markdown: 'Note',
+        text: 'Text',
+        url: 'Web Link',
+        arxiv: 'Research Paper'
+      };
       listEl.innerHTML = docs.map(d => `
         <div class="p-2.5 bg-cream/60 border border-ink flex items-center justify-between gap-2">
           <div class="min-w-0">
             <div class="font-bold text-ink truncate" title="${escapeHtml(d.title)}">${escapeHtml(d.title)}</div>
             <div class="flex items-center gap-1.5 mt-0.5 font-mono text-[10px]">
-              <span class="px-1.5 py-0.2 border border-ink font-bold uppercase ${badgeStyles[d.status] || 'bg-sand'}">${escapeHtml(d.status)}</span>
-              <span class="text-neutral-600">${d.chunk_count} chunks · ${escapeHtml(d.source_type)}</span>
+              <span class="px-1.5 py-0.2 border border-ink font-bold uppercase ${badgeStyles[d.status] || 'bg-sand'}">${escapeHtml(statusText[d.status] || d.status)}</span>
+              <span class="text-neutral-600">${escapeHtml(typeLabels[d.source_type] || 'Document')}</span>
             </div>
           </div>
-          <button onclick="deletePrivateDocument('${escapeHtml(d.id)}')" class="px-2 py-1 border border-ink bg-white hover:bg-vermilion hover:text-white text-[10px] font-bold shrink-0" title="Delete document and vector chunks">✕</button>
+          <button onclick="deletePrivateDocument('${escapeHtml(d.id)}')" class="px-2 py-1 border border-ink bg-white hover:bg-vermilion hover:text-white text-[10px] font-bold shrink-0" title="Remove document">✕</button>
         </div>
       `).join('');
 
@@ -2197,18 +2209,18 @@ def render_dashboard_html() -> str:
     try {
       const res = await fetch('/api/saral/documents/upload', { method: 'POST', credentials: 'include', body: fd });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(data.detail || 'Upload failed');
       inp.value = '';
-      showToast(data.deduplicated ? 'Document already indexed in your library.' : 'Document queued for indexing!', 'success');
+      showToast(data.deduplicated ? 'This document is already in your library.' : 'Uploaded! Preparing your document...', 'success');
       await loadPrivateDocuments();
-    } catch (e) { showToast(`Upload failed: ${e.message}`, 'error'); }
+    } catch (e) { showToast('Could not upload this file. Please try again.', 'error'); }
   }
 
   async function ingestPrivateUrl() {
     const inp = document.getElementById('privateUrlInput');
     const url = inp.value.trim();
     if (!url) return;
-    showToast('Fetching & indexing URL into your private library...', 'info');
+    showToast('Adding link to your documents...', 'info');
     try {
       const res = await fetch('/api/saral/documents/ingest-url', {
         method: 'POST',
@@ -2217,20 +2229,20 @@ def render_dashboard_html() -> str:
         body: JSON.stringify({ url })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(data.detail || 'Could not add link');
       inp.value = '';
-      showToast(`Indexed "${data.document?.title || 'URL'}" (${data.document?.chunk_count || 0} chunks)!`, 'success');
+      showToast(`Added "${data.document?.title || 'link'}" to your documents!`, 'success');
       await loadPrivateDocuments();
-    } catch (e) { showToast(`URL ingestion failed: ${e.message}`, 'error'); }
+    } catch (e) { showToast('Could not add that link. Please check the URL and try again.', 'error'); }
   }
 
   async function deletePrivateDocument(docId) {
     try {
       const res = await fetch(`/api/saral/documents/${encodeURIComponent(docId)}`, { method: 'DELETE', credentials: 'include' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      showToast('Document & embeddings deleted.', 'info');
+      if (!res.ok) throw new Error('Delete failed');
+      showToast('Document removed.', 'info');
       await loadPrivateDocuments();
-    } catch (e) { showToast('Could not delete document.', 'error'); }
+    } catch (e) { showToast('Could not remove document.', 'error'); }
   }
 
   async function loadPrivateSessions() {
@@ -2242,7 +2254,7 @@ def render_dashboard_html() -> str:
       const list = data.sessions || [];
       const el = document.getElementById('privateSessionsList');
       if (!list.length) {
-        el.innerHTML = '<div class="text-[11px] text-neutral-500">Start asking questions to save study sessions.</div>';
+        el.innerHTML = '<div class="text-[11px] text-neutral-500">Ask a question to start saving your chats.</div>';
         return;
       }
       el.innerHTML = list.map(s => `
@@ -2258,7 +2270,7 @@ def render_dashboard_html() -> str:
     activePrivateSessionId = null;
     document.getElementById('privateChatMessages').innerHTML = `
       <div class="p-3.5 bg-white border-2 border-ink text-xs text-neutral-700 leading-relaxed">
-        Started a fresh private study session. Ask anything grounded in your uploaded library.
+        Started a new chat. Ask anything about your uploaded documents.
       </div>
     `;
     loadPrivateSessions();
@@ -2324,13 +2336,12 @@ def render_dashboard_html() -> str:
   async function openCitationChunk(docId, chunkId) {
     try {
       const res = await fetch(`/api/saral/documents/${encodeURIComponent(docId)}/chunks/${encodeURIComponent(chunkId)}`, { credentials: 'include' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Could not open source');
       const data = await res.json();
       const ch = data.chunk;
       document.getElementById('citMetaBadges').innerHTML = `
         <span class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold">Page ${ch.page_number}</span>
         <span class="px-2 py-0.5 bg-white border border-ink font-mono text-[10px] font-semibold">${escapeHtml(ch.section_header)}</span>
-        <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">${ch.token_count} tokens</span>
       `;
       document.getElementById('citDocTitle').innerText = ch.doc_title;
       const body = document.getElementById('citChunkBody');
@@ -2338,7 +2349,7 @@ def render_dashboard_html() -> str:
       renderMathSafe(body);
       document.getElementById('citationModal').classList.remove('hidden');
     } catch (e) {
-      showToast('Could not load source chunk.', 'error');
+      showToast('Could not open source passage.', 'error');
     }
   }
 
@@ -2354,7 +2365,7 @@ def render_dashboard_html() -> str:
     box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[82%] px-3 py-2 bg-ink text-accent border-2 border-ink text-xs font-semibold">${escapeHtml(query)}</div></div>`);
     const respCard = document.createElement('div');
     respCard.className = 'p-3.5 bg-white border-2 border-ink text-xs sm:text-sm space-y-2';
-    respCard.innerHTML = '<div class="private-md-body font-mono text-xs animate-pulse">Retrieving grounded chunks &amp; streaming...</div><div class="private-cites"></div>';
+    respCard.innerHTML = '<div class="private-md-body font-mono text-xs animate-pulse">Thinking...</div><div class="private-cites"></div>';
     box.appendChild(respCard);
     box.scrollTop = box.scrollHeight;
 
@@ -2369,8 +2380,7 @@ def render_dashboard_html() -> str:
         body: JSON.stringify({ query, session_id: activePrivateSessionId })
       });
       if (!res.ok) {
-        const errJ = await res.json().catch(() => ({}));
-        throw new Error(errJ.detail || `HTTP ${res.status}`);
+        throw new Error('Response unavailable');
       }
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -2404,7 +2414,7 @@ def render_dashboard_html() -> str:
       }
       await loadPrivateSessions();
     } catch (e) {
-      respCard.innerHTML = `<div class="text-vermilion font-semibold text-xs">Streaming failed: ${escapeHtml(e.message)}</div>`;
+      respCard.innerHTML = `<div class="text-vermilion font-semibold text-xs">Could not generate a response right now. Please try again.</div>`;
     } finally {
       btn.disabled = false;
     }

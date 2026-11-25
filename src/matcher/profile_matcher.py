@@ -110,9 +110,9 @@ class ProfileGrantMatcher:
 
             # Build 6-part Explainable Matching Object
             why_matches = (
-                f"{foa.title} ({foa.agency.value}) aligns with your research profile via Hybrid BM25 + Dense Vector RRF "
-                f"(score: {rrf_score:.2f}, domain similarity: {domain_sim:.0%}). "
-                f"The call specifically funds work in {', '.join(foa.thematic_areas[:3])}, with a budget ceiling of "
+                f"{foa.title} ({foa.agency.value}) aligns closely with your research profile "
+                f"(domain fit: {domain_sim:.0%}). "
+                f"This call supports work in {', '.join(foa.thematic_areas[:3])}, with funding up to "
                 f"₹{(foa.financials.max_amount_inr or 0):,.0f} over {foa.duration_months or 36} months."
             )
 
