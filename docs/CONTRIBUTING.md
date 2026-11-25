@@ -78,3 +78,4 @@ python -m pytest tests/ -v
 python -m evaluation.benchmark_runner
 ```
 Ensure all tests pass and no regression occurs in retrieval metrics ($Hit@1 = 100\%$).
+
