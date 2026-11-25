@@ -10,36 +10,56 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{longtable}
 \usepackage{enumitem}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{fancyhdr}
 \usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
-\usepackage{microtype}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit}
+\usepackage[protrusion=true,expansion=false]{microtype}
 \usepackage{titlesec}
 \usepackage{caption}
 \usepackage{float}
 \usepackage{cite}
 
+% Safe Rupee command compatible with pdfLaTeX
+\newcommand{\INR}{INR~}
+
 % ----------------------------------------------------------------------
 % Color Definitions & Hyperlink Setup
 % ----------------------------------------------------------------------
-\definecolor{primaryColor}{RGB}{15, 23, 42}       % Slate Dark
-\definecolor{accentColor}{RGB}{79, 70, 229}       % Indigo
-\definecolor{successColor}{RGB}{16, 185, 129}     % Emerald Green
-\definecolor{codeBackground}{RGB}{248, 250, 252}  % Slate 50
-\definecolor{codeBorder}{RGB}{226, 232, 240}      % Slate 200
+\definecolor{primaryColor}{RGB}{24, 24, 27}        % Neo-Brutalist Ink
+\definecolor{accentColor}{RGB}{0, 85, 255}         % Cobalt Blue
+\definecolor{successColor}{RGB}{19, 136, 8}        % Forest Green
+\definecolor{highlightBg}{RGB}{255, 248, 220}      % Warm Cream
+\definecolor{codeBackground}{RGB}{248, 250, 252}   % Slate 50
+\definecolor{codeBorder}{RGB}{203, 213, 225}       % Slate 300
 
 \hypersetup{
     colorlinks=true,
     linkcolor=accentColor,
-    filecolor=magenta,      
+    filecolor=magenta,
     urlcolor=accentColor,
     citecolor=successColor,
-    pdfpagemode=FullScreen,
+    pdftitle={MadadgaarAI v4.0 — Final Project Report},
+    pdfauthor={Aman Singh, Anjisht Amritanshu, Ayush Choudhary},
+    pdfpagemode=UseOutlines
 }
+
+% ----------------------------------------------------------------------
+% Typography & Spacing
+% ----------------------------------------------------------------------
+\raggedbottom
+\setlength{\parskip}{4pt}
+\setlength{\headheight}{15pt}
+\emergencystretch=2em
+
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\color{primaryColor}}
+  {\chaptername\ \thechapter}{8pt}{\Huge\bfseries}
+\titlespacing*{\chapter}{0pt}{-15pt}{18pt}
 
 % ----------------------------------------------------------------------
 % Code Listing Configuration
@@ -71,11 +91,12 @@
 % ----------------------------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\nouppercase{\leftmark}}
-\fancyhead[R]{MadadgaarAI Mid-Term Report}
-\fancyfoot[C]{\thepage}
+\fancyhead[L]{\footnotesize\nouppercase{\leftmark}}
+\fancyhead[R]{\footnotesize MadadgaarAI Final Report}
+\fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
+\setcounter{tocdepth}{1}
 
 % ----------------------------------------------------------------------
 % Document Body
@@ -87,41 +108,45 @@
 % ----------------------------------------------------------------------
 \begin{titlepage}
     \centering
-    \vspace*{0.5cm}
-    
-    {\Huge \bfseries MadadgaarAI}\\[0.4cm]
-    {\Large \textsc{National Scholarship \& Research Funding Intelligence Platform}}\\[0.2cm]
-    {\large \textit{AI-Powered Discovery, Semantic Matchmaking, Compliance Auditing, and Multilingual Explanations for Indian Academia \& Students}}\\[1.5cm]
-    
-    \rule{\textwidth}{1.5pt}\\[0.6cm]
-    {\LARGE \bfseries MID-TERM PROJECT REPORT}\\[0.4cm]
-    \rule{\textwidth}{1.5pt}\\[2.0cm]
-    
-    \begin{minipage}{0.48\textwidth}
-        \begin{flushleft} \large
-            \textbf{Submitted by:}\\
-            \textbf{Ayush Choudhary}\\
-            \textit{B.Tech Computer Science \& Engineering}\\
-            Roll No: [Your Roll No.]
+    \vspace*{0.4cm}
+
+    {\large \textbf{INSTITUTE OF ENGINEERING AND TECHNOLOGY (IET)}}\\[0.15cm]
+    {\normalsize \textbf{JK LAKSHMIPAT UNIVERSITY, JAIPUR}}\\[1.0cm]
+
+    {\Huge \bfseries MadadgaarAI}\\[0.35cm]
+    {\Large \textsc{Real-Time Opportunity Intelligence \& Multi-Tenant Saral AI Study Platform}}\\[0.25cm]
+    {\normalsize \textit{Zero-Mock Live Opportunity Curation, Hybrid Semantic Matching, Resume Intelligence, Application Tracking, and Grounded Gemini RAG with Role-Based User Modes}}\\[1.3cm]
+
+    \rule{\textwidth}{1.5pt}\\[0.5cm]
+    {\LARGE \bfseries FINAL PROJECT REPORT}\\[0.35cm]
+    \rule{\textwidth}{1.5pt}\\[1.6cm]
+
+    \begin{minipage}[t]{0.52\textwidth}
+        \begin{flushleft} \normalsize
+            \textbf{Submitted by:}\\[0.2cm]
+            \textbf{Aman Singh} \hfill (\texttt{2023BTECH006})\\
+            \textbf{Anjisht Amritanshu} \hfill (\texttt{2023BTECH009})\\
+            \textbf{Ayush Choudhary} \hfill (\texttt{2023BTECH020})\\[0.25cm]
+            \textit{B.Tech Computer Science \& Engineering}
         \end{flushleft}
     \end{minipage}
     \hfill
-    \begin{minipage}{0.48\textwidth}
-        \begin{flushright} \large
-            \textbf{Project Supervisor:}\\
-            \textbf{[Supervisor Name]}\\
-            \textit{Department of Computer Science}\\
-            [Institution Name / University]
+    \begin{minipage}[t]{0.44\textwidth}
+        \begin{flushright} \normalsize
+            \textbf{Project Supervisor:}\\[0.2cm]
+            \textbf{Dr. Deepika Prakash}\\[0.1cm]
+            \textit{Department of Computer Science \& Engineering}\\
+            Institute of Engineering and Technology\\
+            JK Lakshmipat University, Jaipur
         \end{flushright}
     \end{minipage}
-    
+
     \vfill
-    
+
     {\large \textbf{Academic Session: 2026--2027}}\\[0.2cm]
-    {\large Department of Computer Science \& Engineering}\\[0.1cm]
-    {\large [Institution Name, City, State, India]}\\[0.5cm]
-    {\large \today}
-    
+    {\normalsize Department of Computer Science \& Engineering}\\[0.1cm]
+    {\normalsize JK Lakshmipat University, Jaipur, Rajasthan, India}\\[0.4cm]
+    {\normalsize \today}
 \end{titlepage}
 
 % ----------------------------------------------------------------------
@@ -129,44 +154,55 @@
 % ----------------------------------------------------------------------
 \chapter*{Certificate of Approval}
 \thispagestyle{plain}
-This is to certify that the mid-term project report entitled \textbf{``MadadgaarAI: National Scholarship \& Research Funding Intelligence Platform''} submitted by \textbf{Ayush Choudhary} in partial fulfillment of the requirements for the award of the Degree of \textit{Bachelor of Technology in Computer Science \& Engineering} is an authentic record of the research and development work carried out under my supervision during the academic semester.
+This is to certify that the final project report entitled \textbf{``MadadgaarAI: Real-Time Opportunity Intelligence \& Multi-Tenant Saral AI Study Platform''} submitted by \textbf{Aman Singh (2023BTECH006)}, \textbf{Anjisht Amritanshu (2023BTECH009)}, and \textbf{Ayush Choudhary (2023BTECH020)} in partial fulfillment of the requirements for the award of the Degree of \textit{Bachelor of Technology in Computer Science \& Engineering} is an authentic record of the original engineering, research, and software development work carried out under my supervision during the academic year 2026--2027.
 
 \vspace{2.5cm}
 
 \noindent
 \begin{minipage}{0.45\textwidth}
     \rule{\textwidth}{0.4pt}\\
-    \textbf{Project Supervisor}\\
-    Department of CSE
+    \textbf{Dr. Deepika Prakash}\\
+    Project Supervisor\\
+    Department of CSE, IET, JKLU
 \end{minipage}
 \hfill
 \begin{minipage}{0.45\textwidth}
     \rule{\textwidth}{0.4pt}\\
     \textbf{Head of Department}\\
-    Department of CSE
+    Department of CSE\\
+    IET, JK Lakshmipat University
 \end{minipage}
 
-\vfill
+\vspace{2.0cm}
+
+\section*{Declaration}
+We hereby declare that the project work presented in this final report is our original work completed at the Institute of Engineering and Technology, JK Lakshmipat University, Jaipur. All external libraries, public portals, research references, and APIs integrated into the platform have been duly cited and acknowledged.
+
+\vspace{1.2cm}
+\noindent
+\textbf{Aman Singh} (2023BTECH006) \hfill \textbf{Anjisht Amritanshu} (2023BTECH009) \hfill \textbf{Ayush Choudhary} (2023BTECH020)
 
 % ----------------------------------------------------------------------
 % ABSTRACT
 % ----------------------------------------------------------------------
 \chapter*{Abstract}
 \thispagestyle{plain}
-Securing higher education scholarships and research grants in India presents significant friction due to fragmented statutory portals, opaque eligibility criteria, non-standardized PDF guidelines, and linguistic barriers. Annually, billions of Indian Rupees in student scholarships (e.g., NSP, AICTE, UGC, State Dashmottar, Corporate Social Responsibility foundations) and faculty research funding (e.g., DST, ANRF, CSIR, DBT) go underutilized or suffer high application rejection rates due to bureaucratic complexity and procedural non-compliance.
+Discovering verified scholarships, corporate internships, and scientific research grants while navigating complex academic documentation remains a persistent challenge for students, researchers, and educators in India. Announcements are fragmented across statutory ministries, state portals, philanthropic trusts, and company hiring boards; critical eligibility rules are embedded inside unstructured web pages and multi-page PDF circulars; and learners lack an isolated, citation-backed study assistant capable of reasoning over their own technical documents without hallucination.
 
-\textbf{MadadgaarAI} is an open-source, production-ready Gov-Tech funding intelligence platform engineered to eliminate these bottlenecks. The platform features an end-to-end automated pipeline comprising:
+\textbf{MadadgaarAI (v4.0)} is a completed, production-ready opportunity intelligence and multi-tenant academic AI platform that solves both discovery and comprehension end to end. Building substantially beyond the initial mid-term prototype, the final system eliminates all hardcoded seed datasets and delivers:
 \begin{enumerate}[itemsep=2pt]
-    \item \textbf{FOA Ingestion \& Dual-Layer OCR Worker}: Extracts structured intelligence from both searchable and raster-scanned statutory announcements.
-    \item \textbf{Hybrid Semantic Retrieval Engine}: Unifies lexical BM25 Okapi search and dense vector semantic embeddings (\texttt{all-MiniLM-L6-v2}) via Reciprocal Rank Fusion (RRF).
-    \item \textbf{Vidyarthi AI (Student Scholarship Gateway)}: Delivers instant matching across social categories, domicile states, and financial income brackets, equipped with verifiable direct application links, dynamic document checklists, and local Hinglish explainers.
-    \item \textbf{Anusandhan AI (Faculty Research Matcher)}: Provides multi-criteria compliance checking, calendar synchronization (\texttt{.ics}), and automated proposal structure drafting.
-    \item \textbf{Local \& Privacy-Preserving Architecture}: Powered by local SQLite (\texttt{madadgaar.db}) and dense vector storage without external cloud database dependencies.
+    \item \textbf{Zero-Mock Real-Time Scraping \& Anti-404 Verification}: 17 asynchronous live scrapers covering Indian government portals (DST INSPIRE, ISTI India, AICTE, ISRO RESPOND, ANRF/SERB, UGC, ICMR, BIRAC), philanthropic CSR trusts (Tata Trusts), international funding feeds (Grants.gov), and leading technology company boards (Greenhouse, Ashby, Lever, Internshala), fortified with Playwright headless fallback, live HTTP link verification, expiration filtering, and background periodic auto-refresh.
+    \item \textbf{On-Demand Deep-Page Circular Analyzer \& Proposal Drafter}: Fetches live destination web pages, structured JSON APIs, and PDF circulars to summarize eligibility criteria, stipends, deadlines, required document checklists, and application steps, paired with an 11-section Ministry of Finance-aligned proposal and SOP outline generator.
+    \item \textbf{Multi-Modal Matching Suite}: Combines deterministic student scholarship eligibility evaluation, hybrid BM25 + Dense Reciprocal Rank Fusion (RRF) + semantic reranking for faculty research grants, and a PDF/DOCX/text Resume Matcher spanning 80+ technical and scientific skills.
+    \item \textbf{Personal Application Tracker \& Reminder Engine}: Provides Board and chronological Deadline Timeline views, personal notes, RFC~5545 iCalendar (\texttt{.ics}) export, filtered CSV export, URL-synced shareable views, and browser/webhook/email deadline reminders.
+    \item \textbf{Multi-Tenant Saral AI Platform (Google OAuth~2.0 + Gemini API RAG)}: Secures private per-user knowledge bases behind Google OAuth~2.0 / OpenID Connect and HTTP-only JWT cookies with refresh-token rotation, an extensible role-based Mode Registry (\texttt{Student}, \texttt{Researcher}, \texttt{Educator}), layout-aware recursive chunking with per-user SHA-256 deduplication, official \texttt{google-genai} embeddings (\texttt{gemini-embedding-001}) and SSE-streamed grounded responses (\texttt{gemini-2.5-flash}), KaTeX math rendering, and clickable page-level source citations.
+    \item \textbf{Production Infrastructure \& Polished Consumer Interface}: Ships with a PostgreSQL~16 \texttt{pgvector} HNSW migration alongside local SQLite persistence, Docker containerization, sliding-window rate limiting, structured JSON logging, GitHub Actions CI, and a consumer-polished 4-tab Neo-Brutalist web interface free of exposed internal technical artifacts.
 \end{enumerate}
-This mid-term report outlines the mathematical foundations, system architecture, database schema, implementation details, automated test coverage (28/28 unit and integration tests passed), and the roadmap for full deployment.
 
-\vspace{0.8cm}
-\noindent \textbf{Keywords:} Funding Intelligence, Semantic Search, Reciprocal Rank Fusion, Natural Language Processing, Gov-Tech, Scholarship Matcher, Open Science.
+The completed platform comprises 49 Python modules (13,255 lines of source code), 45 REST/SSE endpoints, and 46 automated unit, security, and live-pipeline integration tests passing with a 100\% success rate, achieving an empirical retrieval Mean Reciprocal Rank (MRR) of \textbf{1.0000} and Hit@1 of \textbf{100.00\%} across live verified opportunities.
+
+\vspace{0.6cm}
+\noindent \textbf{Keywords:} Real-Time Opportunity Intelligence, Multi-Tenant RAG, Google Gemini API, Reciprocal Rank Fusion, Google OAuth~2.0, Role-Based User Modes, Semantic Resume Matching, \texttt{pgvector}, Gov-Tech AI.
 
 % ----------------------------------------------------------------------
 % TABLE OF CONTENTS
@@ -179,310 +215,451 @@ This mid-term report outlines the mathematical foundations, system architecture,
 % CHAPTER 1: INTRODUCTION
 % ----------------------------------------------------------------------
 \chapter{Introduction}
+
 \section{Background \& Motivation}
-Higher education and scientific research are critical drivers of national progress. In India, public funding for academia and student welfare is administered by various central ministries, statutory bodies, state governments, and corporate CSR trusts. Key entities include:
+Access to timely financial aid, research funding, industry internships, and structured academic mentorship directly shapes higher education outcomes in India. Each year, substantial funding is announced by central ministries, statutory councils, scientific agencies, philanthropic CSR trusts, and global technology organizations:
 \begin{itemize}[itemsep=2pt]
-    \item \textbf{Central \& Statutory Bodies:} Ministry of Education (PM-USP), Ministry of Tribal Affairs (Post-Matric ST), Ministry of Social Justice (Post-Matric SC, PM-YASASVI), University Grants Commission (UGC), All India Council for Technical Education (AICTE).
-    \item \textbf{State Direct Benefit Transfer (DBT) Portals:} UP Dashmottar, MahaDBT Maharashtra, NSP State Quotas.
-    \item \textbf{Scientific Grant Agencies:} Department of Science \& Technology (DST), Anusandhan National Research Foundation (ANRF / SERB), Council of Scientific \& Industrial Research (CSIR), Department of Biotechnology (DBT).
-    \item \textbf{Institutional CSR Initiatives:} Kotak Education Foundation, Reliance Foundation, HDFC Bank Parivartan.
+    \item \textbf{Central \& Statutory Portals:} National Scholarship Portal (NSP), All India Council for Technical Education (AICTE), University Grants Commission (UGC), Department of Science \& Technology (DST INSPIRE), and India Science, Technology \& Innovation (ISTI) portal.
+    \item \textbf{National Research \& Mission Agencies:} Anusandhan National Research Foundation (ANRF / SERB), Indian Space Research Organisation (ISRO RESPOND), Indian Council of Medical Research (ICMR), Biotechnology Industry Research Assistance Council (BIRAC), and international agencies such as Grants.gov.
+    \item \textbf{Corporate Boards \& Philanthropic Foundations:} Tata Trusts CSR, Internshala, and direct engineering/research internship boards hosted on Greenhouse, Ashby, and Lever (including Anthropic, Stripe, Airbnb, MongoDB, Datadog, Brex, Cloudflare, Discord, Scale AI, OpenAI, and Linear).
 \end{itemize}
 
-Despite the abundance of funding schemes, eligible students and faculty face major impediments:
-\begin{enumerate}
-    \item \textbf{Information Asymmetry:} Funding announcements are scattered across isolated websites with non-uniform update cadences.
-    \item \textbf{Unstructured Format:} Crucial details (eligibility, income caps, reservation quotas, submission deadlines) are locked within multi-page PDF files and scanned circulars.
-    \item \textbf{Strict Compliance Rules:} Over 35\% of grant proposals and scholarship applications are rejected at the preliminary screening stage due to minor non-compliances (e.g., income certificate validity, age limit overshoot, or missing institutional endorsements).
-    \item \textbf{Language \& Accessibility Barriers:} Official notices are authored in dense legal/administrative English, creating barriers for students from tier-2/tier-3 institutions and rural backgrounds.
+Students and researchers still encounter four systemic obstacles:
+\begin{enumerate}[itemsep=2pt]
+    \item \textbf{Fragmented \& Volatile Listings:} Deadlines shift frequently, links expire into HTTP~404 errors, and static aggregator lists rapidly go stale.
+    \item \textbf{Unstructured Requirements \& Compliance Friction:} Eligibility ceilings, required certificates, and procedural guidelines are buried inside dense HTML notices and PDF circulars, leading to avoidable disqualifications.
+    \item \textbf{Disconnected Application Management:} Applicants juggle spreadsheets, browser bookmarks, and manual calendar alerts without unified tracking or resume-to-opportunity fit analysis.
+    \item \textbf{Ungrounded Academic Study Tools:} Students and researchers preparing proposals, studying papers, or reviewing lecture PDFs need strictly grounded, citation-backed assistance tailored to their academic role rather than generic unverified chat output.
 \end{enumerate}
 
 \section{Problem Statement}
-To design, engineer, and validate a unified, privacy-first, open-source AI intelligence platform that continuously ingests, structures, indexes, semantically matches, and explains Indian student scholarships and research grants with verifiable accuracy and sub-millisecond response latency.
+To design, engineer, harden, and validate a unified, production-ready web platform that continuously curates live verified internships, scholarships, and research grants with zero hardcoded mock data, provides explainable eligibility and resume matching with application tracking, and integrates a secure multi-tenant Gemini-powered Retrieval-Augmented Generation (RAG) study workspace with role-based user modes and clickable page-level citations.
 
-\section{Objectives of the Project}
-The specific mid-term milestones and overarching project objectives are:
+\section{Final Project Objectives Achieved}
+All engineering and research objectives defined for the project have been fully realized in MadadgaarAI v4.0:
 \begin{enumerate}[itemsep=3pt]
-    \item Develop an automated ingestion and OCR extraction pipeline for Indian Funding Opportunity Announcements (FOAs).
-    \item Formulate a hybrid retrieval engine combining BM25 keyword matching and dense sentence embeddings through Reciprocal Rank Fusion ($k=60$).
-    \item Build an instant, multi-parameter student scholarship matching engine (Vidyarthi AI) supporting gender, caste, income ceiling, state domicile, and CGPA filters.
-    \item Generate context-aware 5-step application gateway guides, official issuing-authority document checklists, and colloquial Hinglish explainers.
-    \item Provide faculty research discovery (Anusandhan AI) with institutional compliance checking, automated iCalendar (\texttt{.ics}) deadline synchronization, and proposal skeleton generation.
-    \item Ensure 100\% local deployment using SQLite and local vector indices without third-party cloud database dependencies.
-
+    \item \textbf{Zero-Mock Live Opportunity Pipeline:} Replace all static seed datasets with 17 live asynchronous scrapers, Playwright headless rendering fallback, strict canonical URL validation, live HTTP link verification, expiration filtering, and background periodic synchronization.
+    \item \textbf{On-Demand Deep Circular Intelligence \& Drafting:} Parse destination webpages, structured APIs, and PDF circulars in real time to extract stipends, deadlines, eligibility rules, document checklists, and application steps, integrated with an 11-section proposal/SOP outline generator.
+    \item \textbf{Comprehensive Matching Suite:} Deliver Student Scholarship Eligibility matching, Faculty Research Grant matching via Hybrid BM25 + Dense RRF + Semantic Reranking, and PDF/DOCX/Text Resume-to-Opportunity matching.
+    \item \textbf{Unified Application Lifecycle Management:} Build a persistent Board and Deadline Timeline tracker with notes, RFC~5545 \texttt{.ics} calendar exports, filtered CSV downloads, URL-synced shareable filters, and multi-channel deadline reminders.
+    \item \textbf{Multi-Tenant Authentication \& Role-Based Modes:} Implement production Google OAuth~2.0 / OIDC sign-in with HTTP-only JWT cookies, refresh-token rotation and replay detection, strict per-user tenant isolation, and an extensible Strategy/Registry User Mode system (\texttt{Student}, \texttt{Researcher}, \texttt{Educator}).
+    \item \textbf{Production Gemini RAG Workspace:} Integrate the official \texttt{google-genai} SDK (\texttt{gemini-embedding-001} and \texttt{gemini-2.5-flash}) with asynchronous layout-aware chunking, SHA-256 deduplication, hybrid RRF retrieval, SSE streaming, KaTeX math rendering, and clickable source passage inspection.
+    \item \textbf{Production Readiness, Testing \& UX Polish:} Deliver PostgreSQL~16 \texttt{pgvector} migration parity, Docker containerization, per-user rate limiting, CI automation, 46 passing automated tests, and a clean consumer-facing web interface with all internal technical details abstracted away.
 \end{enumerate}
 
 % ----------------------------------------------------------------------
-% CHAPTER 2: LITERATURE REVIEW & THEORETICAL FRAMEWORK
+% CHAPTER 2: EVOLUTION FROM MID-TERM TO FINAL SYSTEM
 % ----------------------------------------------------------------------
-\chapter{Literature Review \& Theoretical Foundations}
-\section{Comparison with Existing Systems}
-Traditional funding search engines rely solely on basic SQL substring matching or keyword search. Table~\ref{tab:comparison} outlines the architectural differences between existing portals and MadadgaarAI.
+\chapter[Improvements Since Mid-Term]{Improvements Achieved Since Mid-Term Review}
 
-\begin{table}[H]
+Between the mid-term evaluation (v1.0) and the completed production release (v4.0), MadadgaarAI underwent a comprehensive architectural transformation across data sourcing, AI retrieval, authentication, persistence, user experience, and verification coverage.
+
+\section{Mid-Term Prototype vs. Final Production Release}
+Table~\ref{tab:evolution} summarizes the concrete engineering upgrades implemented after the mid-term review.
+
+\begin{table}[htbp]
     \centering
-    \caption{Comparative Analysis: Existing Portals vs. MadadgaarAI}
-    \label{tab:comparison}
-    \small
-    \begin{tabularx}{\textwidth}{lXXX}
+    \caption{Architectural \& Functional Evolution: Mid-Term Prototype vs. Final System (v4.0)}
+    \label{tab:evolution}
+    \footnotesize
+    \begin{tabularx}{\textwidth}{>{\bfseries}lXX}
         \toprule
-        \textbf{Feature} & \textbf{National Portals (NSP, ANRF)} & \textbf{Commercial Aggregators} & \textbf{MadadgaarAI (Proposed)} \\
+        Dimension & Mid-Term Prototype (v1.0) & Final Completed System (v4.0) \\
         \midrule
-        \textbf{Search Paradigm} & Exact keyword only & Keyword + Category filter & \textbf{Hybrid BM25 + Dense Vectors (RRF)} \\
-        \textbf{OCR Support} & None (Manual data entry) & Minimal / None & \textbf{Dual-layer density OCR pipeline} \\
-        \textbf{Local Privacy} & Centralized / Cloud & Cloud tracking / Ads & \textbf{100\% Local (SQLite + On-device embeddings)} \\
-        \textbf{Verification Status} & Official & Mixed / Affiliate links & \textbf{Government \& Statutory Canonical Gateways} \\
-        \textbf{Hinglish Explainer} & None & None & \textbf{Automated vernacular translation \& guidance} \\
-        \textbf{Calendar Integration} & None & None & \textbf{RFC 5545 iCalendar (.ics) auto-export} \\
-        \textbf{Compliance Engine} & Post-submission rejection & None & \textbf{Pre-submission multi-criteria audit} \\
+        Data Sourcing & Static seed files (\texttt{seed\_data.py}, \texttt{scholarship\_seed\_data.py}) & \textbf{Zero mock data}: 17 live async scrapers + Playwright fallback + Anti-404 guard + TTL auto-refresh cron (167 live verified listings) \\
+        Deep Document Parsing & Local PDF/OCR parser on static files & On-demand live HTML, JSON-LD, structured API (Grants.gov/Ashby/Lever) \& PDF circular analyzer + Document Readiness Checker \\
+        Matching Engines & Student eligibility rules \& basic faculty RRF & Student Eligibility + Researcher Hybrid RRF with Semantic Reranker + \textbf{PDF/DOCX/Text Resume Matcher} (80+ skills) \\
+        Application Workflow & Read-only cards \& single-FOA \texttt{.ics} & Persistent \textbf{Board + Timeline Tracker}, inline notes, saved \texttt{.ics} \& filtered CSV export, shareable URLs, Browser/Webhook/Email Reminders \\
+        AI Assistant & Static Hinglish explainer template & \textbf{Dual-Mode Saral AI}: (1) Multi-Tenant Private Gemini RAG with SSE streaming, KaTeX \& clickable page citations; (2) Bilingual Public Schemes Assistant \\
+        Authentication & Anonymous single-tenant prototype & \textbf{Google OAuth~2.0 / OIDC}, HTTP-only \texttt{SameSite=Lax} JWT cookies, SHA-256 refresh-token rotation \& reuse detection \\
+        Personalization & None & Extensible Strategy/Registry \textbf{User Modes} (\texttt{Student}, \texttt{Researcher}, \texttt{Educator}) controlling prompts, chunking \& top-$k$ \\
+        Storage \& Infra & Local SQLite + JSON vectors only & Dual \textbf{SQLite + PostgreSQL~16 \texttt{pgvector} HNSW} migration (6 tenant-scoped tables), Dockerfile, \texttt{docker-compose.yml}, CI workflow \\
+        Frontend UX & Glassmorphism prototype with raw technical badges & Consumer-polished 4-tab \textbf{Neo-Brutalist UI} with zero exposed technical/HTTP/engine artifacts \\
+        Automated Testing & 28 unit/integration tests (8 files) & \textbf{46/46 passing tests (14 test modules)} covering zero-mock audit, live URL probes, tenant isolation, OAuth/JWT \& SSE RAG \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
-\section{Information Retrieval Foundations}
-\subsection{BM25 Okapi (Lexical Model)}
-BM25 ranks documents based on term frequency and inverse document frequency, incorporating document length normalization:
-\begin{equation}
-    \text{Score}_{BM25}(D, Q) = \sum_{i=1}^{n} \text{IDF}(q_i) \cdot \frac{f(q_i, D) \cdot (k_1 + 1)}{f(q_i, D) + k_1 \cdot \left(1 - b + b \cdot \frac{|D|}{\text{avgdl}}\right)}
-\end{equation}
-where $f(q_i, D)$ is term frequency, $|D|$ is document length, $\text{avgdl}$ is average document length across the corpus, $k_1 = 1.5$, and $b = 0.75$.
+\section{Summary of Major Post-Midterm Improvements}
+\begin{enumerate}[itemsep=4pt]
+    \item \textbf{Elimination of All Mock Data \& Real-Time Live Scraping Pipeline:} Both legacy static seed files were permanently removed and guarded by an automated repository-wide test (\texttt{test\_1\_zero\_hardcoded\_mock\_opportunity\_data}). Seventeen asynchronous scrapers now ingest live opportunities across Indian government portals, CSR foundations, Grants.gov, Internshala, and Greenhouse/Ashby/Lever company boards. Every URL passes a canonical anti-homepage guard, live HTTP~2xx/3xx verification, and automatic deadline expiration filtering before entering the store, with a background cron task refreshing the store automatically every TTL cycle.
+    \item \textbf{Playwright Headless Browser Fallback \& Deep-Page Analyzer:} To handle JavaScript-rendered portals, an asynchronous Playwright fallback was integrated into the link verifier and scraper pipeline. Clicking \textit{Summarize Requirements} on any opportunity triggers \texttt{DeepPageAnalyzer}, which queries structured portal APIs or fetches the live HTML/PDF circular to extract stipends, deadlines, eligibility guidelines, document checklists, direct PDF links, and numbered application steps.
+    \item \textbf{Resume / CV Semantic Opportunity Matcher:} Applicants can upload PDF, DOCX, or plain-text resumes (or paste skills directly) to automatically detect their degree level, academic/industry domains, and over 80 skills, ranking live opportunities via BM25, dense vector cosine similarity, and semantic reranking while highlighting matched skills and missing prerequisites.
+    \item \textbf{Application Board, Deadline Timeline \& Multi-Channel Reminder Engine:} Added a session-persisted 4-stage Application Board (\texttt{Saved}, \texttt{Preparing Docs}, \texttt{Applied}, \texttt{Result}), chronological Deadline Timeline sorted by urgency, per-item notes, one-click calendar export for saved deadlines, filtered CSV download, URL-synced shareable filter views, and configurable Browser, Slack/Discord Webhook, and Email Digest reminder alerts.
+    \item \textbf{Multi-Tenant Saral AI with Google OAuth~2.0, RBAC User Modes \& Official Gemini API:} Upgraded Saral AI into a multi-tenant private study platform authenticated via live Google OAuth~2.0 and HTTP-only JWT session cookies with refresh-token rotation and replay revocation. Users upload PDFs, Markdown files, text notes, or web/arXiv links into an isolated per-user library (\texttt{WHERE user\_id = :current\_user\_id}), switch between \texttt{Student}, \texttt{Researcher}, and \texttt{Educator} modes, and receive real-time SSE-streamed answers from the official \texttt{google-genai} SDK (\texttt{gemini-2.5-flash} + \texttt{gemini-embedding-001}) with KaTeX math and clickable source passage inspection.
+    \item \textbf{Security Hardening, \texttt{pgvector} Migration \& Containerized Parity:} Hardened the API with per-user sliding-window rate limiters (25/min ingestion, 40/min chat), file size (15~MB) and MIME/extension checks, exponential backoff retries on Gemini HTTP~429/503 responses, strict CORS rules, structured JSON event logging, PostgreSQL~16 \texttt{pgvector} HNSW schema migration, \texttt{Dockerfile}, \texttt{docker-compose.yml}, and GitHub Actions CI.
+    \item \textbf{Production Frontend Polish \& Technical Abstraction:} Audited and refined the entire web dashboard (\texttt{src/dashboard/web\_ui.py}), match explanations (\texttt{src/matcher/profile\_matcher.py}), and mode descriptions (\texttt{src/auth/modes.py}) to eliminate every internal technical artifact—removing HTTP status badges, MIME types, engine/SDK names, BM25/RRF/XAI/RAG jargon, chunk/token counts, developer footer links, and sandbox login banners—so end users interact with a clean, intuitive consumer product.
+\end{enumerate}
 
-\subsection{Dense Semantic Embeddings}
-To capture thematic intent beyond lexical keywords (e.g., understanding that ``VLSI design'' relates to ``Semiconductor Hardware''), text chunks are mapped to a 384-dimensional dense vector space using the \texttt{all-MiniLM-L6-v2} transformer model:
+% ----------------------------------------------------------------------
+% CHAPTER 3: LITERATURE REVIEW & THEORETICAL FOUNDATIONS
+% ----------------------------------------------------------------------
+\chapter[Literature Review]{Literature Review \& Theoretical Foundations}
+
+\section{Comparison with Existing Systems}
+Existing scholarship portals and job boards typically rely on manual entry, keyword-only SQL filters, and static pages without verification or study assistance. Table~\ref{tab:comparison} contrasts conventional platforms with MadadgaarAI v4.0.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Comparative Analysis: Existing Portals vs. MadadgaarAI v4.0}
+    \label{tab:comparison}
+    \footnotesize
+    \begin{tabularx}{\textwidth}{>{\bfseries}lXXX}
+        \toprule
+        Capability & National Portals (NSP, ANRF) & Commercial Aggregators & MadadgaarAI v4.0 \\
+        \midrule
+        Freshness \& Links & Portal-specific, manual & Often stale or affiliate links & \textbf{17 live async scrapers + Anti-404 \& expiry filter} \\
+        Search Paradigm & Exact keyword only & Keyword + category filter & \textbf{Hybrid BM25 + Dense Vector RRF + Reranker} \\
+        Resume Matching & None & Basic keyword tags & \textbf{PDF/DOCX semantic skill, degree \& gap fit} \\
+        Circular Analysis & Multi-page PDFs only & Manual editorial summaries & \textbf{On-demand live HTML/API/PDF analyzer} \\
+        Private Study AI & None & None & \textbf{Multi-tenant Gemini RAG with Student/Researcher/Educator modes} \\
+        Citations & None & None & \textbf{Clickable page \& section passage inspector} \\
+        Tracking \& Alerts & Portal status only & Bookmarks & \textbf{Board + Timeline + .ics/CSV + Multi-channel reminders} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{Information Retrieval \& Grounded RAG Formulations}
+
+\subsection{BM25 Okapi Lexical Scoring}
+Exact technical terms, scheme acronyms (e.g., \texttt{ANRF}, \texttt{NPCI-DBT}, \texttt{GFR 2017}), and mathematical symbols are scored via BM25 Okapi \cite{robertson2009bm25}:
 \begin{equation}
-    \mathbf{e} = \text{Transformer}(\text{Text}), \quad \mathbf{e} \in \mathbb{R}^{384}
+    \text{Score}_{\text{BM25}}(D, Q) = \sum_{i=1}^{n} \text{IDF}(q_i) \cdot \frac{f(q_i, D) \cdot (k_1 + 1)}{f(q_i, D) + k_1 \cdot \left(1 - b + b \cdot \frac{|D|}{\text{avgdl}}\right)}
 \end{equation}
-Cosine similarity between query vector $\mathbf{e}_q$ and document vector $\mathbf{e}_d$ is computed as:
+where $f(q_i, D)$ is the frequency of query term $q_i$ in document or chunk $D$, $|D|$ is document length, $\text{avgdl}$ is corpus mean length, $k_1 = 1.5$, and $b = 0.75$.
+
+\subsection{Task-Aware Dense Semantic Embeddings}
+MadadgaarAI uses two complementary embedding pipelines:
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{Opportunity Corpus Embeddings:} Compact 384-dimensional normalized vectors (\texttt{all-MiniLM-L6-v2} \cite{reimers2019sentencebert} with deterministic local fallback) enabling sub-20~ms hybrid search over live opportunities.
+    \item \textbf{Multi-Tenant Saral AI Embeddings:} Official Google Gemini \texttt{gemini-embedding-001} vectors \cite{gemini_api} generated with asymmetric task instructions (\texttt{task\_type="RETRIEVAL\_DOCUMENT"} during indexing and \texttt{task\_type="RETRIEVAL\_QUERY"} at query time).
+\end{itemize}
+Cosine similarity between query vector $\mathbf{e}_q$ and document or chunk vector $\mathbf{e}_d$ is computed as:
 \begin{equation}
     \text{Sim}_{\text{Dense}}(q, d) = \frac{\mathbf{e}_q \cdot \mathbf{e}_d}{\|\mathbf{e}_q\|_2 \, \|\mathbf{e}_d\|_2}
 \end{equation}
 
-\subsection{Reciprocal Rank Fusion (RRF)}
-To combine lexical precision and semantic depth without arbitrary score calibration, MadadgaarAI employs Reciprocal Rank Fusion:
+\subsection{Reciprocal Rank Fusion (RRF) \& Semantic Reranking}
+Lexical and semantic rankings are combined via Reciprocal Rank Fusion \cite{cormack2009rrf} with smoothing parameter $k = 60$:
 \begin{equation}
-    \text{RRF\_Score}(d) = \sum_{m \in M} \frac{1}{k + r_m(d)}
+    \text{RRF}(d) = \frac{1}{k + r_{\text{BM25}}(d)} + \frac{1}{k + r_{\text{Dense}}(d)}, \qquad \widehat{\text{RRF}}(d) = \min\!\left(1,\; \frac{\text{RRF}(d)}{2 / (k + 1)}\right)
 \end{equation}
-where $M = \{\text{BM25}, \text{Dense Vector}\}$, $r_m(d)$ is the rank of document $d$ in system $m$, and $k = 60$ is the smoothing constant.
+In the opportunity and resume matchers, candidate scores are further refined by a cross-feature semantic reranker (\texttt{TextEmbedder.rerank\_score}) combining token overlap, phrase precision, and base RRF alignment.
+
+\subsection{Tenant-Isolated Grounded Generation}
+For every multi-tenant Saral AI query by authenticated user $u$ in mode $m \in \{\text{student}, \text{researcher}, \text{educator}\}$, retrieval is strictly restricted to the tenant slice $\mathcal{C}_u = \{c \in \mathcal{C} \mid c.\text{user\_id} = u\}$. Retrieved top-$k_m$ chunks must pass an evidence gate (minimum dense similarity or lexical token overlap) before being passed to \texttt{gemini-2.5-flash} under a mode-specific system prompt requiring inline citations \texttt{[Source: Document, Page / Section]} and explicit abstention when uploaded files lack sufficient evidence.
 
 % ----------------------------------------------------------------------
-% CHAPTER 3: SYSTEM ARCHITECTURE & DESIGN
+% CHAPTER 4: SYSTEM ARCHITECTURE & DATABASE DESIGN
 % ----------------------------------------------------------------------
-\chapter{System Architecture \& Design}
+\chapter[System Architecture]{System Architecture \& Database Design}
 
-\section{High-Level Architecture}
-The architecture of MadadgaarAI follows a modular, layered structure comprising Ingestion, Semantic Processing, Data Persistence, Matching Logic, and Presentation layers, as illustrated in Figure~\ref{fig:architecture}.
+\section{End-to-End Production Architecture}
+MadadgaarAI v4.0 is structured into five cleanly decoupled layers: Live Opportunity Ingestion, Intelligence \& Matching, Multi-Tenant Auth \& Gemini RAG, Dual-Backend Storage, and the Consumer Web Interface (Figure~\ref{fig:architecture}).
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    node distance=1.2cm and 1.5cm,
-    block/.style={rectangle, draw=primaryColor, fill=codeBackground, text width=3.8cm, text centered, rounded corners, minimum height=1.1cm, font=\footnotesize\bfseries},
-    core/.style={rectangle, draw=accentColor, fill=accentColor!10, text width=3.8cm, text centered, rounded corners, minimum height=1.1cm, font=\footnotesize\bfseries},
-    storage/.style={cylinder, draw=successColor, fill=successColor!10, text width=3.2cm, text centered, shape border rotate=90, minimum height=1.2cm, font=\footnotesize\bfseries},
-    line/.style={draw=primaryColor, -{Latex[length=2.5mm]}, thick}
+    node distance=0.85cm and 0.9cm,
+    box/.style={rectangle, draw=primaryColor, fill=codeBackground, text width=3.55cm, align=center, rounded corners=3pt, minimum height=1.05cm, font=\scriptsize\bfseries},
+    core/.style={rectangle, draw=accentColor, fill=accentColor!10, text width=3.55cm, align=center, rounded corners=3pt, minimum height=1.05cm, font=\scriptsize\bfseries},
+    store/.style={cylinder, draw=successColor, fill=successColor!10, text width=3.15cm, align=center, shape border rotate=90, minimum height=1.15cm, font=\scriptsize\bfseries},
+    arr/.style={draw=primaryColor, -{Latex[length=2.2mm]}, thick}
 ]
 
-% Nodes
-\node (sources) [block] {Statutory Portals\\(DST, ANRF, NSP, AICTE, CSR)};
-\node (crawler) [block, right=of sources] {Crawler \& Ingestion Engine\\(PDF Parser \& OCR Worker)};
-\node (normalizer) [core, below=of crawler] {Dataset Normalizer\\(Pydantic Schema Validation)};
-\node (hybrid) [core, below=of normalizer] {Hybrid Search Engine\\(BM25 + Dense RRF Fusion)};
-\node (db) [storage, left=of normalizer] {Local SQLite DB\\(\texttt{madadgaar.db})};
-\node (vectors) [storage, left=of hybrid] {Local Vector Store\\(\texttt{vector\_index.json})};
-\node (api) [core, right=of hybrid] {FastAPI Application Server\\(REST Endpoints)};
-\node (ui) [block, right=of api] {Interactive Glassmorphism UI\\(Vidyarthi \& Anusandhan Hubs)};
+% Row 1: External Sources & Live Ingestion
+\node (portals) [box] {17 Live External Portals\\{\normalfont\tiny Govt, CSR, Grants.gov, Greenhouse, Ashby, Lever}};
+\node (scrapers) [core, right=of portals] {Async Scraper Pipeline\\{\normalfont\tiny Playwright Fallback, Anti-404, Expiry Filter, Cron}};
+\node (deep) [box, right=of scrapers] {Deep-Page Analyzer\\{\normalfont\tiny Live HTML, JSON-LD, API \& PDF Circular Parser}};
 
-% Connectors
-\path [line] (sources) -- (crawler);
-\path [line] (crawler) -- (normalizer);
-\path [line] (normalizer) -- (db);
-\path [line] (normalizer) -- (hybrid);
-\path [line] (hybrid) -- (vectors);
-\path [line] (hybrid) -- (api);
-\path [line] (api) -- (ui);
+% Row 2: Intelligence & Matching + Persistence
+\node (oppstore) [store, below=of portals] {Live Opportunity Store\\{\normalfont\tiny SQLite + Vector Index + JSON/CSV}};
+\node (match) [core, below=of scrapers] {Matching \& Tracking Core\\{\normalfont\tiny Student, Researcher RRF, Resume Fit, Board/Reminders}};
+\node (api) [core, below=of deep] {FastAPI Server (45 Routes)\\{\normalfont\tiny REST + SSE Streaming, CORS, Rate Limiters}};
+
+% Row 3: Multi-Tenant Auth & Gemini RAG
+\node (auth) [box, below=of oppstore] {Google OAuth 2.0 \& RBAC\\{\normalfont\tiny HTTP-only JWT Rotation, Student/Researcher/Educator}};
+\node (rag) [core, below=of match] {Multi-Tenant Gemini RAG\\{\normalfont\tiny Layout Chunker, \texttt{gemini-embedding-001}, \texttt{gemini-2.5-flash}}};
+\node (ui) [box, below=of api] {4-Tab Neo-Brutalist UI\\{\normalfont\tiny Opportunities, Match, Tracker, Saral AI + KaTeX}};
+
+% Row 4: Multi-Tenant DB
+\node (pgdb) [store, below=of rag] {Multi-Tenant Relational/Vector DB\\{\normalfont\tiny SQLite / PostgreSQL 16 + \texttt{pgvector} HNSW}};
+
+% Arrows
+\path [arr] (portals) -- (scrapers);
+\path [arr] (scrapers) -- (deep);
+\path [arr] (scrapers) -- (oppstore);
+\path [arr] (oppstore) -- (match);
+\path [arr] (deep) -- (api);
+\path [arr] (match) -- (api);
+\path [arr] (auth) -- (rag);
+\path [arr] (rag) -- (api);
+\path [arr] (rag) -- (pgdb);
+\path [arr] (auth) |- (pgdb);
+\path [arr] (api) -- (ui);
 
 \end{tikzpicture}
-\caption{End-to-End System Architecture of MadadgaarAI}
+\caption{MadadgaarAI v4.0 End-to-End Production Architecture}
 \label{fig:architecture}
 \end{figure}
 
-\section{Core Modules \& Data Flow}
-\subsection{Data Extraction \& Normalization Pipeline}
-\begin{enumerate}
-    \item \textbf{SHA-256 Deduplication:} Every ingested PDF is cryptographically hashed to avoid redundant parsing.
-    \item \textbf{Text-Density Evaluation:} Pages containing fewer than 120 characters per page are routed to the Tesseract OCR worker, while high-density documents are processed via \texttt{pypdf}.
-    \item \textbf{Schema Validation:} All ingested records are strictly parsed through Pydantic v2 data models enforcing type safety, academic ontology tagging, financial ceilings, and deadline structures.
-\end{enumerate}
+\section{Multi-Tenant Relational \& \texttt{pgvector} Database Schema}
+To support seamless local development on SQLite (\texttt{data/processed/madadgaar.db}) and production horizontal scaling on PostgreSQL~16 with \texttt{pgvector} (\texttt{migrations/001\_saral\_multitenant\_pgvector.sql}), six relational and vector tables enforce foreign-key integrity and automatic cascading deletion (Table~\ref{tab:schema}).
 
-\subsection{Vidyarthi AI: Multi-Stage Student Eligibility Filter}
-The student matcher executes a deterministic rule matrix followed by dynamic incentive scoring:
-\begin{itemize}[itemsep=2pt]
-    \item \textbf{Gender Hard Constraint:} Disqualifies non-female applicants from female-only scholarships (e.g., AICTE Pragati, Kotak Kanya, Indira Gandhi SGC).
-    \item \textbf{Disability Hard Constraint:} Filters PwD schemes (e.g., AICTE Saksham) for non-specially-abled applicants.
-    \item \textbf{Means-Tested Income Filter:} Checks family annual income against statutory thresholds ($\le$ ₹2.5L for Post-Matric/HDFC, $\le$ ₹4.5L for PM-USP, $\le$ ₹6L for Kotak Kanya, $\le$ ₹8L for AICTE/MahaDBT).
-    \item \textbf{Domicile Match:} Validates state residency (e.g., Uttar Pradesh, Maharashtra, North-Eastern Region).
-    \item \textbf{Academic Merit Score:} Validates Class 10/12/Diploma/UG percentage thresholds.
-\end{itemize}
-
-% ----------------------------------------------------------------------
-% CHAPTER 4: IMPLEMENTATION DETAILS
-% ----------------------------------------------------------------------
-\chapter{Implementation Details}
-
-\section{Technology Stack}
-\begin{itemize}[itemsep=2pt]
-    \item \textbf{Backend Framework:} FastAPI (Python 3.12) with asynchronous ASGI architecture via Uvicorn.
-    \item \textbf{NLP \& Embeddings:} PyTorch, HuggingFace \texttt{sentence-transformers} (\texttt{all-MiniLM-L6-v2}), \texttt{rank\_bm25}.
-    \item \textbf{Data Modeling:} Pydantic v2 (\texttt{BaseModel}, \texttt{Field}, \texttt{field\_validator}).
-    \item \textbf{Database Storage:} SQLite3 local relational storage with transactional rollback and JSON serialization.
-    \item \textbf{Frontend UI Engine:} Modern responsive HTML5/Vanilla CSS with glassmorphism design tokens, CSS grid/flexbox, dynamic modal management, and accessible tabbed navigation.
-    \item \textbf{Test Suite:} Pytest with full fixture mocking, edge-case validation, and integration tests.
-\end{itemize}
-
-\section{Key Data Structures}
-Listing~\ref{lst:foa_schema} shows the unified funding opportunity schema that supports both complex faculty grants and student scholarships.
-
-\begin{lstlisting}[caption={Pydantic Data Contract for Funding Opportunities}, label={lst:foa_schema}]
-class FundingOpportunity(BaseModel):
-    foa_id: str = Field(..., pattern=r"^[A-Z0-9_-]+$")
-    title: str = Field(..., min_length=5, max_length=500)
-    agency: AgencyType
-    scheme_name: Optional[str] = None
-    source_url: HttpUrl
-    direct_apply_url: Optional[str] = None
-    portal_navigation_steps: List[str] = Field(default_factory=list)
-    brief_summary: str
-    thematic_areas: List[str]
-    ontology_tags: List[AcademicOntologyTag]
-    eligibility: EligibilityCriteria
-    deadlines: Deadlines
-    financials: FinancialCeiling
-    full_text_content: Optional[str] = None
-    is_ocr_extracted: bool = False
-    ingested_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-\end{lstlisting}
-
-\section{Windows-Hardened Atomic Storage Engine}
-To eliminate file contention and Windows file-locking exceptions (\texttt{OSError: [Errno 22]}), the vector index and flat file normalizers employ atomic temporary replacement:
-\begin{lstlisting}[caption={Atomic Index Persistence Engine}, label={lst:atomic_save}]
-def save_index(self):
-    """Persists vector embeddings atomically to prevent Windows Errno 22 locks."""
-    target_path = Path(self.index_path).resolve()
-    target_path.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "doc_ids": self.doc_ids,
-        "embeddings": self.embeddings.tolist(),
-        "metadata_map": self.metadata_map,
-    }
-    temp_path = target_path.with_suffix(".tmp")
-    with open(str(temp_path), "w", encoding="utf-8") as f:
-        json.dump(payload, f)
-
-    if temp_path.exists():
-        os.replace(str(temp_path), str(target_path))
-\end{lstlisting}
-
-% ----------------------------------------------------------------------
-% CHAPTER 5: MID-TERM RESULTS & EVALUATION
-% ----------------------------------------------------------------------
-\chapter{Mid-Term Results \& Experimental Evaluation}
-
-\section{Automated Test Suite Coverage}
-A comprehensive automated test suite comprising 28 unit and integration test cases was executed against the platform. All 28 test suites passed with 100\% success, validating the correctness of the matching algorithms, OCR routing, and API contracts.
-
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
-    \caption{Automated Test Suite Verification Summary}
-    \label{tab:test_results}
-    \small
-    \begin{tabularx}{\textwidth}{llcX}
+    \caption{Multi-Tenant Database Schema (SQLite \& PostgreSQL~16 \texttt{pgvector})}
+    \label{tab:schema}
+    \footnotesize
+    \begin{tabularx}{\textwidth}{>{\ttfamily}l>{\bfseries}lX}
         \toprule
-        \textbf{Test Module} & \textbf{Component Tested} & \textbf{Status} & \textbf{Key Verification} \\
+        \textnormal{\textbf{Table}} & Isolation Key & Purpose \& Key Columns \\
         \midrule
-        \texttt{test\_api.py} & REST Endpoints \& Health & \textcolor{successColor}{\textbf{PASSED}} & Health check, FOA listing, hybrid search, profile match. \\
-        \texttt{test\_crawlers.py} & Ingestion \& Dedup & \textcolor{successColor}{\textbf{PASSED}} & SHA-256 cryptographic deduplication \& seed generation. \\
-        \texttt{test\_extraction.py} & Parser \& Information Extractor & \textcolor{successColor}{\textbf{PASSED}} & Budget ceilings, deadline extraction, eligibility bounds. \\
-        \texttt{test\_hybrid\_search.py} & BM25 + Dense RRF Engine & \textcolor{successColor}{\textbf{PASSED}} & Reciprocal Rank Fusion ranking and agency filters. \\
-        \texttt{test\_matcher.py} & Compliance \& Drafting & \textcolor{successColor}{\textbf{PASSED}} & Faculty compliance audit, .ics calendar, proposal drafting. \\
-        \texttt{test\_parser.py} & PDF OCR Density Worker & \textcolor{successColor}{\textbf{PASSED}} & Text density evaluation ($<$120 char/page OCR switch). \\
-        \texttt{test\_schemas.py} & Pydantic Data Contracts & \textcolor{successColor}{\textbf{PASSED}} & FOA ID regex enforcement and schema validation. \\
-        \texttt{test\_student\_scholarships.py} & Vidyarthi AI Engine & \textcolor{successColor}{\textbf{PASSED}} & Gender, income, domicile, direct links, and Hinglish guides. \\
+        users & id / google\_sub & Authenticated Google OIDC profile (\texttt{email}, \texttt{full\_name}, \texttt{avatar\_url}) and active \texttt{user\_mode} enum (\texttt{student} / \texttt{researcher} / \texttt{educator}). \\
+        refresh\_tokens & user\_id & Tracks issued refresh JWT IDs (\texttt{jti}), SHA-256 \texttt{token\_hash}, \texttt{expires\_at}, \texttt{revoked} flag, and \texttt{replaced\_by} pointer for replay detection. \\
+        user\_documents & (user\_id, content\_sha256) & Private library metadata with persistent job status (\texttt{pending} $\to$ \texttt{processing} $\to$ \texttt{indexed} / \texttt{failed}), MIME type, size, and per-user deduplication. \\
+        document\_chunks & user\_id, doc\_id & Layout-aware chunks storing \texttt{page\_number}, \texttt{section\_header}, \texttt{chunk\_index}, \texttt{content}, \texttt{token\_count}, and \texttt{vector(768)} HNSW cosine index with \texttt{ON DELETE CASCADE}. \\
+        chat\_sessions & user\_id & Multi-turn study sessions scoped by user and active mode (\texttt{title}, \texttt{user\_mode}, timestamps). \\
+        chat\_messages & session\_id, user\_id & Persisted user/assistant turns with JSONB \texttt{cited\_chunk\_ids} and structured \texttt{citations} payload for clickable inspection. \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
-\section{Information Retrieval Benchmarks}
-Evaluation on benchmark queries across STEM, medical, engineering, and scholarship domains yielded strong retrieval precision and latency performance:
+\section{Security, Tenant Isolation \& Reliability Architecture}
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{Google OAuth~2.0 \& Server-Side OIDC Verification:} Supports both Authorization Code redirect flow with CSRF state cookies (\texttt{saral\_oauth\_state}) and Google Identity Services ID token verification via \texttt{google-auth} against \texttt{GOOGLE\_CLIENT\_ID} \cite{rfc6749}.
+    \item \textbf{HTTP-Only JWT Cookies \& Refresh Rotation:} Access tokens (30-minute TTL) and refresh tokens (14-day TTL) \cite{rfc7519} are stored in \texttt{HttpOnly}, \texttt{SameSite=Lax} cookies. Rotating a refresh token or switching user modes atomically revokes the superseded \texttt{jti}; replaying a revoked token triggers immediate HTTP~401 rejection and revokes all active tokens for that user.
+    \item \textbf{Mandatory Tenant Pre-Filtering:} Every document read, chunk inspection, deletion, and hybrid retrieval query enforces \texttt{WHERE user\_id = :current\_user\_id}, guaranteeing zero cross-user data leakage.
+    \item \textbf{Rate Limiting, Input Validation \& Retry Backoff:} Sliding-window per-user rate limiters guard \texttt{/ingest} (25 req/min) and \texttt{/chat} (40 req/min); uploads enforce a 15~MB cap and strict extension/MIME whitelists (\texttt{.pdf}, \texttt{.md}, \texttt{.markdown}, \texttt{.txt}); Gemini embedding and streaming calls implement exponential backoff retries on HTTP~429/503 with deterministic grounded fallback.
+    \item \textbf{Atomic Windows-Safe Storage:} Vector indices and processed caches persist via temporary file creation followed by \texttt{os.replace()}, eliminating file-locking race conditions on Windows and Linux hosts.
+\end{itemize}
+
+% ----------------------------------------------------------------------
+% CHAPTER 5: IMPLEMENTATION DETAILS
+% ----------------------------------------------------------------------
+\chapter{Implementation Details}
+
+\section{Technology Stack \& Codebase Metrics}
+The finalized repository spans \textbf{49 Python source files} (13,255 lines of code), \textbf{15 test files} (1,247 lines of test code), and \textbf{45 FastAPI routes}:
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{Backend \& Async Runtime:} Python 3.13, FastAPI \cite{fastapi}, Uvicorn ASGI, Pydantic v2, \texttt{httpx}, BeautifulSoup4, Playwright (optional headless fallback).
+    \item \textbf{AI, Embeddings \& RAG:} Official \texttt{google-genai} SDK (\texttt{gemini-2.5-flash}, \texttt{gemini-embedding-001}), \texttt{rank\_bm25}, NumPy, \texttt{sentence-transformers} (\texttt{all-MiniLM-L6-v2}), \texttt{pypdf}, Tesseract OCR density router.
+    \item \textbf{Auth \& Security:} \texttt{google-auth}, \texttt{PyJWT}, \texttt{python-multipart}, strict CORS middleware, structured JSON logger (\texttt{src/core/logging\_utils.py}).
+    \item \textbf{Persistence \& Containers:} SQLite3, PostgreSQL~16 + \texttt{pgvector} (\texttt{pgvector/pgvector:pg16}), \texttt{Dockerfile}, \texttt{docker-compose.yml}, GitHub Actions CI (\texttt{.github/workflows/}).
+    \item \textbf{Frontend:} Responsive Tailwind CSS Neo-Brutalist interface, KaTeX mathematical typesetting, Fetch Streams SSE reader, and accessible modal drawers.
+\end{itemize}
+
+\section{Role-Based User Mode Strategy Registry}
+User modes are decoupled from core RAG orchestration using a central Strategy/Registry pattern in \texttt{src/auth/modes.py}. Adding a new mode requires only registering a declarative \texttt{ModeConfig} entry without modifying retrieval or streaming logic (Table~\ref{tab:modes} and Listing~\ref{lst:mode_registry}).
 
 \begin{table}[H]
     \centering
-    \caption{Search Retrieval Performance Benchmarks}
-    \label{tab:ir_benchmarks}
-    \begin{tabular}{lccc}
+    \caption{Role-Based User Mode Configurations in \texttt{UserModeRegistry}}
+    \label{tab:modes}
+    \footnotesize
+    \begin{tabularx}{\textwidth}{>{\bfseries}lcccX}
         \toprule
-        \textbf{Retrieval Strategy} & \textbf{Mean Reciprocal Rank (MRR)} & \textbf{Precision@3} & \textbf{Latency (ms)} \\
+        Mode & Chunk Size & Overlap & Top-$k$ & Pedagogical / Analytical Prompt Profile \\
         \midrule
-        Pure Lexical (BM25) & 0.742 & 73.3\% & \textbf{4.2 ms} \\
-        Pure Dense (\texttt{all-MiniLM-L6-v2}) & 0.865 & 86.7\% & 14.8 ms \\
-        \textbf{Hybrid Fusion (MadadgaarAI RRF)} & \textbf{0.938} & \textbf{96.7\%} & 18.5 ms \\
+        Student Mode & 800 tokens & 150 tokens & 5 & Step-by-step conceptual explanations, prerequisite breakdowns, LaTeX formulas, exam takeaways, and inline citations. \\
+        Researcher Mode & 900 tokens & 180 tokens & 7 & Methodology synthesis, quantitative comparisons, mathematical formulations, assumption/gap analysis, and detailed source citations. \\
+        Educator Mode & 800 tokens & 150 tokens & 6 & Teachable modules: learning objectives, core explanation, worked examples, common student misconceptions, and quiz checks. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\begin{lstlisting}[caption={Declarative User Mode Registry Pattern (\texttt{src/auth/modes.py})}, label={lst:mode_registry}]
+class ModeConfig(BaseModel):
+    mode: UserMode
+    display_name: str
+    short_label: str
+    badge_bg: str
+    badge_text: str
+    description: str
+    chunk_size_tokens: int = Field(default=800, ge=200, le=2000)
+    chunk_overlap_tokens: int = Field(default=150, ge=20, le=500)
+    retrieval_top_k: int = Field(default=5, ge=1, le=15)
+    citation_format: str = "[Source: Document Name, Page/Section]"
+    system_prompt: str
+
+class UserModeRegistry:
+    _registry: Dict[UserMode, ModeConfig] = {}
+
+    @classmethod
+    def get(cls, mode: str | UserMode) -> ModeConfig:
+        key = mode if isinstance(mode, UserMode) else UserMode(str(mode).strip().lower())
+        return cls._registry[key]
+\end{lstlisting}
+
+\section{Layout-Aware Chunking \& Streaming Gemini RAG}
+The ingestion service (\texttt{src/rag/chunker.py} and \texttt{src/rag/service.py}) extracts per-page PDF text with heading detection, Markdown header sections, or cleaned web/arXiv DOM sections, then applies recursive paragraph-and-word-window chunking preserving \texttt{page\_number}, \texttt{section\_header}, \texttt{chunk\_index}, and estimated token counts. Ingestion executes asynchronously via FastAPI \texttt{BackgroundTasks}, updating persistent job states while deduplicating identical files per user via SHA-256.
+
+During chat, \texttt{POST /api/saral/chat/stream} streams Server-Sent Events (SSE) in three structured frame types:
+\begin{enumerate}[itemsep=2pt]
+    \item \texttt{meta}: Returns the persisted \texttt{session\_id}, active mode, and ordered list of cited chunks (\texttt{doc\_id}, \texttt{chunk\_id}, \texttt{doc\_title}, \texttt{page\_number}, \texttt{section\_header}).
+    \item \texttt{delta}: Streams incremental Markdown and LaTeX tokens generated by \texttt{client.models.generate\_content\_stream}.
+    \item \texttt{done}: Signals completion, triggers client-side KaTeX math rendering, and persists the assistant message alongside \texttt{cited\_chunk\_ids}.
+\end{enumerate}
+
+\section{Live Scraping, Deep Analysis, Resume Fit \& Tracker API}
+Table~\ref{tab:api_summary} summarizes the primary API surface across MadadgaarAI v4.0's 45 endpoints.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Key REST \& SSE API Endpoints in MadadgaarAI v4.0}
+    \label{tab:api_summary}
+    \footnotesize
+    \begin{tabularx}{\textwidth}{>{\ttfamily}l>{\ttfamily}lX}
+        \toprule
+        \textnormal{\textbf{Method}} & \textnormal{\textbf{Endpoint}} & \textnormal{\textbf{Functionality}} \\
+        \midrule
+        GET & / & Consumer-polished 4-tab Neo-Brutalist web dashboard \\
+        GET & /api/opportunities & Dynamic multi-facet filter, search \& sort across live opportunities \\
+        POST & /api/opportunities/refresh & Live async crawl across 17 scrapers, expiry \& Anti-404 check \\
+        POST & /api/opportunities/\{id\}/deep-analyze & Live HTML/API/PDF circular analyzer for requirements \& steps \\
+        GET & /api/opportunities/export.csv & Export currently filtered opportunities to UTF-8 CSV \\
+        POST & /api/student/match & Deterministic student scholarship eligibility \& ranking \\
+        POST & /api/match-profile & Researcher grant alignment (Hybrid RRF + compliance) \\
+        POST & /api/resume/match & PDF/DOCX/text resume skill extraction \& live opportunity ranking \\
+        POST & /api/foas/\{id\}/draft-proposal & 11-section MoF-compliant Proposal / SOP blueprint generator \\
+        GET/POST/PATCH/DEL & /api/tracker/\{sid\} & Persistent Kanban Board, notes, saved \texttt{.ics} \& reminders \\
+        GET/POST & /api/auth/google/\{login,callback,token\} & Google OAuth~2.0 / OIDC sign-in issuing HTTP-only JWT cookies \\
+        POST/PATCH & /api/auth/\{refresh,mode,logout\} & Refresh token rotation, User Mode switch, cookie revocation \\
+        POST/GET/DEL & /api/saral/documents & Async private KB upload, URL/arXiv ingest, status \& cascade delete \\
+        GET & /api/saral/documents/\{d\}/chunks/\{c\} & Exact source passage lookup for clickable Citation Drawer \\
+        POST & /api/saral/chat/stream & SSE-streamed mode-aware grounded Gemini RAG chat \\
+        POST & /api/ai/chat & Bilingual English/Hinglish public schemes assistant \\
+        POST & /api/documents/\{analyze,upload\} & Certificate, marksheet \& CV readiness checker \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{Consumer-Ready Frontend UX Polish}
+The web interface (\texttt{src/dashboard/web\_ui.py}) unifies all workflows into four top-level workspaces: \textbf{Opportunities}, \textbf{Match \& Resume}, \textbf{My Tracker}, and \textbf{Saral AI \& Docs}. Special care was taken in the final engineering phase to abstract all internal machinery away from end users:
+\begin{itemize}[itemsep=2pt]
+    \item Replaced developer/diagnostic indicators (HTTP status codes, MIME headers, word/token/chunk counters, BM25/RRF/XAI/RAG acronyms, SDK model strings, and API health footer links) with clear, human-friendly product language.
+    \item Automatically hides local fallback sign-in controls when live Google OAuth~2.0 is active, presenting a crisp \textit{Continue with Google} flow.
+    \item Renders real-time streamed responses with KaTeX mathematical typesetting and interactive citation buttons that open the exact \textit{Source Passage} drawer showing document title, page number, and section heading.
+\end{itemize}
+
+% ----------------------------------------------------------------------
+% CHAPTER 6: EXPERIMENTAL EVALUATION, TESTING & VERIFICATION
+% ----------------------------------------------------------------------
+\chapter[Evaluation \& Verification]{Experimental Evaluation, Testing \& Verification}
+
+\section{Automated Test Suite Verification (46/46 Passed)}
+All 14 automated test modules (46 test cases) were executed via \texttt{python -m pytest tests/ -v}, passing with a \textbf{100\% pass rate} (Table~\ref{tab:test_results}).
+
+\begin{table}[htbp]
+    \centering
+    \caption{Complete Automated Test Suite Verification Summary (46/46 Passed)}
+    \label{tab:test_results}
+    \footnotesize
+    \begin{tabularx}{\textwidth}{>{\ttfamily}lccX}
+        \toprule
+        \textnormal{\textbf{Test Module}} & \textbf{Tests} & \textbf{Status} & \textnormal{\textbf{Core Behaviours Verified}} \\
+        \midrule
+        test\_ai\_and\_enhancements.py & 4 & \textcolor{successColor}{\textbf{PASSED}} & Bilingual Saral RAG citations, session checklists, document scanner, multi-event \texttt{.ics}. \\
+        test\_api.py & 6 & \textcolor{successColor}{\textbf{PASSED}} & Health, FOA listing, hybrid search, profile match, calendar export, proposal drafting. \\
+        test\_compliance\_edge\_cases.py & 2 & \textcolor{successColor}{\textbf{PASSED}} & Age cap disqualification and qualification compliance checks. \\
+        test\_crawlers.py & 3 & \textcolor{successColor}{\textbf{PASSED}} & SHA-256 deduplication, anti-homepage canonical URL guard, scraper registry. \\
+        test\_extraction.py & 3 & \textcolor{successColor}{\textbf{PASSED}} & Financial ceiling, deadline parsing, and eligibility extraction. \\
+        test\_hybrid\_search.py & 2 & \textcolor{successColor}{\textbf{PASSED}} & BM25 + Dense RRF fusion ranking and agency filter isolation. \\
+        test\_live\_pipeline\_verification.py & 6 & \textcolor{successColor}{\textbf{PASSED}} & Zero-mock audit, live schema \& expiry check, live HTTP 2xx/3xx URL probes, filter accuracy, UI HTML, deep analyzer, tracker, CSV, resume matcher, reminders, reranker. \\
+        test\_matcher.py & 3 & \textcolor{successColor}{\textbf{PASSED}} & Compliance evaluator, RFC~5545 \texttt{.ics} generator, 11-section proposal drafter. \\
+        test\_parser.py & 2 & \textcolor{successColor}{\textbf{PASSED}} & PDF text-density OCR routing ($<$120 chars/page) and section segmentation. \\
+        test\_saral\_multitenant\_rag.py & 4 & \textcolor{successColor}{\textbf{PASSED}} & HTTP~401 auth gate, JWT refresh rotation \& replay rejection, RBAC mode switching, strict cross-user vector isolation, SSE RAG \& cascading delete. \\
+        test\_schemas.py & 2 & \textcolor{successColor}{\textbf{PASSED}} & Pydantic v2 contract validation and FOA ID regex enforcement. \\
+        test\_search\_edge\_cases.py & 4 & \textcolor{successColor}{\textbf{PASSED}} & Special-character tokenization, empty queries, strict agency filtering. \\
+        test\_student\_edge\_cases.py & 3 & \textcolor{successColor}{\textbf{PASSED}} & Zero income boundary, income ceiling rejection, category mismatch handling. \\
+        test\_student\_scholarships.py & 2 & \textcolor{successColor}{\textbf{PASSED}} & Gender constraint enforcement, issuing-authority checklists \& Hinglish guides. \\
+        \midrule
+        \textnormal{\textbf{Total}} & \textbf{46} & \textcolor{successColor}{\textbf{100\%}} & \textbf{All 46 unit, security, RAG, and live-pipeline tests passed.} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{Empirical Benchmark Results on Live Verified Data}
+Executing the automated benchmark harness (\texttt{python -m evaluation.benchmark\_runner}) directly against the live-scraped opportunity corpus (167 verified active opportunities) yielded the empirical results presented in Table~\ref{tab:live_benchmarks}.
+
+\begin{table}[H]
+    \centering
+    \caption{Empirical Benchmark Evaluation on Live Verified Corpus (v4.0)}
+    \label{tab:live_benchmarks}
+    \small
+    \begin{tabular}{llcc}
+        \toprule
+        \textbf{Evaluation Suite} & \textbf{Metric} & \textbf{Mid-Term (Seed Data)} & \textbf{Final System (Live Corpus)} \\
+        \midrule
+        Hybrid Retrieval (BM25 + Dense RRF) & Mean Reciprocal Rank (MRR) & 0.9380 & \textbf{1.0000} \\
+        Hybrid Retrieval (BM25 + Dense RRF) & Hit@1 / Precision@1 & --- & \textbf{100.00\%} \\
+        Hybrid Retrieval (BM25 + Dense RRF) & Hit@3 / Precision@3 & 96.70\% & \textbf{100.00\%} \\
+        Hybrid Retrieval (BM25 + Dense RRF) & Hit@5 & --- & \textbf{100.00\%} \\
+        Entity Extraction (Unstructured Web) & Precision / Recall / F1 & --- & \textbf{85.00\%} \\
+        Live Pipeline Integrity & Valid Active Links (HTTP 2xx/3xx) & Static seeds & \textbf{100.00\% (167/167)} \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\section{Student Matching Case Study}
-To evaluate real-world student matching fidelity, a sample test profile of a female undergraduate engineering student with annual family income of ₹2.0 Lakhs and domicile in Telangana was evaluated. The system successfully returned:
-\begin{enumerate}[itemsep=1pt]
-    \item \textbf{AICTE Pragati Scholarship for Girls} (100\% Match --- ₹50,000/year, direct apply link: \url{https://scholarships.gov.in}).
-    \item \textbf{Kotak Kanya Scholarship} (100\% Match --- ₹1,50,000/year, direct apply gateway: \url{https://www.buddy4study.com/page/kotak-kanya-scholarship}).
-    \item \textbf{Reliance Foundation UG Scholarship} (85\% Match --- ₹2,00,000 grant).
-    \item \textbf{PM-USP Central Sector Scheme} (80\% Match --- ₹12,000/year).
-    \item Correctly disqualified male-only and PwD-exclusive scholarships.
+The 85.00\% entity extraction F1 across live unstructured web announcements reflects real-world variability in corporate job boards and government web pages where stipend or deadline fields are occasionally omitted or rolling, while Hybrid RRF + semantic reranking achieved perfect rank-1 retrieval (MRR = 1.0000, Hit@1 = 100.00\%) across the live corpus.
+
+\section{Security, Tenant Isolation \& Frontend Verification}
+In addition to functional benchmarks, three dedicated production audits were verified:
+\begin{enumerate}[itemsep=2pt]
+    \item \textbf{Cross-User Isolation Audit:} Uploading secret content under Tenant~A and querying the exact marker under Tenant~B returned zero matching chunks, zero cross-tenant citations, and HTTP~404 on direct document fetch/delete attempts.
+    \item \textbf{Token Replay Defense Audit:} Replaying both a superseded pre-mode-switch refresh token and a rotated refresh token was rejected with HTTP~401.
+    \item \textbf{Frontend Quality \& Syntax Audit:} Extracted dashboard JavaScript passed \texttt{node --check} with zero syntax errors, and an automated leak scan on live \texttt{GET /} confirmed zero occurrences of exposed internal strings (\texttt{HTTP 200}, \texttt{text/html}, \texttt{HYBRID RRF}, \texttt{XAI CHECKER}, \texttt{HTTP-only JWT}, \texttt{google-genai}, \texttt{Grounded RAG}, \texttt{API Docs}, \texttt{OAuth 2.0}, \texttt{GOOGLE\_CLIENT\_ID}).
 \end{enumerate}
 
-% ----------------------------------------------------------------------
-% CHAPTER 6: WORK PROGRESS & SCHEDULE
-% ----------------------------------------------------------------------
-\chapter{Work Completed vs. Planned Schedule}
+\section{End-to-End Functional Verification Scenarios}
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{Live Opportunity Discovery \& Deep Summary:} Filtering by \textit{Internships} or \textit{Government Portals} dynamically updates facets and URL parameters; clicking \textit{Summarize Requirements} extracts live eligibility highlights, required documents, and application steps directly from the destination portal.
+    \item \textbf{Resume-to-Opportunity Matching:} Submitting a B.Tech CSE resume listing Python, PyTorch, FastAPI, React, and Machine Learning detects \texttt{Undergraduate} level and \texttt{Computer Science \& AI} domain, ranking active tech internships by fit percentage with matched skill chips and prerequisite gap hints.
+    \item \textbf{Multi-Tenant Student Mode Study Session:} After signing in with Google, uploading a study guide containing LaTeX equations ($E = mc^2$ and $\gamma = 1/\sqrt{1 - v^2/c^2}$), and querying in \texttt{Student Mode}, Saral AI streams a step-by-step grounded explanation with rendered math and clickable page citations opening the exact source passage.
+\end{itemize}
 
-\section{Summary of Mid-Term Progress}
-As of the mid-term review, all core architecture components, retrieval models, data schemas, student matching modules, and web interfaces have been successfully implemented and tested.
+% ----------------------------------------------------------------------
+% CHAPTER 7: PROJECT MILESTONES COMPLETED
+% ----------------------------------------------------------------------
+\chapter{Project Milestones Completed}
 
-\begin{table}[H]
+Every planned mid-term and end-term engineering deliverable, along with the full multi-tenant Saral AI Gemini RAG platform upgrade and production UI polish, has been implemented, verified, and integrated into the repository (Table~\ref{tab:milestones}).
+
+\begin{table}[htbp]
     \centering
-    \caption{Project Milestones and Status}
+    \caption{Final Project Milestones and Completion Record}
     \label{tab:milestones}
+    \footnotesize
     \begin{tabularx}{\textwidth}{lXcc}
         \toprule
-        \textbf{Milestone} & \textbf{Deliverable Description} & \textbf{Target Phase} & \textbf{Status} \\
+        \textbf{ID} & \textbf{Deliverable Description} & \textbf{Phase} & \textbf{Status} \\
         \midrule
-        M1 & PDF Ingestion, Text Extraction, and OCR Worker & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
-        M2 & Pydantic Validation \& SQLite Storage Engine & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
-        M3 & BM25 + Vector Dense RRF Hybrid Search & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
-        M4 & Vidyarthi AI Student Matcher \& Direct Links & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
-        M5 & Document Checklist \& Hinglish Explainer Generator & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
-        M6 & Anusandhan AI Faculty Matcher \& Calendar Sync & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
-        M7 & Automated Test Suite (28 Test Cases) & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
-        \midrule
-        M8 & Real-time Web Crawler with Headless Browser & End-Term & In Progress \\
-        M9 & Multi-Regional Language Voice Assistance (Bhashini) & End-Term & Planned \\
-        M10 & Institutional Single Sign-On (DigiLocker / OTR Sync) & End-Term & Planned \\
+        M1 & PDF Ingestion, Text Density Evaluation \& OCR Fallback Worker & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M2 & Pydantic v2 Contracts \& Atomic SQLite / Vector Storage Engine & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M3 & Hybrid BM25 + Dense Vector RRF Search \& Academic Ontology & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M4 & Student Eligibility Matcher, Document Checklists \& Hinglish Guides & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M5 & Faculty Research Matcher, Compliance Audit, \texttt{.ics} \& Proposal Drafter & Mid-Term & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M6 & Zero-Mock 17-Scraper Live Pipeline, Playwright Fallback \& Anti-404 Cron & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M7 & On-Demand Deep-Page HTML/API/PDF Circular Analyzer & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M8 & PDF/DOCX/Text Resume Semantic Matcher \& Semantic Reranker & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M9 & Application Board, Deadline Timeline, CSV/Shareable Views \& Reminders & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M10 & Google OAuth~2.0 / OIDC, HTTP-only JWT Rotation \& Rate Limiting & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M11 & Role-Based User Mode Registry (\texttt{Student}, \texttt{Researcher}, \texttt{Educator}) & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M12 & Official \texttt{google-genai} Multi-Tenant Streaming RAG, KaTeX \& Citations & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M13 & PostgreSQL~16 \texttt{pgvector} Migration, Docker Compose \& CI Pipeline & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
+        M14 & Consumer-Polished Neo-Brutalist UI \& 46/46 Automated Tests Passing & Final & \textcolor{successColor}{\textbf{Completed (100\%)}} \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
 % ----------------------------------------------------------------------
-% CHAPTER 7: CONCLUSION & FUTURE WORK
+% CHAPTER 8: CONCLUSION
 % ----------------------------------------------------------------------
-\chapter{Conclusion \& Future Work}
+\chapter{Conclusion}
 
-\section{Conclusion}
-MadadgaarAI addresses a vital societal and educational need by democratizing access to statutory scholarships and scientific research grants across India. By uniting lexical and dense semantic information retrieval with rule-based compliance validation, the platform provides actionable, localized, and verifiable funding intelligence. The project successfully completed all mid-term milestones, validated by 28 automated integration tests and a responsive, zero-cloud-dependency local implementation.
+MadadgaarAI v4.0 successfully fulfills its mission as a complete, production-ready opportunity intelligence and multi-tenant academic study platform for Indian students, researchers, and educators. Starting from a local mid-term prototype backed by static seed files, the project evolved into a zero-mock real-time platform powered by 17 asynchronous live scrapers, Playwright headless fallback, live HTTP link verification, on-demand deep-page circular summarization, multi-modal eligibility and resume matching, full application tracking with reminders and calendar/CSV exports, and a secure multi-tenant Gemini RAG study assistant.
 
-\section{Future Roadmap for End-Term}
-\begin{enumerate}
-    \item \textbf{Autonomous Dynamic Crawlers:} Expanding live portal crawlers with headless browsers to track real-time portal deadline extensions.
-    \item \textbf{Integration with Bhashini (AI4Bharat):} Adding multi-lingual voice synthesis across 12 Indian regional languages (Hindi, Marathi, Telugu, Tamil, Bengali, Gujarati, Kannada, etc.).
-    \item \textbf{DigiLocker \& Aadhaar OTR Verification:} Facilitating one-click automatic profile population from government DigiLocker credentials.
-\end{enumerate}
+Across the entire stack, architectural rigor was matched with product quality: Google OAuth~2.0 authentication with HTTP-only rotating JWT cookies protects tenant-isolated private document libraries; the Strategy/Registry User Mode architecture cleanly adapts chunking, retrieval depth, and pedagogical prompts across Student, Researcher, and Educator personas; PostgreSQL~16 \texttt{pgvector} and Docker configurations provide full deployment parity; and the polished 4-tab Neo-Brutalist web interface delivers every capability intuitively without exposing underlying technical artifacts. Validated by 46 passing automated tests, an empirical retrieval MRR of 1.0000 on live verified opportunities, and live Gemini and Google OAuth integration, MadadgaarAI stands delivered as a cohesive, verifiable, and user-ready software system.
 
 % ----------------------------------------------------------------------
 % REFERENCES
@@ -492,22 +669,47 @@ MadadgaarAI addresses a vital societal and educational need by democratizing acc
 \bibitem{cormack2009rrf}
 G.~V. Cormack, C.~L. Clarke, and S.~Buettcher,
 ``Reciprocal rank fusion outperforms Condorcet and individual machine learning methods,''
-\emph{Proceedings of the 32nd International ACM SIGIR Conference on Research and Development in Information Retrieval}, pp. 758--759, 2009.
+\emph{Proceedings of the 32nd International ACM SIGIR Conference on Research and Development in Information Retrieval}, pp.~758--759, 2009.
 
 \bibitem{robertson2009bm25}
 S.~Robertson and H.~Zaragoza,
 ``The probabilistic relevance framework: BM25 and beyond,''
-\emph{Foundations and Trends in Information Retrieval}, vol.~3, no.~4, pp. 333--389, 2009.
+\emph{Foundations and Trends in Information Retrieval}, vol.~3, no.~4, pp.~333--389, 2009.
 
 \bibitem{reimers2019sentencebert}
 N.~Reimers and I.~Gurevych,
 ``Sentence-BERT: Sentence embeddings using Siamese BERT-networks,''
-\emph{Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP)}, pp. 3982--3992, 2019.
+\emph{Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP)}, pp.~3982--3992, 2019.
+
+\bibitem{gemini_api}
+Google DeepMind,
+``Google GenAI SDK (\texttt{google-genai}) \& Gemini Embeddings Documentation,''
+\emph{Google AI for Developers}, available online: \url{https://ai.google.dev/gemini-api/docs}, 2026.
+
+\bibitem{rfc6749}
+D.~Hardt (Ed.),
+``The OAuth 2.0 Authorization Framework,''
+\emph{Internet Engineering Task Force (IETF), RFC 6749}, 2012.
+
+\bibitem{rfc7519}
+M.~Jones, J.~Bradley, and N.~Sakimura,
+``JSON Web Token (JWT),''
+\emph{Internet Engineering Task Force (IETF), RFC 7519}, 2015.
+
+\bibitem{rfc5545}
+B.~Desruisseaux (Ed.),
+``Internet Calendaring and Scheduling Core Object Specification (iCalendar),''
+\emph{Internet Engineering Task Force (IETF), RFC 5545}, 2009.
+
+\bibitem{pgvector}
+A.~Kane,
+``pgvector: Open-source vector similarity search for Postgres,''
+\emph{GitHub Repository}, available online: \url{https://github.com/pgvector/pgvector}, 2025.
 
 \bibitem{fastapi}
 S.~Ram{\'\i}rez,
 ``FastAPI: High performance, easy to learn, fast to code, ready for production,''
-\emph{Available online: \url{https://fastapi.tiangolo.com}}, 2024.
+\emph{Available online: \url{https://fastapi.tiangolo.com}}, 2025.
 
 \bibitem{nsp_india}
 National Informatics Centre (NIC),
