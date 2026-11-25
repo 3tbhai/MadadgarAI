@@ -47,3 +47,4 @@ Get-Process -Id (Get-NetTCPConnection -LocalPort 8000).OwningProcess | Stop-Proc
 
 ### Q6: Can I import the generated `.ics` files into Google Calendar?
 **A:** Yes! Download the `.ics` file from `/api/foas/{foa_id}/calendar` or the Web UI, open Google Calendar -> Settings -> Import & Export -> Select `.ics` file -> Import. The grant deadline and pre-configured 7-day and 24-hour reminder alarms will automatically appear.
+
