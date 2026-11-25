@@ -73,3 +73,4 @@ def generate_stats():
 
 if __name__ == "__main__":
     generate_stats()
+
