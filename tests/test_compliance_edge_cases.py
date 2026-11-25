@@ -56,3 +56,4 @@ def test_applicant_compliant_qualifications():
     result = checker.evaluate_compliance(req, foa.eligibility, foa=foa)
     assert result.is_compliant is True
     assert result.status == "ELIGIBLE"
+
