@@ -142,3 +142,4 @@ curl -X GET "http://localhost:8000/api/foas/DST-CRG-2026-01/calendar" -o grant_d
 - `GET /api/student/scholarships/{foa_id}/hinglish`
 
 Returns issuance authorities (Tehsildar, College Registrar, E-District) and simplified *"Saral Samjhauti"* guides in Hindi/Hinglish.
+
