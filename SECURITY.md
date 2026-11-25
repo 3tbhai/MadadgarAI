@@ -30,3 +30,4 @@ If you discover any security vulnerability or malicious domain matching error wi
 1. Please do **NOT** open a public issue.
 2. Email the development team at `ayushchoudhary18481@gmail.com` with reproducible steps and proof of concept.
 3. The team will acknowledge receipt within 48 hours and coordinate a security fix.
+
