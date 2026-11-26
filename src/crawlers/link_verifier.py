@@ -3,11 +3,40 @@ import asyncio
 from datetime import datetime, timezone
 import importlib.util
 import logging
+import ssl
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 import httpx
 
 logger = logging.getLogger("MadadgaarAI.Crawlers.LinkVerifier")
+
+
+def _is_tls_cert_error(exc: Exception) -> bool:
+    cur: Optional[BaseException] = exc
+    while cur is not None:
+        if isinstance(cur, ssl.SSLCertVerificationError) or "CERTIFICATE_VERIFY_FAILED" in str(cur):
+            return True
+        cur = cur.__cause__ or cur.__context__
+    return False
+
+
+async def smart_http_get(
+    url: str,
+    timeout: float = 12.0,
+    headers: Optional[Dict[str, str]] = None,
+    follow_redirects: bool = True,
+) -> httpx.Response:
+    """Verifies TLS strictly first; falls back to verify=False ONLY on certificate chain errors (common on .gov.in portals)."""
+    hdrs = headers or DEFAULT_HEADERS
+    try:
+        async with httpx.AsyncClient(verify=True, headers=hdrs, timeout=timeout, follow_redirects=follow_redirects) as hc:
+            return await hc.get(url)
+    except Exception as exc:
+        if not _is_tls_cert_error(exc):
+            raise
+        logger.debug(f"TLS chain fallback for {urlparse(url).netloc}: {exc}")
+        async with httpx.AsyncClient(verify=False, headers=hdrs, timeout=timeout, follow_redirects=follow_redirects) as hc:
+            return await hc.get(url)
 
 PLAYWRIGHT_AVAILABLE = importlib.util.find_spec("playwright") is not None
 
@@ -98,15 +127,29 @@ class AsyncLinkVerifier:
 
         async with semaphore:
             try:
-                resp = await client.head(url, timeout=self.timeout_seconds, follow_redirects=True)
+                try:
+                    resp = await client.head(url, timeout=self.timeout_seconds, follow_redirects=True)
+                except Exception as tls_exc:
+                    if not _is_tls_cert_error(tls_exc):
+                        raise
+                    async with httpx.AsyncClient(verify=False, headers=DEFAULT_HEADERS, timeout=self.timeout_seconds) as fb:
+                        resp = await fb.head(url, follow_redirects=True)
                 status = resp.status_code
                 final_url = str(resp.url)
 
                 # Some servers reject HEAD with 403/405/501; fall back to streaming GET
                 if status in (403, 405, 501) or status >= 400:
-                    async with client.stream("GET", url, timeout=self.timeout_seconds, follow_redirects=True) as get_resp:
-                        status = get_resp.status_code
-                        final_url = str(get_resp.url)
+                    try:
+                        async with client.stream("GET", url, timeout=self.timeout_seconds, follow_redirects=True) as get_resp:
+                            status = get_resp.status_code
+                            final_url = str(get_resp.url)
+                    except Exception as tls_exc:
+                        if not _is_tls_cert_error(tls_exc):
+                            raise
+                        async with httpx.AsyncClient(verify=False, headers=DEFAULT_HEADERS, timeout=self.timeout_seconds) as fb:
+                            async with fb.stream("GET", url, follow_redirects=True) as get_resp:
+                                status = get_resp.status_code
+                                final_url = str(get_resp.url)
 
                 # Optional Playwright headless fallback when installed and anti-bot 403/503 is encountered
                 if status in (403, 503) and PLAYWRIGHT_AVAILABLE:
@@ -130,7 +173,7 @@ class AsyncLinkVerifier:
         semaphore = asyncio.Semaphore(self.concurrency)
         results: Dict[str, Tuple[bool, int, str, datetime]] = {}
         async with httpx.AsyncClient(
-            verify=False,
+            verify=True,
             headers=DEFAULT_HEADERS,
             limits=httpx.Limits(max_connections=self.concurrency + 4, max_keepalive_connections=self.concurrency),
         ) as client:

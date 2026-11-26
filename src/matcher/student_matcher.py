@@ -39,19 +39,43 @@ class StudentScholarshipMatcher:
         self.normalizer = normalizer or DatasetNormalizer()
 
     def get_all_student_scholarships(self) -> List[FundingOpportunity]:
-        """Returns all deduplicated opportunities tailored for students."""
+        """Returns deduplicated opportunities tailored for students, filtering out senior faculty/postdoc grants."""
         all_foas = self.normalizer.load_all_opportunities()
         student_foas: List[FundingOpportunity] = []
         seen_ids = set()
         seen_hashes = set()
+
+        faculty_only_markers = (
+            "j. c. bose", "post doctoral", "post-doctoral", "postdoc", "n-pdf",
+            "principal investigator", "faculty fellowship", "ramanujan", "ramalingaswami",
+            "core research grant", "sponsored research", "isro respond", "extramural",
+            "start-up research grant", "scientist", "investigator award",
+        )
+        explicit_student_markers = (
+            "scholarship", "internship", "intern ", "undergraduate", "school student",
+            "graduate student", "b.tech", "bachelor", "post-matric", "pragati", "saksham",
+            "kotak kanya", "single girl child", "she)", "she ", "student",
+        )
+
         for foa in all_foas:
             if foa.foa_id in seen_ids or foa.raw_document_hash in seen_hashes:
                 continue
+            title_low = foa.title.lower()
+            elig_low = (foa.eligibility.raw_eligibility_text or "").lower()
+            combined_low = f"{title_low} {elig_low}"
+
+            is_faculty_only = any(m in title_low for m in faculty_only_markers) and not any(
+                s in title_low for s in ("scholarship", "internship", "student", "undergraduate")
+            )
+            if is_faculty_only:
+                continue
+
             is_student = (
                 foa.foa_id.startswith("SCHOLARSHIP-")
                 or any("Student" in b.value for b in foa.eligibility.target_beneficiaries)
-                or foa.agency in [AgencyType.NSP, AgencyType.UGC, AgencyType.STATE_GOVT, AgencyType.CSR_FOUNDATION]
-                or any("Scholarship" in tag for tag in foa.thematic_areas)
+                or any(m in combined_low for m in explicit_student_markers)
+                or foa.agency in [AgencyType.NSP, AgencyType.STATE_GOVT, AgencyType.CSR_FOUNDATION]
+                or any("Scholarship" in tag or "Internship" in tag for tag in foa.thematic_areas)
             )
             if is_student:
                 seen_ids.add(foa.foa_id)

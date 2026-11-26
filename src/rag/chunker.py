@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import httpx
 from pypdf import PdfReader
 
-from src.crawlers.link_verifier import DEFAULT_HEADERS
+from src.crawlers.link_verifier import DEFAULT_HEADERS, smart_http_get
 
 logger = logging.getLogger("MadadgaarAI.RAG.Chunker")
 
@@ -92,46 +92,45 @@ class LayoutAwareChunker:
         if not clean_url.startswith(("http://", "https://")):
             raise ValueError("URL must start with http:// or https://")
 
-        async with httpx.AsyncClient(verify=False, headers=DEFAULT_HEADERS, timeout=15.0, follow_redirects=True) as hc:
-            resp = await hc.get(clean_url)
-            resp.raise_for_status()
-            ctype = (resp.headers.get("content-type") or "text/html").split(";")[0].strip().lower()
+        resp = await smart_http_get(clean_url, timeout=15.0, headers=DEFAULT_HEADERS, follow_redirects=True)
+        resp.raise_for_status()
+        ctype = (resp.headers.get("content-type") or "text/html").split(";")[0].strip().lower()
 
-            if "pdf" in ctype or clean_url.lower().endswith(".pdf") or resp.content[:4] == b"%PDF":
-                pages = LayoutAwareChunker.extract_pdf_pages(resp.content)
-                title = clean_url.rstrip("/").split("/")[-1] or "Remote PDF Document"
-                return title, "application/pdf", pages
+        if "pdf" in ctype or clean_url.lower().endswith(".pdf") or resp.content[:4] == b"%PDF":
+            pages = LayoutAwareChunker.extract_pdf_pages(resp.content)
+            title = clean_url.rstrip("/").split("/")[-1] or "Remote PDF Document"
+            return title, "application/pdf", pages
 
-            soup = BeautifulSoup(resp.text, "html.parser")
-            title = " ".join(soup.title.string.split())[:120] if (soup.title and soup.title.string) else clean_url
-            for tag in soup(["script", "style", "noscript", "svg", "nav", "footer"]):
-                tag.decompose()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        title = " ".join(soup.title.string.split())[:120] if (soup.title and soup.title.string) else clean_url
+        for tag in soup(["script", "style", "noscript", "svg", "nav", "footer"]):
+            tag.decompose()
 
-            # Preserve heading-delimited sections from HTML (great for arXiv / docs / Wikipedia)
-            sections: List[ParsedPage] = []
-            current_header = "Overview"
-            buf: List[str] = []
-            sec_idx = 1
-            root = soup.select_one("main, article, #abs, .ltx_document, #content") or soup.body or soup
-            for elem in root.find_all(["h1", "h2", "h3", "p", "li", "blockquote"]):
-                txt = " ".join(elem.get_text(" ", strip=True).split())
-                if len(txt) < 4:
-                    continue
-                if elem.name in ("h1", "h2", "h3"):
-                    if buf:
-                        sections.append(ParsedPage(page_number=sec_idx, section_header=current_header, text="\n".join(buf)))
-                        sec_idx += 1
-                        buf = []
-                    current_header = txt[:90]
-                else:
-                    buf.append(txt)
-            if buf:
-                sections.append(ParsedPage(page_number=sec_idx, section_header=current_header, text="\n".join(buf)))
+        # Preserve heading-delimited sections from HTML (great for arXiv / docs / Wikipedia)
+        sections: List[ParsedPage] = []
+        current_header = "Overview"
+        buf: List[str] = []
+        sec_idx = 1
+        root = soup.select_one("main, article, #abs, .ltx_document, #content") or soup.body or soup
+        for elem in root.find_all(["h1", "h2", "h3", "p", "li", "blockquote"]):
+            txt = " ".join(elem.get_text(" ", strip=True).split())
+            if len(txt) < 4:
+                continue
+            if elem.name in ("h1", "h2", "h3"):
+                if buf:
+                    sections.append(ParsedPage(page_number=sec_idx, section_header=current_header, text="\n".join(buf)))
+                    sec_idx += 1
+                    buf = []
+                current_header = txt[:90]
+            else:
+                buf.append(txt)
+        if buf:
+            sections.append(ParsedPage(page_number=sec_idx, section_header=current_header, text="\n".join(buf)))
 
-            if not sections:
-                plain = root.get_text("\n", strip=True)
-                sections = [ParsedPage(page_number=1, section_header="Web Excerpt", text=plain)]
-            return title, ctype, sections
+        if not sections:
+            plain = root.get_text("\n", strip=True)
+            sections = [ParsedPage(page_number=1, section_header="Web Excerpt", text=plain)]
+        return title, ctype, sections
 
     def chunk_pages(
         self,

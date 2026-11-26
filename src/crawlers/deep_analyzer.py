@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import httpx
 from pydantic import BaseModel, Field
 
-from src.crawlers.link_verifier import DEFAULT_HEADERS, PLAYWRIGHT_AVAILABLE, playwright_fetch_page
+from src.crawlers.link_verifier import DEFAULT_HEADERS, PLAYWRIGHT_AVAILABLE, playwright_fetch_page, smart_http_get
 from src.crawlers.live_scrapers import parse_deadline_from_text, strip_html
 from src.extractor.entity_extractor import FOAEntityExtractor
 from src.parser.pdf_parser import PDFLayoutParser
@@ -107,7 +107,7 @@ class DeepPageAnalyzer:
         api_deadline_raw = ""
 
         try:
-            async with httpx.AsyncClient(verify=False, headers=DEFAULT_HEADERS, timeout=12.0, follow_redirects=True) as client:
+            async with httpx.AsyncClient(verify=True, headers=DEFAULT_HEADERS, timeout=12.0, follow_redirects=True) as client:
                 api_data = await self._try_structured_api(client, url)
                 if api_data:
                     raw_text = api_data.get("text") or ""
@@ -116,7 +116,7 @@ class DeepPageAnalyzer:
                     content_type = "application/json+html"
 
                 if len(raw_text) < 120:
-                    resp = await client.get(url)
+                    resp = await smart_http_get(url, timeout=12.0, headers=DEFAULT_HEADERS, follow_redirects=True)
                     http_status = resp.status_code
                     content_type = (resp.headers.get("content-type") or "text/html").split(";")[0].strip().lower()
 

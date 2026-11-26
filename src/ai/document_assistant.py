@@ -1,4 +1,5 @@
 """Intelligent Document Assistant for Scholarship Certificates, Marksheets, CVs, and Research Proposals."""
+from datetime import date
 import logging
 import re
 from typing import Any, Dict, List, Optional
@@ -177,21 +178,23 @@ class IntelligentDocumentAssistant:
             )
             warnings.append("Digital e-District Certificate/Application Number was not clearly detected.")
 
-        # 4. Issue Date / Financial Year Check
-        year_matches = re.findall(r"\b(202[0-9])\b", text)
+        # 4. Issue Date / Dynamic Indian Financial Year Check (April 1 cutoff)
+        today = date.today()
+        active_fy_start = today.year if today.month >= 4 else today.year - 1
+        year_matches = re.findall(r"\b(20\d{2})\b", text)
         if year_matches:
             latest_yr = max(int(y) for y in year_matches)
-            if latest_yr < 2025:
+            if latest_yr < active_fy_start:
                 fields.append(
                     DocumentFieldResult(
                         field_name="Issue Year / Financial Year",
                         extracted_value=str(latest_yr),
                         status="WARNING",
-                        note=f"Detected year {latest_yr} appears older than the current financial year.",
+                        note=f"Detected year {latest_yr} is older than active FY {active_fy_start}-{str(active_fy_start + 1)[-2:]}.",
                     )
                 )
                 warnings.append(
-                    f"Certificate date ({latest_yr}) may be expired. Most portals require an Income Certificate issued on or after 1st April of the current financial year."
+                    f"Certificate date ({latest_yr}) may be expired. Most portals require an Income Certificate issued on or after 1st April {active_fy_start}."
                 )
             else:
                 fields.append(
@@ -199,11 +202,11 @@ class IntelligentDocumentAssistant:
                         field_name="Issue Year / Financial Year",
                         extracted_value=str(latest_yr),
                         status="DETECTED",
-                        note="Matches active financial year window.",
+                        note=f"Matches active FY {active_fy_start}-{str(active_fy_start + 1)[-2:]} window.",
                     )
                 )
         else:
-            missing.append("Issue Date (must be on or after 1st April of current FY)")
+            missing.append(f"Issue Date (must be on or after 1st April {active_fy_start})")
 
         recommendations = [
             "Verify that the Income Certificate is issued in the name of the earning parent/head of family where required (e.g. UP Dashmottar).",
