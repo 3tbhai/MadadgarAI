@@ -114,6 +114,8 @@ def render_dashboard_html() -> str:
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #FAF8F5; }
   </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-claySoft selection:text-clayDark">
