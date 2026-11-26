@@ -1,23 +1,100 @@
-"""Automated Grant Proposal Skeleton Drafter for Indian Statutory Bodies."""
+"""Automated Grant Proposal & SOP Drafter with Optional Official Gemini API Tailoring."""
 from datetime import datetime, timezone
+import json
+import logging
+import os
 from typing import Dict, List, Optional
 from src.schemas.foa import AgencyType, FundingOpportunity, ProposalSection, ProposalSkeleton
+
+logger = logging.getLogger("MadadgaarAI.Matcher.ProposalDrafter")
 
 
 class ProposalDrafter:
     def __init__(self):
-        pass
+        self._genai_client = None
+        self._cached_key = ""
+
+    def _get_gemini_client(self):
+        key = (os.getenv("GEMINI_API_KEY") or "").strip()
+        if not key:
+            return None
+        try:
+            from google import genai
+            if self._genai_client is None or self._cached_key != key:
+                self._genai_client = genai.Client(api_key=key)
+                self._cached_key = key
+            return self._genai_client
+        except Exception as exc:
+            logger.debug(f"Gemini drafter client unavailable: {exc}")
+            return None
+
+    def _enrich_sections_with_gemini(
+        self,
+        foa: FundingOpportunity,
+        sections: List[ProposalSection],
+        is_student_sop: bool,
+        pi_name: str,
+        institution_name: str,
+        custom_abstract: Optional[str],
+    ) -> List[ProposalSection]:
+        """Tailors the top narrative sections using Gemini when GEMINI_API_KEY is configured."""
+        client = self._get_gemini_client()
+        if client is None:
+            return sections
+        try:
+            from google.genai import types
+            model = (os.getenv("SARAL_GEMINI_MODEL") or os.getenv("MADADGAAR_GEMINI_MODEL") or "gemini-2.5-flash").strip()
+            doc_kind = "Statement of Purpose (SOP) / Cover Application" if is_student_sop else "Research Grant Proposal"
+            prompt = (
+                f"Generate tailored, concrete, non-generic draft content for the first 3 sections of a {doc_kind}.\n"
+                f"Opportunity Title: {foa.title}\n"
+                f"Organization / Agency: {foa.issuing_authority or foa.agency.value}\n"
+                f"Summary: {foa.brief_summary}\n"
+                f"Thematic Areas: {', '.join(foa.thematic_areas[:5])}\n"
+                f"Applicant / PI: {pi_name} ({institution_name})\n"
+                f"Applicant Focus / Abstract: {custom_abstract or 'Not provided'}\n\n"
+                "Return strict JSON with exact keys: "
+                '{"section_1": "...", "section_2": "...", "section_3": "..."}. '
+                "Each value should be 90-140 words of crisp, directly usable draft prose."
+            )
+            resp = client.models.generate_content(
+                model=model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.3,
+                    max_output_tokens=900,
+                    response_mime_type="application/json",
+                ),
+            )
+            raw = (getattr(resp, "text", None) or "").strip()
+            if not raw:
+                return sections
+            parsed = json.loads(raw)
+            updated = list(sections)
+            for idx, key in enumerate(("section_1", "section_2", "section_3")):
+                val = parsed.get(key)
+                if isinstance(val, str) and len(val.strip()) > 40 and idx < len(updated):
+                    updated[idx] = updated[idx].model_copy(update={"drafted_content": val.strip()})
+            return updated
+        except Exception as exc:
+            logger.debug(f"Gemini proposal tailoring fallback triggered: {exc}")
+            return sections
 
     def draft_proposal_skeleton(
         self,
         foa: FundingOpportunity,
         project_title: Optional[str] = None,
-        pi_name: str = "Dr. Principal Investigator",
-        institution_name: str = "JK Lakshmipat University, Jaipur",
+        pi_name: str = "Applicant / Principal Investigator",
+        institution_name: str = "Your Academic / Research Institution",
         custom_abstract: Optional[str] = None,
+        use_llm: bool = False,
     ) -> ProposalSkeleton:
-        """Generates an agency-tailored 11-section proposal blueprint with MoF OM budget justification and references."""
+        """Generates an agency-tailored 11-section proposal or SOP blueprint with optional live Gemini tailoring."""
         scheme_title = foa.title
+        low_title = f"{foa.title} {' '.join(foa.thematic_areas)}".lower()
+        is_student_sop = any(k in low_title for k in ("intern", "scholarship", "undergraduate", "student", "fellowship")) and not any(
+            k in low_title for k in ("principal investigator", "core research grant", "faculty", "extramural")
+        )
         primary_thrust = (
             foa.ontology_tags[0].thematic_thrust
             if foa.ontology_tags
@@ -228,6 +305,16 @@ class ProposalDrafter:
             f"Overhead Cap: {overhead_pct:.1f}%, Tenure: {duration_m} months) and Ministry of Finance GFR 2017 / DST Fellowship OM norms. "
             "NOTE: Automated drafting does not certify final administrative compliance; PI must verify call-specific annexures and institutional sign-offs on the official portal before submission."
         )
+
+        if use_llm:
+            sections = self._enrich_sections_with_gemini(
+                foa=foa,
+                sections=sections,
+                is_student_sop=is_student_sop,
+                pi_name=pi_name,
+                institution_name=institution_name,
+                custom_abstract=custom_abstract,
+            )
 
         return ProposalSkeleton(
             foa_id=foa.foa_id,
