@@ -17,17 +17,24 @@ logger = logging.getLogger("MadadgaarAI.Matcher.Resume")
 
 SKILL_CATALOG = [
     "Python", "Java", "C++", "C#", "JavaScript", "TypeScript", "Go", "Rust", "SQL", "R", "MATLAB",
-    "Machine Learning", "Deep Learning", "Artificial Intelligence", "NLP", "LLM", "Generative AI",
-    "Computer Vision", "PyTorch", "TensorFlow", "Scikit-learn", "Data Science", "Data Analytics",
-    "React", "Next.js", "Node.js", "FastAPI", "Django", "Flask", "Spring Boot", "GraphQL", "REST API",
-    "AWS", "GCP", "Azure", "Docker", "Kubernetes", "Linux", "Git", "CI/CD", "Distributed Systems",
-    "Cybersecurity", "Blockchain", "Robotics", "ROS", "Embedded Systems", "IoT", "FPGA", "VLSI",
-    "Semiconductor", "Aerospace", "Mechanical Design", "CAD", "SolidWorks", "ANSYS", "Signal Processing",
+    "Swift", "Kotlin", "Scala", "Julia", "Shell", "Bash",
+    "Machine Learning", "Deep Learning", "Artificial Intelligence", "NLP", "LLM", "Generative AI", "RAG",
+    "Computer Vision", "PyTorch", "TensorFlow", "JAX", "Transformers", "HuggingFace", "LangChain",
+    "Scikit-learn", "Data Science", "Data Analytics", "Reinforcement Learning", "MLOps", "CUDA",
+    "React", "Next.js", "Vue", "Angular", "Node.js", "FastAPI", "Django", "Flask", "Spring Boot",
+    "GraphQL", "REST API", "Flutter", "React Native", "Tailwind CSS",
+    "PostgreSQL", "MySQL", "MongoDB", "Redis", "pgvector", "Elasticsearch", "Kafka", "Apache Spark",
+    "Airflow", "dbt", "Snowflake", "BigQuery", "Tableau", "Power BI",
+    "AWS", "GCP", "Azure", "Docker", "Kubernetes", "Terraform", "Linux", "Git", "CI/CD", "Distributed Systems",
+    "Cybersecurity", "Cryptography", "Blockchain", "Robotics", "ROS", "Embedded Systems", "IoT",
+    "FPGA", "VLSI", "Verilog", "SystemVerilog", "VHDL", "Semiconductor", "Aerospace", "Mechanical Design",
+    "CAD", "AutoCAD", "SolidWorks", "ANSYS", "Signal Processing", "Control Systems", "Mechatronics",
     "Biotechnology", "Bioinformatics", "Genomics", "Proteomics", "Molecular Biology", "Clinical Research",
-    "Public Health", "Pharmacology", "Biomedical", "CRISPR", "Cell Culture",
-    "Quantum Computing", "Physics", "Chemistry", "Mathematics", "Statistics", "Climate Science",
-    "Renewable Energy", "Finance", "Accounting", "Economics", "Marketing", "Product Management",
-    "UI/UX", "Figma", "Public Policy", "Research Writing", "LaTeX", "Publications",
+    "Public Health", "Epidemiology", "Immunology", "Pharmacology", "Biomedical", "CRISPR", "Cell Culture",
+    "Quantum Computing", "Physics", "Photonics", "Nanotechnology", "Chemistry", "Materials Science",
+    "Mathematics", "Statistics", "Climate Science", "GIS", "Renewable Energy", "Sustainability",
+    "Finance", "Accounting", "Economics", "Econometrics", "Marketing", "Product Management",
+    "SPSS", "Stata", "UI/UX", "Figma", "Public Policy", "Research Writing", "LaTeX", "Publications",
 ]
 
 
@@ -113,10 +120,23 @@ class ResumeOpportunityMatcher:
     def _detect_skills(text: str) -> List[str]:
         low = text.lower()
         found: List[str] = []
+        seen_low = set()
         for skill in SKILL_CATALOG:
             pattern = r"(?<![a-z0-9])" + re.escape(skill.lower()) + r"(?![a-z0-9])"
             if re.search(pattern, low):
                 found.append(skill)
+                seen_low.add(skill.lower())
+
+        # Dynamically extract additional skills declared after "Skills:", "Technologies:", or "Tools:" headings
+        for m in re.finditer(r"(?:technical\s+skills|skills|technologies|tools|stack)\s*[:\-]\s*([^\n]{4,220})", text, re.I):
+            for raw_tok in re.split(r"[,;|/•·]+", m.group(1)):
+                tok = raw_tok.strip(" .-()[]")
+                if 2 <= len(tok) <= 32 and tok.lower() not in seen_low and not tok.isdigit():
+                    if len(tok.split()) <= 3:
+                        found.append(tok)
+                        seen_low.add(tok.lower())
+                        if len(found) >= 24:
+                            return found
         return found
 
     def match_resume(

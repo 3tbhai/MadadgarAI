@@ -1,5 +1,6 @@
 """Neural & Dense Semantic Text Embedder + Cross-Encoder / Late-Interaction Semantic Reranker (3.1)."""
 import logging
+import os
 import re
 from typing import List, Optional, Tuple
 import zlib
@@ -13,8 +14,9 @@ logger = logging.getLogger("MadadgaarAI.Embeddings.Embedder")
 class TextEmbedder:
     """
     Hybrid Neural + Deterministic 384-d Semantic Embedder and Pairwise Semantic Reranker.
-    Attempts SentenceTransformer / HuggingFace Transformers neural model if cached locally,
-    and seamlessly fuses with multi-granular subword/trigram + bigram CRC32 projections.
+    Attempts SentenceTransformer neural model (local cache first, or downloading when
+    MADADGAAR_ALLOW_MODEL_DOWNLOAD=true), and seamlessly fuses with multi-granular
+    subword/4-gram + bigram CRC32 projections when offline.
     """
 
     def __init__(self, model_name: str = EMBEDDING_MODEL_NAME):
@@ -26,8 +28,11 @@ class TextEmbedder:
     def _init_model(self):
         try:
             from sentence_transformers import SentenceTransformer
-            self.st_model = SentenceTransformer(self.model_name, local_files_only=True)
-            logger.info(f"Loaded local neural SentenceTransformer: {self.model_name}")
+            allow_download = (os.getenv("MADADGAAR_ALLOW_MODEL_DOWNLOAD", "false").strip().lower() in ("1", "true", "yes"))
+            offline = (os.getenv("HF_HUB_OFFLINE", "0").strip() == "1")
+            local_only = offline or not allow_download
+            self.st_model = SentenceTransformer(self.model_name, local_files_only=local_only)
+            logger.info(f"Loaded neural SentenceTransformer: {self.model_name} (local_only={local_only})")
         except Exception:
             self.st_model = None
 
