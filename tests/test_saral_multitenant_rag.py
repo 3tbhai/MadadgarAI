@@ -1,4 +1,4 @@
-"""Integration Tests for Multi-Tenant Saral AI: Google/JWT Auth, RBAC Modes, Cross-User Isolation & Streaming RAG."""
+"""Integration Tests for Multi-Tenant Saral AI: Google/JWT Auth, Cross-User Isolation & Streaming RAG."""
 import json
 import uuid
 import pytest
@@ -12,7 +12,6 @@ def test_1_unauthenticated_requests_strictly_rejected():
     """Verify every protected Saral AI & Auth endpoint rejects unauthenticated requests with HTTP 401."""
     with TestClient(app) as client:
         assert client.get("/api/auth/me").status_code == 401
-        assert client.patch("/api/auth/mode", json={"user_mode": "researcher"}).status_code == 401
         assert client.get("/api/saral/documents").status_code == 401
         assert client.post(
             "/api/saral/documents/upload",
@@ -23,45 +22,37 @@ def test_1_unauthenticated_requests_strictly_rejected():
         assert client.get("/api/saral/sessions").status_code == 401
 
 
-def test_2_jwt_cookies_user_modes_and_refresh_token_rotation():
-    """Verify HTTP-only JWT cookie login, default Student mode, mode switching, and refresh token reuse detection."""
+def test_2_jwt_cookies_and_refresh_token_rotation():
+    """Verify HTTP-only JWT cookie login, profile endpoint, and refresh token reuse detection."""
     with TestClient(app) as client:
-        unique_email = f"mode_tester_{uuid.uuid4().hex[:8]}@saral.test"
+        unique_email = f"auth_tester_{uuid.uuid4().hex[:8]}@saral.test"
         r_login = client.post(
             "/api/auth/dev-login",
-            json={"email": unique_email, "full_name": "Mode Tester"},
+            json={"email": unique_email, "full_name": "Auth Tester"},
         )
         assert r_login.status_code == 200
         user = r_login.json()["user"]
-        assert user["user_mode"] == "student"
+        assert user["email"] == unique_email
         assert ACCESS_COOKIE_NAME in client.cookies
         assert REFRESH_COOKIE_NAME in client.cookies
         old_refresh = client.cookies.get(REFRESH_COOKIE_NAME)
 
-        # Switch Student -> Researcher -> Educator via Strategy Registry
-        r_res = client.patch("/api/auth/mode", json={"user_mode": "researcher"})
-        assert r_res.status_code == 200
-        assert r_res.json()["user"]["user_mode"] == "researcher"
-        assert r_res.json()["user"]["mode_config"]["retrieval_top_k"] == 7
-
-        r_edu = client.patch("/api/auth/mode", json={"user_mode": "educator"})
-        assert r_edu.status_code == 200
-        assert r_edu.json()["user"]["user_mode"] == "educator"
-        assert r_edu.json()["user"]["mode_config"]["display_name"] == "Educator Mode"
+        # Authenticated /api/auth/me returns the same user profile
+        r_me = client.get("/api/auth/me")
+        assert r_me.status_code == 200
+        assert r_me.json()["user"]["id"] == user["id"]
 
         # Refresh token rotation succeeds and issues a new refresh token
-        latest_refresh = client.cookies.get(REFRESH_COOKIE_NAME)
         r_ref = client.post("/api/auth/refresh")
         assert r_ref.status_code == 200
         rotated_refresh = client.cookies.get(REFRESH_COOKIE_NAME)
-        assert rotated_refresh and rotated_refresh != latest_refresh
+        assert rotated_refresh and rotated_refresh != old_refresh
 
-        # Replaying either the superseded login refresh token OR the rotated refresh token is strictly rejected with 401
-        for revoked_tok in (old_refresh, latest_refresh):
-            with TestClient(app) as replay_client:
-                replay_client.cookies.set(REFRESH_COOKIE_NAME, revoked_tok)
-                r_replay = replay_client.post("/api/auth/refresh")
-                assert r_replay.status_code == 401
+        # Replaying the rotated/revoked refresh token is strictly rejected with 401
+        with TestClient(app) as replay_client:
+            replay_client.cookies.set(REFRESH_COOKIE_NAME, old_refresh)
+            r_replay = replay_client.post("/api/auth/refresh")
+            assert r_replay.status_code == 401
 
 
 def test_3_strict_cross_user_vector_and_document_isolation():

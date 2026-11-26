@@ -110,24 +110,17 @@ class GeminiRAGClient:
     def _build_offline_grounded_answer(
         self,
         query: str,
-        mode_name: str,
         retrieved_chunks: List[Dict[str, Any]],
     ) -> str:
         """Deterministic strict-grounding synthesis when GEMINI_API_KEY is not configured."""
         if not retrieved_chunks:
             return (
                 "Your uploaded private documents do not contain enough information to answer this question. "
-                "Please upload a relevant PDF, Markdown, text file, or arXiv/web URL into your Knowledge Base and try again."
+                "Please upload a relevant PDF, Markdown, text file, or web URL into your Knowledge Base and try again."
             )
 
         top = retrieved_chunks[0]
-        header_note = {
-            "student": "### Step-by-Step Study Breakdown (Student Mode)",
-            "researcher": "### Technical Evidence Synthesis (Researcher Mode)",
-            "educator": "### Structured Teaching Notes (Educator Mode)",
-        }.get(mode_name, "### Grounded Answer")
-
-        lines = [header_note, ""]
+        lines = ["### Grounded Answer", ""]
         for idx, ch in enumerate(retrieved_chunks[:3], start=1):
             cite = f"[Source: {ch['doc_title']}, Page {ch['page_number']} / {ch['section_header']}]"
             sentences = [
@@ -136,20 +129,13 @@ class GeminiRAGClient:
                 if len(s.strip()) > 20
             ]
             snippet = " ".join(sentences[:3]) if sentences else ch["content"][:320]
-            prefix = f"**Step {idx} — {ch['section_header']}:**" if mode_name == "student" else f"**Finding {idx} ({ch['section_header']}):**"
-            lines.append(f"{prefix} {snippet} {cite}")
+            lines.append(f"**Point {idx} — {ch['section_header']}:** {snippet} {cite}")
             lines.append("")
 
-        if mode_name == "student":
-            lines.append(
-                f"**Key Exam / Study Takeaway:** Review `{top['section_header']}` in *{top['doc_title']}* "
-                f"(Page {top['page_number']}) and verify formulas/definitions against the cited source chunks."
-            )
-        elif mode_name == "educator":
-            lines.append(
-                f"**Quick Check Question:** Based on *{top['doc_title']}* (Page {top['page_number']}), "
-                f"how would you explain `{top['section_header']}` in your own words?"
-            )
+        lines.append(
+            f"**Key Takeaway:** Review `{top['section_header']}` in *{top['doc_title']}* "
+            f"(Page {top['page_number']}) and verify details against the cited source chunks."
+        )
         return "\n".join(lines).strip()
 
     async def generate_grounded_stream(
@@ -157,7 +143,6 @@ class GeminiRAGClient:
         system_instruction: str,
         user_prompt: str,
         query: str,
-        mode_name: str,
         retrieved_chunks: List[Dict[str, Any]],
     ) -> AsyncIterator[str]:
         """Streams grounded tokens using google-genai generate_content_stream with retry & safe fallback."""
@@ -203,7 +188,6 @@ class GeminiRAGClient:
         # Deterministic streaming fallback when GEMINI_API_KEY is unset or unavailable
         fallback_text = self._build_offline_grounded_answer(
             query=query,
-            mode_name=mode_name,
             retrieved_chunks=retrieved_chunks,
         )
         words = fallback_text.split(" ")

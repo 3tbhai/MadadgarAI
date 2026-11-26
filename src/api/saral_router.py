@@ -1,4 +1,4 @@
-"""FastAPI Routers for Google OAuth 2.0 + JWT Auth, Role-Based User Modes, and Multi-Tenant Gemini RAG."""
+"""FastAPI Routers for Google OAuth 2.0 + JWT Auth and Multi-Tenant Gemini RAG."""
 import json
 import logging
 import secrets
@@ -19,7 +19,6 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from src.auth.database import SaralMultiTenantDB
-from src.auth.modes import UserMode, UserModeRegistry
 from src.auth.security import (
     REFRESH_COOKIE_NAME,
     SlidingWindowRateLimiter,
@@ -67,10 +66,6 @@ class DevLoginRequest(BaseModel):
     full_name: str = Field(default="Demo Student")
 
 
-class ModeSwitchRequest(BaseModel):
-    user_mode: UserMode
-
-
 class URLIngestRequest(BaseModel):
     url: str = Field(..., min_length=8)
     title: Optional[str] = None
@@ -83,24 +78,21 @@ class SaralMultiTenantChatRequest(BaseModel):
 
 
 def _format_user_response(user: Dict[str, Any]) -> Dict[str, Any]:
-    mode_cfg = UserModeRegistry.get(user["user_mode"])
     return {
         "id": user["id"],
         "email": user["email"],
         "full_name": user["full_name"],
         "avatar_url": user.get("avatar_url") or "",
-        "user_mode": mode_cfg.mode.value,
-        "mode_config": mode_cfg.model_dump(),
     }
 
 
 # ------------------------------------------------------------------
-# 1. Google OAuth 2.0 + JWT Cookie Authentication & User Modes
+# 1. Google OAuth 2.0 + JWT Cookie Authentication
 # ------------------------------------------------------------------
 
 @router.get("/api/auth/config")
 async def get_auth_config():
-    """Public auth metadata for frontend Google Sign-In button and User Mode switcher."""
+    """Public auth metadata for frontend Google Sign-In button."""
     cid = get_google_client_id()
     csec = get_google_client_secret()
     return {
@@ -108,7 +100,6 @@ async def get_auth_config():
         "google_oauth_code_flow_enabled": bool(cid and csec),
         "google_client_id": cid,
         "dev_auth_allowed": is_dev_auth_allowed(),
-        "modes": [m.model_dump() for m in UserModeRegistry.list_all()],
         "gemini_rag_backend": saral_gemini.backend_label,
         "gemini_live_enabled": saral_gemini.is_live_gemini_enabled,
     }
@@ -219,34 +210,8 @@ async def logout_session(request: Request, response: Response):
 
 @router.get("/api/auth/me")
 async def get_authenticated_profile(current_user: Dict[str, Any] = Depends(get_current_user)):
-    """Returns the authenticated user profile and active User Mode configuration."""
+    """Returns the authenticated user profile."""
     return {"authenticated": True, "user": _format_user_response(current_user)}
-
-
-@router.patch("/api/auth/mode")
-async def switch_user_mode(
-    req: ModeSwitchRequest,
-    request: Request,
-    response: Response,
-    current_user: Dict[str, Any] = Depends(get_current_user),
-):
-    """Switches the authenticated user's role mode (student / researcher / educator) and rotates session cookies."""
-    updated = saral_db.update_user_mode(current_user["id"], req.user_mode)
-    if not updated:
-        raise HTTPException(status_code=404, detail="User not found.")
-    old_refresh = request.cookies.get(REFRESH_COOKIE_NAME)
-    access_tok, refresh_tok, new_jti = create_token_pair(saral_db, updated)
-    if old_refresh:
-        try:
-            import jwt
-            from src.auth.security import JWT_ALGORITHM, get_jwt_secret
-            old_payload = jwt.decode(old_refresh, get_jwt_secret(), algorithms=[JWT_ALGORITHM])
-            if old_payload.get("jti"):
-                saral_db.revoke_refresh_token(old_payload["jti"], replaced_by=new_jti)
-        except Exception:
-            pass
-    set_auth_cookies(response, access_tok, refresh_tok)
-    return {"authenticated": True, "user": _format_user_response(updated)}
 
 
 # ------------------------------------------------------------------
@@ -277,7 +242,6 @@ async def upload_private_document(
             saral_rag_service.process_file_job,
             doc["id"],
             current_user["id"],
-            current_user["user_mode"],
             doc["title"],
             doc["source_type"],
             file_bytes,

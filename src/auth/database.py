@@ -9,7 +9,6 @@ import sqlite3
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 import uuid
 
-from src.auth.modes import UserMode
 from src.config import DATABASE_PATH
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -169,7 +168,6 @@ class SaralMultiTenantDB:
                     email TEXT UNIQUE NOT NULL,
                     full_name TEXT NOT NULL,
                     avatar_url TEXT DEFAULT '',
-                    user_mode TEXT NOT NULL DEFAULT 'student',
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 );
@@ -188,7 +186,6 @@ class SaralMultiTenantDB:
                 CREATE TABLE IF NOT EXISTS user_documents (
                     id TEXT PRIMARY KEY,
                     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                    user_mode TEXT NOT NULL DEFAULT 'student',
                     title TEXT NOT NULL,
                     source_type TEXT NOT NULL,
                     source_uri TEXT DEFAULT '',
@@ -208,7 +205,6 @@ class SaralMultiTenantDB:
                     id TEXT PRIMARY KEY,
                     doc_id TEXT NOT NULL REFERENCES user_documents(id) ON DELETE CASCADE,
                     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                    user_mode TEXT NOT NULL DEFAULT 'student',
                     doc_title TEXT NOT NULL,
                     page_number INTEGER NOT NULL DEFAULT 1,
                     section_header TEXT NOT NULL DEFAULT 'Overview',
@@ -225,7 +221,6 @@ class SaralMultiTenantDB:
                 CREATE TABLE IF NOT EXISTS chat_sessions (
                     id TEXT PRIMARY KEY,
                     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                    user_mode TEXT NOT NULL DEFAULT 'student',
                     title TEXT NOT NULL,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
@@ -276,10 +271,10 @@ class SaralMultiTenantDB:
             uid = f"usr_{uuid.uuid4().hex[:16]}"
             cur.execute(
                 """
-                INSERT INTO users (id, google_sub, email, full_name, avatar_url, user_mode, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO users (id, google_sub, email, full_name, avatar_url, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
-                (uid, google_sub, clean_email, full_name.strip() or clean_email, avatar_url or "", UserMode.STUDENT.value, now, now),
+                (uid, google_sub, clean_email, full_name.strip() or clean_email, avatar_url or "", now, now),
             )
             conn.commit()
             cur.execute("SELECT * FROM users WHERE id = ?", (uid,))
@@ -287,17 +282,6 @@ class SaralMultiTenantDB:
 
     def get_user_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
         with self._connect() as conn:
-            row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-            return dict(row) if row else None
-
-    def update_user_mode(self, user_id: str, mode: UserMode) -> Optional[Dict[str, Any]]:
-        now = _utc_now()
-        with self._connect() as conn:
-            conn.execute(
-                "UPDATE users SET user_mode = ?, updated_at = ? WHERE id = ?",
-                (mode.value, now, user_id),
-            )
-            conn.commit()
             row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
             return dict(row) if row else None
 
@@ -352,7 +336,6 @@ class SaralMultiTenantDB:
     def create_document(
         self,
         user_id: str,
-        user_mode: str,
         title: str,
         source_type: str,
         mime_type: str,
@@ -366,13 +349,13 @@ class SaralMultiTenantDB:
             conn.execute(
                 """
                 INSERT INTO user_documents (
-                    id, user_id, user_mode, title, source_type, source_uri,
+                    id, user_id, title, source_type, source_uri,
                     mime_type, file_size_bytes, content_sha256, status, error_message,
                     chunk_count, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', '', 0, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', '', 0, ?, ?)
                 """,
                 (
-                    doc_id, user_id, user_mode, title, source_type, source_uri,
+                    doc_id, user_id, title, source_type, source_uri,
                     mime_type, int(file_size_bytes), content_sha256, now, now,
                 ),
             )
@@ -448,13 +431,13 @@ class SaralMultiTenantDB:
                     cur.execute(
                         """
                         INSERT INTO document_chunks (
-                            id, doc_id, user_id, user_mode, doc_title, page_number,
+                            id, doc_id, user_id, doc_title, page_number,
                             section_header, chunk_index, content, token_count,
                             embedding, created_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::vector, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::vector, ?)
                         """,
                         (
-                            ch["id"], doc_id, user_id, ch["user_mode"], ch["doc_title"],
+                            ch["id"], doc_id, user_id, ch["doc_title"],
                             int(ch["page_number"]), ch["section_header"], int(ch["chunk_index"]),
                             ch["content"], int(ch["token_count"]), _format_pgvector(vec_768), now,
                         ),
@@ -463,16 +446,15 @@ class SaralMultiTenantDB:
                     cur.execute(
                         """
                         INSERT INTO document_chunks (
-                            id, doc_id, user_id, user_mode, doc_title, page_number,
+                            id, doc_id, user_id, doc_title, page_number,
                             section_header, chunk_index, content, token_count,
                             embedding_json, embedding_dim, created_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (
                             ch["id"],
                             doc_id,
                             user_id,
-                            ch["user_mode"],
                             ch["doc_title"],
                             int(ch["page_number"]),
                             ch["section_header"],
@@ -528,7 +510,7 @@ class SaralMultiTenantDB:
             if doc_ids:
                 placeholders = ",".join("?" for _ in doc_ids)
                 sql = (
-                    f"SELECT id, doc_id, user_id, user_mode, doc_title, page_number, section_header, "
+                    f"SELECT id, doc_id, user_id, doc_title, page_number, section_header, "
                     f"chunk_index, content, token_count, 1 - (embedding <=> ?::vector) AS dense_sim "
                     f"FROM document_chunks WHERE user_id = ? AND doc_id IN ({placeholders}) "
                     f"ORDER BY embedding <=> ?::vector LIMIT ?"
@@ -536,7 +518,7 @@ class SaralMultiTenantDB:
                 rows = conn.execute(sql, [vec_lit, user_id, *doc_ids, vec_lit, int(top_k)]).fetchall()
             else:
                 sql = (
-                    "SELECT id, doc_id, user_id, user_mode, doc_title, page_number, section_header, "
+                    "SELECT id, doc_id, user_id, doc_title, page_number, section_header, "
                     "chunk_index, content, token_count, 1 - (embedding <=> ?::vector) AS dense_sim "
                     "FROM document_chunks WHERE user_id = ? "
                     "ORDER BY embedding <=> ?::vector LIMIT ?"
@@ -547,7 +529,7 @@ class SaralMultiTenantDB:
     def get_user_chunk(self, chunk_id: str, doc_id: str, user_id: str) -> Optional[Dict[str, Any]]:
         with self._connect() as conn:
             row = conn.execute(
-                "SELECT id, doc_id, user_id, user_mode, doc_title, page_number, section_header, chunk_index, content, token_count, created_at "
+                "SELECT id, doc_id, user_id, doc_title, page_number, section_header, chunk_index, content, token_count, created_at "
                 "FROM document_chunks WHERE id = ? AND doc_id = ? AND user_id = ?",
                 (chunk_id, doc_id, user_id),
             ).fetchone()
@@ -558,7 +540,7 @@ class SaralMultiTenantDB:
     # ------------------------------------------------------------------
 
     def get_or_create_chat_session(
-        self, user_id: str, user_mode: str, session_id: Optional[str] = None, title: str = "New Study Session"
+        self, user_id: str, session_id: Optional[str] = None, title: str = "New Study Session"
     ) -> Dict[str, Any]:
         now = _utc_now()
         with self._connect() as conn:
@@ -573,10 +555,10 @@ class SaralMultiTenantDB:
             sid = f"chat_{uuid.uuid4().hex[:16]}"
             conn.execute(
                 """
-                INSERT INTO chat_sessions (id, user_id, user_mode, title, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO chat_sessions (id, user_id, title, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?)
                 """,
-                (sid, user_id, user_mode, title[:90], now, now),
+                (sid, user_id, title[:90], now, now),
             )
             conn.commit()
             row = conn.execute("SELECT * FROM chat_sessions WHERE id = ? AND user_id = ?", (sid, user_id)).fetchone()

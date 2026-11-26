@@ -1,16 +1,9 @@
 -- ============================================================================
--- Migration 001: Multi-Tenant Saral AI Auth, RBAC User Modes & pgvector Schema
+-- Migration 001: Multi-Tenant Saral AI Auth & pgvector Schema
 -- Target: PostgreSQL 16+ with pgvector extension
 -- ============================================================================
 
 CREATE EXTENSION IF NOT EXISTS vector;
-
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_mode_enum') THEN
-        CREATE TYPE user_mode_enum AS ENUM ('student', 'researcher', 'educator');
-    END IF;
-END$$;
 
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
@@ -18,7 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT UNIQUE NOT NULL,
     full_name TEXT NOT NULL,
     avatar_url TEXT DEFAULT '',
-    user_mode user_mode_enum NOT NULL DEFAULT 'student',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -37,7 +29,6 @@ CREATE INDEX IF NOT EXISTS idx_rt_user_id ON refresh_tokens(user_id);
 CREATE TABLE IF NOT EXISTS user_documents (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    user_mode user_mode_enum NOT NULL DEFAULT 'student',
     title TEXT NOT NULL,
     source_type TEXT NOT NULL,
     source_uri TEXT DEFAULT '',
@@ -57,7 +48,6 @@ CREATE TABLE IF NOT EXISTS document_chunks (
     id TEXT PRIMARY KEY,
     doc_id TEXT NOT NULL REFERENCES user_documents(id) ON DELETE CASCADE,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    user_mode user_mode_enum NOT NULL DEFAULT 'student',
     doc_title TEXT NOT NULL,
     page_number INTEGER NOT NULL DEFAULT 1,
     section_header TEXT NOT NULL DEFAULT 'Overview',
@@ -75,7 +65,6 @@ CREATE INDEX IF NOT EXISTS idx_chunks_embedding_hnsw ON document_chunks USING hn
 CREATE TABLE IF NOT EXISTS chat_sessions (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    user_mode user_mode_enum NOT NULL DEFAULT 'student',
     title TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

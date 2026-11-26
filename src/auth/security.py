@@ -153,7 +153,6 @@ def create_token_pair(db: SaralMultiTenantDB, user: Dict[str, Any]) -> Tuple[str
     access_payload = {
         "sub": user["id"],
         "email": user["email"],
-        "mode": user["user_mode"],
         "type": "access",
         "iat": int(now.timestamp()),
         "exp": int(access_exp.timestamp()),

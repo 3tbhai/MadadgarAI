@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MadadgaarAI — Final Project Presentation (PR1107)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --border: #E2E8F0;
+      --ink: #0F172A;
+      --muted: #64748B;
+      --blue: #2563EB;
+      --blue-soft: #EFF6FF;
+      --teal: #0D9488;
+      --teal-soft: #F0FDFA;
+      --amber: #D97706;
+      --amber-soft: #FFFBEB;
+      --green: #15803D;
+      --green-soft: #F0FDF4;
+      --purple: #7C3AED;
+      --purple-soft: #F5F3FF;
+      --red: #DC2626;
+      --red-soft: #FEF2F2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0F172A;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    #stage-container {
+      width: 100vw;
+      height: 100vh;
+      max-width: 1333px;
+      max-height: 750px;
+      aspect-ratio: 16 / 9;
+      background: var(--bg);
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 28px 40px 20px;
+      display: none;
+      flex-direction: column;
+      background: var(--bg);
+      animation: fadeSlide 0.2s ease-out;
+    }
+    .slide.active { display: flex; }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .pill-blue { background: var(--blue-soft); color: var(--blue); border: 1px solid #BFDBFE; }
+    .pill-panel { background: var(--amber-soft); color: #B45309; border: 1px solid #FDE68A; }
+    .pill-green { background: var(--green-soft); color: var(--green); border: 1px solid #BBF7D0; }
+
+    h1.slide-title {
+      font-size: 27px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+    }
+
+    .diagram-stage {
+      flex: 1;
+      min-height: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+    .diagram-stage svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .slide-footer .mono { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--ink); }
+
+    /* Hero Slide */
+    .hero-slide {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 55%, #1E3A8A 100%);
+      color: #FFFFFF;
+      padding: 48px 56px 32px;
+      justify-content: space-between;
+    }
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .hero-tag {
+      background: rgba(59, 130, 246, 0.22);
+      border: 1px solid rgba(147, 197, 253, 0.45);
+      color: #BFDBFE;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .hero-center {
+      display: grid;
+      grid-template-columns: 1.15fr 0.95fr;
+      align-items: center;
+      gap: 44px;
+      margin: auto 0;
+    }
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .hero-title {
+      font-size: 72px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.02;
+    }
+    .hero-title span { color: #60A5FA; }
+    .hero-sub {
+      font-size: 21px;
+      font-weight: 500;
+      color: #CBD5E1;
+      line-height: 1.45;
+      max-width: 560px;
+    }
+    .hero-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.88;
+      filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.42));
+    }
+    .hero-visual svg {
+      width: 100%;
+      max-width: 520px;
+      height: auto;
+      display: block;
+    }
+    .hero-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: 14px;
+      color: #CBD5E1;
+    }
+    .hero-bottom strong { color: #FFFFFF; font-weight: 700; }
+
+    /* Navigation Dock */
+    #controls {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #1E293B;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      color: #F8FAFC;
+      user-select: none;
+    }
+    .ctrl-btn {
+      background: #334155;
+      color: #F8FAFC;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .ctrl-btn:hover { background: #475569; }
+    .ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .ctrl-btn.primary { background: #2563EB; }
+    .ctrl-btn.primary:hover { background: #1D4ED8; }
+    #dots { display: flex; align-items: center; gap: 6px; }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .dot.active { background: #60A5FA; width: 24px; border-radius: 999px; }
+    #slide-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #CBD5E1;
+      min-width: 56px;
+      text-align: center;
+    }
+
+    @media print {
+      @page { size: 1333px 750px landscape; margin: 0; }
+      body { background: #FFFFFF; display: block; overflow: visible; }
+      #controls { display: none !important; }
+      #stage-container {
+        width: 1333px;
+        height: auto;
+        max-width: none;
+        max-height: none;
+        box-shadow: none;
+        border-radius: 0;
+        overflow: visible;
+      }
+      .slide {
+        position: relative !important;
+        display: flex !important;
+        width: 1333px;
+        height: 750px;
+        page-break-after: always;
+        break-after: page;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="stage-container">
+
+  <!-- ==================== SLIDE 1: HERO ==================== -->
+  <div class="slide hero-slide active" id="slide-1">
+    <div class="hero-top">
+      <span class="hero-tag">Major Project Final Presentation &middot; PR1107</span>
+    </div>
+
+    <div class="hero-center">
+      <div class="hero-copy">
+        <div class="hero-title">Madadgaar<span>AI</span></div>
+        <div class="hero-sub">Live Funding &amp; Scholarship Intelligence + Multi-Tenant AI Document Assistant</div>
+      </div>
+
+      <!-- Subtle Glassmorphic Project Preview -->
+      <div class="hero-visual">
+        <svg viewBox="0 0 540 370" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="heroGlow" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.28"/>
+              <stop offset="100%" stop-color="#34D399" stop-opacity="0.10"/>
+            </linearGradient>
+          </defs>
+          <!-- Subtle ambient backdrop -->
+          <rect x="16" y="18" width="508" height="338" rx="18" fill="url(#heroGlow)"/>
+          <!-- Browser Window -->
+          <rect x="24" y="24" width="492" height="322" rx="14" fill="#FBF8F1" fill-opacity="0.94" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
+          <!-- Window Header -->
+          <rect x="24" y="24" width="492" height="36" rx="12" fill="#18181B"/>
+          <circle cx="46" cy="42" r="5" fill="#EF4444" fill-opacity="0.85"/>
+          <circle cx="62" cy="42" r="5" fill="#F59E0B" fill-opacity="0.85"/>
+          <circle cx="78" cy="42" r="5" fill="#10B981" fill-opacity="0.85"/>
+          <rect x="160" y="34" width="220" height="16" rx="8" fill="#27272A"/>
+          <text x="270" y="46" text-anchor="middle" font-size="9.5" font-weight="700" fill="#A1A1AA" font-family="JetBrains Mono, monospace">MadadgaarAI &middot; Live Workspace</text>
+
+          <!-- Top App Navbar -->
+          <rect x="40" y="72" width="84" height="24" rx="5" fill="#18181B"/>
+          <text x="82" y="88" text-anchor="middle" font-size="10" font-weight="800" fill="#FFCC00">Discover</text>
+          <rect x="132" y="72" width="84" height="24" rx="5" fill="#FFFFFF" stroke="#18181B" stroke-width="1.2"/>
+          <text x="174" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="#18181B">Eligibility</text>
+          <rect x="224" y="72" width="76" height="24" rx="5" fill="#FFFFFF" stroke="#18181B" stroke-width="1.2"/>
+          <text x="262" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="#18181B">Tracker</text>
+          <rect x="308" y="72" width="96" height="24" rx="5" fill="#FFCC00" stroke="#18181B" stroke-width="1.2"/>
+          <text x="356" y="88" text-anchor="middle" font-size="10" font-weight="800" fill="#18181B">Saral AI</text>
+          <circle cx="486" cy="84" r="11" fill="#2563EB"/>
+          <text x="486" y="88" text-anchor="middle" font-size="10" font-weight="800" fill="#FFFFFF">A</text>
+
+          <!-- Search Bar -->
+          <rect x="40" y="108" width="460" height="30" rx="6" fill="#FFFFFF" stroke="#18181B" stroke-width="1.5"/>
+          <text x="54" y="127" font-size="10" font-weight="600" fill="#71717A">Search verified scholarships, grants, or upload resume...</text>
+          <rect x="432" y="113" width="62" height="20" rx="4" fill="#18181B"/>
+          <text x="463" y="126" text-anchor="middle" font-size="9" font-weight="800" fill="#FFCC00">Search</text>
+
+          <!-- Left Cards: Live Opportunities -->
+          <rect x="40" y="150" width="222" height="84" rx="8" fill="#FFFFFF" stroke="#18181B" stroke-width="1.5"/>
+          <rect x="52" y="160" width="58" height="15" rx="4" fill="#DCFCE7"/>
+          <text x="81" y="171" text-anchor="middle" font-size="8.5" font-weight="800" fill="#166534">VERIFIED</text>
+          <text x="52" y="194" font-size="12" font-weight="800" fill="#18181B">SERB / ANRF Research Grant</text>
+          <text x="52" y="210" font-size="9.5" font-weight="600" fill="#64748B">Live Portal &middot; Deep Analyze &middot; Draft</text>
+          <rect x="52" y="218" width="66" height="10" rx="3" fill="#2563EB" fill-opacity="0.2"/>
+
+          <rect x="40" y="244" width="222" height="84" rx="8" fill="#FFFFFF" stroke="#18181B" stroke-width="1.5"/>
+          <rect x="52" y="254" width="68" height="15" rx="4" fill="#FEF3C7"/>
+          <text x="86" y="265" text-anchor="middle" font-size="8.5" font-weight="800" fill="#92400E">94% MATCH</text>
+          <text x="52" y="288" font-size="12" font-weight="800" fill="#18181B">NSP Merit Scholarship</text>
+          <text x="52" y="304" font-size="9.5" font-weight="600" fill="#64748B">Resume Matched &middot; Eligible &#10003;</text>
+          <rect x="52" y="312" width="76" height="10" rx="3" fill="#10B981" fill-opacity="0.25"/>
+
+          <!-- Right Card: Saral AI Private RAG Preview -->
+          <rect x="274" y="150" width="226" height="178" rx="8" fill="#FFFFFF" stroke="#18181B" stroke-width="1.5"/>
+          <rect x="274" y="150" width="226" height="28" rx="6" fill="#FFCC00" stroke="#18181B" stroke-width="1.2"/>
+          <text x="286" y="168" font-size="10.5" font-weight="800" fill="#18181B">Saral AI &middot; Private Library</text>
+
+          <rect x="286" y="190" width="150" height="26" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+          <text x="294" y="206" font-size="9" font-weight="700" fill="#1E3A8A">What is the deadline &amp; stipend?</text>
+
+          <rect x="286" y="226" width="202" height="62" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+          <text x="294" y="242" font-size="9" font-weight="700" fill="#0F172A">Stipend is &#8377;37,000/mo under JRF</text>
+          <text x="294" y="256" font-size="9" font-weight="600" fill="#475569">norms with HRA eligibility.</text>
+          <rect x="294" y="266" width="84" height="14" rx="4" fill="#DBEAFE"/>
+          <text x="336" y="276" text-anchor="middle" font-size="8" font-weight="800" fill="#1D4ED8">[1] Circular p.4</text>
+
+          <rect x="286" y="298" width="202" height="20" rx="5" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+          <text x="294" y="311" font-size="8.5" font-weight="600" fill="#94A3B8">Ask your uploaded PDFs...</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="hero-bottom">
+      <div>
+        <strong>Team:</strong> Aman Singh (2023BTECH006) &nbsp;&middot;&nbsp; Anjisht Amritanshu (2023BTECH009) &nbsp;&middot;&nbsp; Ayush Choudhary (2023BTECH020)
+      </div>
+      <div>
+        <strong>Supervisor:</strong> Prof. Dr. Deepika Prakash &nbsp;&middot;&nbsp; IET, JK Lakshmipat University
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 2: PROBLEM -> SOLUTION ==================== -->
+  <div class="slide" id="slide-2">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-blue">Project Overview</span>
+        </div>
+        <h1 class="slide-title">Problem &rarr; Unified Solution</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#EF4444"/>
+          </marker>
+          <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+          </marker>
+          <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#0D9488"/>
+          </marker>
+        </defs>
+
+        <!-- LEFT ZONE: PROBLEM -->
+        <rect x="20" y="20" width="490" height="490" rx="18" fill="#FEF2F2" stroke="#FECACA" stroke-width="2"/>
+        <text x="265" y="56" text-anchor="middle" font-size="18" font-weight="800" fill="#B91C1C">BEFORE: FRAGMENTED ECOSYSTEM</text>
+
+        <!-- Scattered Portals -->
+        <rect x="44" y="88" width="128" height="46" rx="10" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="108" y="116" text-anchor="middle" font-size="14" font-weight="700" fill="#7F1D1D">SERB / ANRF</text>
+
+        <rect x="196" y="88" width="128" height="46" rx="10" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="260" y="116" text-anchor="middle" font-size="14" font-weight="700" fill="#7F1D1D">DST / DBT</text>
+
+        <rect x="348" y="88" width="136" height="46" rx="10" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="416" y="116" text-anchor="middle" font-size="14" font-weight="700" fill="#7F1D1D">NSP / UGC</text>
+
+        <rect x="44" y="154" width="128" height="46" rx="10" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="108" y="182" text-anchor="middle" font-size="14" font-weight="700" fill="#7F1D1D">AICTE / CSIR</text>
+
+        <rect x="196" y="154" width="128" height="46" rx="10" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="260" y="182" text-anchor="middle" font-size="14" font-weight="700" fill="#7F1D1D">Buddy4Study</text>
+
+        <rect x="348" y="154" width="136" height="46" rx="10" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="416" y="182" text-anchor="middle" font-size="14" font-weight="700" fill="#7F1D1D">BIRAC / Startup</text>
+
+        <!-- Tangled Arrows Down -->
+        <path d="M 108 200 C 108 250, 220 230, 150 285" fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arr-red)"/>
+        <path d="M 260 200 C 260 245, 160 240, 380 285" fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arr-red)"/>
+        <path d="M 416 200 C 416 245, 310 245, 150 285" fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arr-red)"/>
+        <path d="M 260 200 L 260 285" fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arr-red)"/>
+
+        <!-- 4 Pain Points -->
+        <rect x="44" y="295" width="206" height="84" rx="12" fill="#FFFFFF" stroke="#EF4444" stroke-width="2"/>
+        <text x="147" y="330" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626">404 Dead Links</text>
+        <text x="147" y="356" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Stale &amp; expired circulars</text>
+
+        <rect x="278" y="295" width="206" height="84" rx="12" fill="#FFFFFF" stroke="#EF4444" stroke-width="2"/>
+        <text x="381" y="330" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626">Dense PDFs</text>
+        <text x="381" y="356" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Manual eligibility checks</text>
+
+        <rect x="44" y="400" width="206" height="84" rx="12" fill="#FFFFFF" stroke="#EF4444" stroke-width="2"/>
+        <text x="147" y="435" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626">Keyword-Only Search</text>
+        <text x="147" y="461" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Misses relevant grants</text>
+
+        <rect x="278" y="400" width="206" height="84" rx="12" fill="#FFFFFF" stroke="#EF4444" stroke-width="2"/>
+        <text x="381" y="435" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626">Missed Deadlines</text>
+        <text x="381" y="461" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">No tracking or drafting</text>
+
+        <!-- CENTER TRANSITION ARROW -->
+        <line x1="528" y1="265" x2="606" y2="265" stroke="#2563EB" stroke-width="6" marker-end="url(#arr-blue)"/>
+        <rect x="525" y="218" width="90" height="30" rx="8" fill="#2563EB"/>
+        <text x="570" y="238" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">SOLVED BY</text>
+
+        <!-- RIGHT ZONE: SOLUTION -->
+        <rect x="630" y="20" width="570" height="490" rx="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="2"/>
+        <text x="915" y="56" text-anchor="middle" font-size="18" font-weight="800" fill="#1E3A8A">AFTER: MADADGAAR AI v4.0</text>
+
+        <!-- Track A -->
+        <rect x="658" y="84" width="514" height="190" rx="14" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+        <rect x="678" y="100" width="106" height="26" rx="13" fill="#2563EB"/>
+        <text x="731" y="117" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">TRACK A</text>
+        <text x="800" y="119" font-size="17" font-weight="800" fill="#0F172A">Live Opportunity Intelligence</text>
+
+        <rect x="678" y="144" width="224" height="50" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+        <text x="790" y="174" text-anchor="middle" font-size="14" font-weight="700" fill="#1D4ED8">17 Live Scrapers + Anti-404</text>
+
+        <rect x="928" y="144" width="224" height="50" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+        <text x="1040" y="174" text-anchor="middle" font-size="14" font-weight="700" fill="#1D4ED8">Hybrid RRF + Reranker</text>
+
+        <rect x="678" y="208" width="224" height="50" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+        <text x="790" y="238" text-anchor="middle" font-size="14" font-weight="700" fill="#1D4ED8">Resume Match + Deep PDF</text>
+
+        <rect x="928" y="208" width="224" height="50" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+        <text x="1040" y="238" text-anchor="middle" font-size="14" font-weight="700" fill="#1D4ED8">Tracker + Real Alerts</text>
+
+        <!-- Track B -->
+        <rect x="658" y="296" width="514" height="190" rx="14" fill="#FFFFFF" stroke="#0D9488" stroke-width="2"/>
+        <rect x="678" y="312" width="106" height="26" rx="13" fill="#0D9488"/>
+        <text x="731" y="329" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">TRACK B</text>
+        <text x="800" y="331" font-size="17" font-weight="800" fill="#0F172A">Multi-Tenant Saral AI Assistant</text>
+
+        <rect x="678" y="356" width="224" height="50" rx="10" fill="#F0FDFA" stroke="#99F6E4" stroke-width="1.5"/>
+        <text x="790" y="386" text-anchor="middle" font-size="14" font-weight="700" fill="#0F766E">Google OAuth + JWT</text>
+
+        <rect x="928" y="356" width="224" height="50" rx="10" fill="#F0FDFA" stroke="#99F6E4" stroke-width="1.5"/>
+        <text x="1040" y="386" text-anchor="middle" font-size="14" font-weight="700" fill="#0F766E">Tenant Isolation (user_id)</text>
+
+        <rect x="678" y="420" width="224" height="50" rx="10" fill="#F0FDFA" stroke="#99F6E4" stroke-width="1.5"/>
+        <text x="790" y="450" text-anchor="middle" font-size="14" font-weight="700" fill="#0F766E">Private Doc Gemini RAG</text>
+
+        <rect x="928" y="420" width="224" height="50" rx="10" fill="#F0FDFA" stroke="#99F6E4" stroke-width="1.5"/>
+        <text x="1040" y="450" text-anchor="middle" font-size="14" font-weight="700" fill="#0F766E">AI SOP &amp; Grant Drafter</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>MadadgaarAI v4.0 &middot; Final Semester Presentation</span>
+      <span class="mono">02 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 3: POST-MIDSEM EVOLUTION ==================== -->
+  <div class="slide" id="slide-3">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-panel">&#9733; Panel Directives</span>
+          <span class="pill pill-blue">&#10022; Additional Team Features</span>
+        </div>
+        <h1 class="slide-title">Post-Midsem Roadmap: Panel Requests &amp; Bonus Upgrades</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <!-- LEFT PANEL: REQUESTED BY MID-SEM PANEL -->
+        <rect x="20" y="18" width="560" height="494" rx="18" fill="#FFFBEB" stroke="#F59E0B" stroke-width="3"/>
+        <rect x="44" y="38" width="310" height="34" rx="17" fill="#D97706"/>
+        <text x="199" y="60" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">&#9733; REQUESTED BY MID-SEM PANEL</text>
+        <text x="556" y="61" text-anchor="end" font-size="15" font-weight="800" fill="#15803D">100% DELIVERED</text>
+
+        <!-- Panel Directive 1 -->
+        <rect x="44" y="96" width="512" height="184" rx="16" fill="#FFFFFF" stroke="#D97706" stroke-width="2.5"/>
+        <rect x="66" y="116" width="142" height="26" rx="13" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+        <text x="137" y="133" text-anchor="middle" font-size="11" font-weight="800" fill="#B45309">PANEL DIRECTIVE #1</text>
+        <text x="534" y="135" text-anchor="end" font-size="15" font-weight="800" fill="#15803D">&#10003; LIVE</text>
+        <text x="66" y="176" font-size="22" font-weight="800" fill="#0F172A">Resume Matching &amp; Real Alerts</text>
+        <text x="66" y="210" font-size="15" font-weight="600" fill="#475569">&bull; PDF / DOCX Upload + 130+ Skill Matching</text>
+        <text x="66" y="240" font-size="15" font-weight="600" fill="#475569">&bull; Protected Tracker + SMTP / Webhook / Web Push</text>
+
+        <!-- Panel Directive 2 -->
+        <rect x="44" y="304" width="512" height="184" rx="16" fill="#FFFFFF" stroke="#D97706" stroke-width="2.5"/>
+        <rect x="66" y="324" width="142" height="26" rx="13" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+        <text x="137" y="341" text-anchor="middle" font-size="11" font-weight="800" fill="#B45309">PANEL DIRECTIVE #2</text>
+        <text x="534" y="343" text-anchor="end" font-size="15" font-weight="800" fill="#15803D">&#10003; LIVE</text>
+        <text x="66" y="384" font-size="22" font-weight="800" fill="#0F172A">Multi-Tenant Auth &amp; Gemini RAG</text>
+        <text x="66" y="418" font-size="15" font-weight="600" fill="#475569">&bull; Google OAuth 2.0 + Rotating HTTP-Only JWT</text>
+        <text x="66" y="448" font-size="15" font-weight="600" fill="#475569">&bull; Isolated Private Docs + Cited Gemini 2.5 Stream</text>
+
+        <!-- RIGHT PANEL: EXTRA FEATURES WE BUILT -->
+        <rect x="606" y="18" width="594" height="494" rx="18" fill="#EFF6FF" stroke="#2563EB" stroke-width="3"/>
+        <rect x="630" y="38" width="320" height="34" rx="17" fill="#2563EB"/>
+        <text x="790" y="60" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">&#10022; ADDITIONAL FEATURES WE BUILT</text>
+
+        <!-- Extra 1 -->
+        <rect x="630" y="96" width="546" height="88" rx="14" fill="#FFFFFF" stroke="#93C5FD" stroke-width="2"/>
+        <text x="652" y="132" font-size="18" font-weight="800" fill="#1E3A8A">1. 17 Live Scrapers &amp; TLS Anti-404 Guard</text>
+        <text x="652" y="160" font-size="14" font-weight="600" fill="#475569">Real-time portal scraping + 6-hour auto-refresh cron</text>
+
+        <!-- Extra 2 -->
+        <rect x="630" y="198" width="546" height="88" rx="14" fill="#FFFFFF" stroke="#5EEAD4" stroke-width="2"/>
+        <text x="652" y="234" font-size="18" font-weight="800" fill="#115E59">2. On-Demand Deep Analyzer &amp; AI SOP Drafter</text>
+        <text x="652" y="262" font-size="14" font-weight="600" fill="#475569">Live circular/PDF parser + Gemini 2.5 SOP &amp; grant drafting</text>
+
+        <!-- Extra 3 -->
+        <rect x="630" y="300" width="546" height="88" rx="14" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="2"/>
+        <text x="652" y="336" font-size="18" font-weight="800" fill="#5B21B6">3. Hybrid RRF Search &amp; Dynamic FY Doc Checker</text>
+        <text x="652" y="364" font-size="14" font-weight="600" fill="#475569">BM25 + Dense + Reranker &middot; Indian Financial Year validity rules</text>
+
+        <!-- Extra 4 -->
+        <rect x="630" y="402" width="546" height="88" rx="14" fill="#FFFFFF" stroke="#86EFAC" stroke-width="2"/>
+        <text x="652" y="438" font-size="18" font-weight="800" fill="#166534">4. Consumer-Polished UI &amp; 40-Query Benchmarks</text>
+        <text x="652" y="466" font-size="14" font-weight="600" fill="#475569">Zero technical jargon &middot; PostgreSQL pgvector parity &middot; 47/47 tests</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>Panel Directives Delivered + 4 End-to-End Engineering Upgrades</span>
+      <span class="mono">03 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 4: 5-LAYER SYSTEM ARCHITECTURE ==================== -->
+  <div class="slide" id="slide-4">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-blue">Overall Architecture</span>
+        </div>
+        <h1 class="slide-title">5-Layer Production System Architecture</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+          </marker>
+        </defs>
+
+        <!-- LAYER 1: FRONTEND -->
+        <rect x="24" y="14" width="1172" height="78" rx="14" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+        <rect x="38" y="28" width="160" height="50" rx="10" fill="#2563EB"/>
+        <text x="118" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">LAYER 1</text>
+        <text x="118" y="68" text-anchor="middle" font-size="12" font-weight="600" fill="#DBEAFE">CLIENT UI</text>
+
+        <rect x="218" y="28" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#93C5FD" stroke-width="1.5"/>
+        <text x="328" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#1E3A8A">Discover &amp; Resume Tab</text>
+
+        <rect x="456" y="28" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#93C5FD" stroke-width="1.5"/>
+        <text x="566" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#1E3A8A">Eligibility &amp; Doc Check</text>
+
+        <rect x="694" y="28" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#93C5FD" stroke-width="1.5"/>
+        <text x="804" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#1E3A8A">Tracker &amp; Web Push</text>
+
+        <rect x="932" y="28" width="244" height="50" rx="10" fill="#FFFFFF" stroke="#93C5FD" stroke-width="1.5"/>
+        <text x="1054" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#1E3A8A">Saral AI (SSE Stream)</text>
+
+        <!-- Connector 1->2 -->
+        <line x1="610" y1="92" x2="610" y2="118" stroke="#475569" stroke-width="2.5" marker-end="url(#arr-slate)"/>
+
+        <!-- LAYER 2: API & SECURITY -->
+        <rect x="24" y="122" width="1172" height="78" rx="14" fill="#FFFBEB" stroke="#D97706" stroke-width="2"/>
+        <rect x="38" y="136" width="160" height="50" rx="10" fill="#D97706"/>
+        <text x="118" y="158" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">LAYER 2</text>
+        <text x="118" y="176" text-anchor="middle" font-size="12" font-weight="600" fill="#FEF3C7">API &amp; SECURITY</text>
+
+        <rect x="218" y="136" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="328" y="166" text-anchor="middle" font-size="14" font-weight="700" fill="#92400E">FastAPI (45 Routes)</text>
+
+        <rect x="456" y="136" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="566" y="166" text-anchor="middle" font-size="14" font-weight="700" fill="#92400E">Google OAuth + JWT</text>
+
+        <rect x="694" y="136" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="804" y="166" text-anchor="middle" font-size="14" font-weight="700" fill="#92400E">Tenant Scope Guard</text>
+
+        <rect x="932" y="136" width="244" height="50" rx="10" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="1054" y="166" text-anchor="middle" font-size="14" font-weight="700" fill="#92400E">Sliding Rate Limiter</text>
+
+        <!-- Connector 2->3 -->
+        <line x1="610" y1="200" x2="610" y2="226" stroke="#475569" stroke-width="2.5" marker-end="url(#arr-slate)"/>
+
+        <!-- LAYER 3: AI & SEARCH ENGINE -->
+        <rect x="24" y="230" width="1172" height="78" rx="14" fill="#F0FDFA" stroke="#0D9488" stroke-width="2"/>
+        <rect x="38" y="244" width="160" height="50" rx="10" fill="#0D9488"/>
+        <text x="118" y="266" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">LAYER 3</text>
+        <text x="118" y="284" text-anchor="middle" font-size="12" font-weight="600" fill="#CCFBF1">AI &amp; RETRIEVAL</text>
+
+        <rect x="218" y="244" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#5EEAD4" stroke-width="1.5"/>
+        <text x="328" y="274" text-anchor="middle" font-size="14" font-weight="700" fill="#115E59">BM25 + Dense RRF</text>
+
+        <rect x="456" y="244" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#5EEAD4" stroke-width="1.5"/>
+        <text x="566" y="274" text-anchor="middle" font-size="14" font-weight="700" fill="#115E59">Cross-Encoder &amp; Rules</text>
+
+        <rect x="694" y="244" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#5EEAD4" stroke-width="1.5"/>
+        <text x="804" y="274" text-anchor="middle" font-size="14" font-weight="700" fill="#115E59">Resume &amp; Deep Parser</text>
+
+        <rect x="932" y="244" width="244" height="50" rx="10" fill="#FFFFFF" stroke="#5EEAD4" stroke-width="1.5"/>
+        <text x="1054" y="274" text-anchor="middle" font-size="14" font-weight="700" fill="#115E59">Gemini 2.5 RAG &amp; SOPs</text>
+
+        <!-- Connector 3->4 -->
+        <line x1="610" y1="308" x2="610" y2="334" stroke="#475569" stroke-width="2.5" marker-end="url(#arr-slate)"/>
+
+        <!-- LAYER 4: INGESTION & JOBS -->
+        <rect x="24" y="338" width="1172" height="78" rx="14" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2"/>
+        <rect x="38" y="352" width="160" height="50" rx="10" fill="#7C3AED"/>
+        <text x="118" y="374" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">LAYER 4</text>
+        <text x="118" y="392" text-anchor="middle" font-size="12" font-weight="600" fill="#EDE9FE">INGESTION &amp; CRON</text>
+
+        <rect x="218" y="352" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="1.5"/>
+        <text x="328" y="382" text-anchor="middle" font-size="14" font-weight="700" fill="#5B21B6">17 Async Scrapers</text>
+
+        <rect x="456" y="352" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="1.5"/>
+        <text x="566" y="382" text-anchor="middle" font-size="14" font-weight="700" fill="#5B21B6">TLS Anti-404 Verifier</text>
+
+        <rect x="694" y="352" width="220" height="50" rx="10" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="1.5"/>
+        <text x="804" y="382" text-anchor="middle" font-size="14" font-weight="700" fill="#5B21B6">6h Catalog Refresh</text>
+
+        <rect x="932" y="352" width="244" height="50" rx="10" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="1.5"/>
+        <text x="1054" y="382" text-anchor="middle" font-size="14" font-weight="700" fill="#5B21B6">SMTP / Webhook Cron</text>
+
+        <!-- Connector 4->5 -->
+        <line x1="610" y1="416" x2="610" y2="442" stroke="#475569" stroke-width="2.5" marker-end="url(#arr-slate)"/>
+
+        <!-- LAYER 5: DATA & INFRASTRUCTURE -->
+        <rect x="24" y="446" width="1172" height="72" rx="14" fill="#F0FDF4" stroke="#15803D" stroke-width="2"/>
+        <rect x="38" y="458" width="160" height="48" rx="10" fill="#15803D"/>
+        <text x="118" y="479" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">LAYER 5</text>
+        <text x="118" y="496" text-anchor="middle" font-size="12" font-weight="600" fill="#DCFCE7">DATA &amp; SCALE</text>
+
+        <rect x="218" y="458" width="308" height="48" rx="10" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.5"/>
+        <text x="372" y="487" text-anchor="middle" font-size="14" font-weight="700" fill="#166534">SQLite WAL (Local Dev)</text>
+
+        <text x="546" y="489" text-anchor="middle" font-size="22" font-weight="800" fill="#15803D">&#8644;</text>
+
+        <rect x="566" y="458" width="332" height="48" rx="10" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.5"/>
+        <text x="732" y="487" text-anchor="middle" font-size="14" font-weight="700" fill="#166534">PostgreSQL 16 + pgvector HNSW</text>
+
+        <rect x="918" y="458" width="258" height="48" rx="10" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.5"/>
+        <text x="1047" y="487" text-anchor="middle" font-size="14" font-weight="700" fill="#166534">Redis Rate-Limit Cache</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>49 Python Modules &middot; 13,255 LOC &middot; Dual SQLite / PostgreSQL pgvector Parity</span>
+      <span class="mono">04 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 5: LIVE SCRAPERS & ANTI-404 ==================== -->
+  <div class="slide" id="slide-5">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-blue">&#10022; Team Feature</span>
+          <span class="pill pill-green">Live Data Pipeline</span>
+        </div>
+        <h1 class="slide-title">17 Live Scrapers &amp; TLS Anti-404 Guard</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-b5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+          </marker>
+          <marker id="arr-r5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#DC2626"/>
+          </marker>
+          <marker id="arr-g5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#15803D"/>
+          </marker>
+        </defs>
+
+        <!-- SOURCE COLUMN -->
+        <rect x="24" y="40" width="265" height="110" rx="14" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+        <text x="156" y="74" text-anchor="middle" font-size="16" font-weight="800" fill="#1E3A8A">Research &amp; R&amp;D Grants</text>
+        <text x="156" y="102" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">SERB/ANRF &middot; DST &middot; DBT</text>
+        <text x="156" y="124" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">ICMR &middot; CSIR &middot; ICSSR</text>
+
+        <rect x="24" y="175" width="265" height="110" rx="14" fill="#F0FDFA" stroke="#0D9488" stroke-width="2"/>
+        <text x="156" y="209" text-anchor="middle" font-size="16" font-weight="800" fill="#115E59">Student Scholarships</text>
+        <text x="156" y="237" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">NSP &middot; UGC &middot; AICTE</text>
+        <text x="156" y="259" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Buddy4Study &middot; Vidyasaarathi</text>
+
+        <rect x="24" y="310" width="265" height="110" rx="14" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2"/>
+        <text x="156" y="344" text-anchor="middle" font-size="16" font-weight="800" fill="#5B21B6">Startups &amp; Innovation</text>
+        <text x="156" y="372" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">BIRAC &middot; Startup India</text>
+        <text x="156" y="394" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">MeitY &middot; DST-NIDHI</text>
+
+        <!-- Arrows into Scraper Pool -->
+        <path d="M 289 95 L 364 215" fill="none" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arr-b5)"/>
+        <path d="M 289 230 L 364 230" fill="none" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arr-b5)"/>
+        <path d="M 289 365 L 364 245" fill="none" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arr-b5)"/>
+
+        <!-- ASYNC SCRAPER POOL -->
+        <rect x="372" y="155" width="200" height="150" rx="16" fill="#FFFFFF" stroke="#2563EB" stroke-width="3"/>
+        <text x="472" y="202" text-anchor="middle" font-size="13" font-weight="800" fill="#2563EB">17 PARALLEL WORKERS</text>
+        <text x="472" y="232" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Async Scraper</text>
+        <text x="472" y="258" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Engine</text>
+        <text x="472" y="286" text-anchor="middle" font-size="12" font-weight="600" fill="#64748B">httpx + BeautifulSoup</text>
+
+        <line x1="572" y1="230" x2="634" y2="230" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b5)"/>
+
+        <!-- TLS ANTI-404 GUARD -->
+        <rect x="642" y="155" width="224" height="150" rx="16" fill="#FFFBEB" stroke="#D97706" stroke-width="3"/>
+        <text x="754" y="198" text-anchor="middle" font-size="13" font-weight="800" fill="#B45309">VERIFY BEFORE STORE</text>
+        <text x="754" y="230" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">TLS-First</text>
+        <text x="754" y="256" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Anti-404 Guard</text>
+        <text x="754" y="286" text-anchor="middle" font-size="12" font-weight="600" fill="#92400E">Strict SSL &rarr; Safe Fallback</text>
+
+        <!-- Dead Link Drop Branch -->
+        <line x1="754" y1="305" x2="754" y2="395" stroke="#DC2626" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arr-r5)"/>
+        <rect x="642" y="405" width="224" height="72" rx="12" fill="#FEF2F2" stroke="#EF4444" stroke-width="2"/>
+        <text x="754" y="437" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626">404 / Soft-404 / Expired</text>
+        <text x="754" y="460" text-anchor="middle" font-size="13" font-weight="700" fill="#991B1B">Automatically Discarded</text>
+
+        <!-- Verified Arrow -->
+        <line x1="866" y1="230" x2="932" y2="230" stroke="#15803D" stroke-width="3" marker-end="url(#arr-g5)"/>
+        <text x="900" y="216" text-anchor="middle" font-size="12" font-weight="800" fill="#15803D">VALID</text>
+
+        <!-- VERIFIED CATALOG -->
+        <rect x="942" y="135" width="252" height="190" rx="16" fill="#F0FDF4" stroke="#15803D" stroke-width="3"/>
+        <text x="1068" y="182" text-anchor="middle" font-size="13" font-weight="800" fill="#15803D">PRODUCTION INDEX</text>
+        <text x="1068" y="220" text-anchor="middle" font-size="22" font-weight="800" fill="#0F172A">Verified Feed</text>
+        <text x="1068" y="255" text-anchor="middle" font-size="16" font-weight="700" fill="#166534">166+ Live Listings</text>
+        <text x="1068" y="286" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Deduplicated &middot; Indexed</text>
+
+        <!-- 6-Hour Auto-Refresh Cron Loop -->
+        <path d="M 1068 325 L 1068 492 L 472 492 L 472 315" fill="none" stroke="#7C3AED" stroke-width="3" stroke-dasharray="8 5" marker-end="url(#arr-b5)"/>
+        <rect x="440" y="468" width="210" height="42" rx="21" fill="#7C3AED"/>
+        <text x="545" y="494" text-anchor="middle" font-size="14" font-weight="800" fill="#FFFFFF">6-Hour Auto-Refresh Cron</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>Zero Static Data &middot; Zero Broken Portal Links</span>
+      <span class="mono">05 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 6: HYBRID RETRIEVAL & ELIGIBILITY ==================== -->
+  <div class="slide" id="slide-6">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-blue">Core AI Engine</span>
+          <span class="pill pill-green">&#10022; Team Feature</span>
+        </div>
+        <h1 class="slide-title">Hybrid Retrieval &amp; Explainable Eligibility</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-b6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+          </marker>
+          <marker id="arr-t6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#0D9488"/>
+          </marker>
+        </defs>
+
+        <!-- INPUT -->
+        <rect x="20" y="185" width="165" height="140" rx="16" fill="#0F172A"/>
+        <text x="102" y="236" text-anchor="middle" font-size="14" font-weight="800" fill="#60A5FA">INPUT</text>
+        <text x="102" y="266" text-anchor="middle" font-size="18" font-weight="800" fill="#FFFFFF">User Query</text>
+        <text x="102" y="294" text-anchor="middle" font-size="14" font-weight="600" fill="#CBD5E1">+ Profile</text>
+
+        <!-- Split Arrows -->
+        <path d="M 185 235 L 252 135" fill="none" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b6)"/>
+        <path d="M 185 275 L 252 375" fill="none" stroke="#0D9488" stroke-width="3" marker-end="url(#arr-t6)"/>
+
+        <!-- BM25 -->
+        <rect x="260" y="75" width="210" height="120" rx="16" fill="#EFF6FF" stroke="#2563EB" stroke-width="2.5"/>
+        <text x="365" y="114" text-anchor="middle" font-size="12" font-weight="800" fill="#2563EB">LEXICAL TRACK</text>
+        <text x="365" y="144" text-anchor="middle" font-size="20" font-weight="800" fill="#0F172A">BM25 Search</text>
+        <text x="365" y="172" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Exact Grant Codes</text>
+
+        <!-- DENSE -->
+        <rect x="260" y="315" width="210" height="120" rx="16" fill="#F0FDFA" stroke="#0D9488" stroke-width="2.5"/>
+        <text x="365" y="354" text-anchor="middle" font-size="12" font-weight="800" fill="#0D9488">SEMANTIC TRACK</text>
+        <text x="365" y="384" text-anchor="middle" font-size="20" font-weight="800" fill="#0F172A">Dense Vectors</text>
+        <text x="365" y="412" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Meaning &amp; Context</text>
+
+        <!-- Merge Arrows -->
+        <path d="M 470 135 L 538 235" fill="none" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b6)"/>
+        <path d="M 470 375 L 538 275" fill="none" stroke="#0D9488" stroke-width="3" marker-end="url(#arr-t6)"/>
+
+        <!-- RRF -->
+        <rect x="546" y="170" width="180" height="170" rx="16" fill="#F5F3FF" stroke="#7C3AED" stroke-width="3"/>
+        <text x="636" y="212" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED">FUSION (k=60)</text>
+        <text x="636" y="246" text-anchor="middle" font-size="20" font-weight="800" fill="#0F172A">Reciprocal</text>
+        <text x="636" y="272" text-anchor="middle" font-size="20" font-weight="800" fill="#0F172A">Rank Fusion</text>
+        <text x="636" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#6D28D9">4.28 ms p50</text>
+
+        <line x1="726" y1="255" x2="778" y2="255" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b6)"/>
+
+        <!-- RERANKER + ELIGIBILITY -->
+        <rect x="786" y="75" width="215" height="150" rx="16" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <text x="893" y="114" text-anchor="middle" font-size="12" font-weight="800" fill="#2563EB">PRECISION STAGE</text>
+        <text x="893" y="148" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Cross-Encoder</text>
+        <text x="893" y="174" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Reranker</text>
+        <text x="893" y="204" text-anchor="middle" font-size="13" font-weight="700" fill="#475569">Top-K Re-scoring</text>
+
+        <line x1="893" y1="225" x2="893" y2="275" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b6)"/>
+
+        <rect x="786" y="285" width="215" height="175" rx="16" fill="#FFFBEB" stroke="#D97706" stroke-width="2.5"/>
+        <text x="893" y="318" text-anchor="middle" font-size="12" font-weight="800" fill="#B45309">HARDENED RULES</text>
+        <text x="893" y="348" text-anchor="middle" font-size="18" font-weight="800" fill="#0F172A">Eligibility Gate</text>
+        <text x="893" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#92400E">&bull; Student-Safe Filter</text>
+        <text x="893" y="404" text-anchor="middle" font-size="13" font-weight="700" fill="#92400E">&bull; Dynamic Indian FY</text>
+        <text x="893" y="428" text-anchor="middle" font-size="13" font-weight="700" fill="#92400E">&bull; Income / Degree Rules</text>
+
+        <line x1="1001" y1="370" x2="1044" y2="370" stroke="#0D9488" stroke-width="3" marker-end="url(#arr-t6)"/>
+
+        <!-- OUTPUT -->
+        <rect x="1052" y="160" width="150" height="260" rx="16" fill="#F0FDF4" stroke="#15803D" stroke-width="3"/>
+        <text x="1127" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="#15803D">OUTPUT</text>
+        <text x="1127" y="258" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Ranked</text>
+        <text x="1127" y="284" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Matches</text>
+        <text x="1127" y="328" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">&#10003; Pass / Fail</text>
+        <text x="1127" y="352" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">&#10003; Exact Reasons</text>
+        <text x="1127" y="376" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">&#10003; Doc Checklist</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>Combines Lexical Precision, Semantic Recall &amp; Deterministic Eligibility Checks</span>
+      <span class="mono">06 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 7: 3-LANE AI TOOLS ==================== -->
+  <div class="slide" id="slide-7">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-panel">&#9733; Panel Directive #1: Resume Match</span>
+          <span class="pill pill-blue">&#10022; Bonus: Deep Analyzer &amp; AI Drafter</span>
+        </div>
+        <h1 class="slide-title">Resume Matcher, Deep Analyzer &amp; AI Drafter</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-b7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+          </marker>
+          <marker id="arr-t7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#0D9488"/>
+          </marker>
+          <marker id="arr-p7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#7C3AED"/>
+          </marker>
+        </defs>
+
+        <!-- LANE 1: RESUME MATCHER -->
+        <rect x="18" y="18" width="1184" height="150" rx="16" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="2"/>
+        <rect x="36" y="34" width="210" height="28" rx="14" fill="#2563EB"/>
+        <text x="141" y="53" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">1. RESUME MATCHER</text>
+
+        <rect x="36" y="78" width="230" height="72" rx="12" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+        <text x="151" y="110" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">PDF / DOCX Resume</text>
+        <text x="151" y="134" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Drag &amp; Drop Upload</text>
+
+        <line x1="266" y1="114" x2="332" y2="114" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b7)"/>
+
+        <rect x="342" y="78" width="265" height="72" rx="12" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+        <text x="474" y="110" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">130+ Skill Extractor</text>
+        <text x="474" y="134" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Catalog + Dynamic Parser</text>
+
+        <line x1="607" y1="114" x2="673" y2="114" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b7)"/>
+
+        <rect x="683" y="78" width="215" height="72" rx="12" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+        <text x="790" y="110" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">Profile Scorer</text>
+        <text x="790" y="134" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Skills + Degree Fit</text>
+
+        <line x1="898" y1="114" x2="958" y2="114" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b7)"/>
+
+        <rect x="968" y="78" width="214" height="72" rx="12" fill="#2563EB"/>
+        <text x="1075" y="110" text-anchor="middle" font-size="16" font-weight="800" fill="#FFFFFF">Ranked Matches</text>
+        <text x="1075" y="134" text-anchor="middle" font-size="13" font-weight="600" fill="#DBEAFE">Instant Fit Score %</text>
+
+        <!-- LANE 2: DEEP CIRCULAR ANALYZER -->
+        <rect x="18" y="190" width="1184" height="150" rx="16" fill="#F0FDFA" stroke="#99F6E4" stroke-width="2"/>
+        <rect x="36" y="206" width="245" height="28" rx="14" fill="#0D9488"/>
+        <text x="158" y="225" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">2. DEEP CIRCULAR ANALYZER</text>
+
+        <rect x="36" y="250" width="230" height="72" rx="12" fill="#FFFFFF" stroke="#0D9488" stroke-width="2"/>
+        <text x="151" y="282" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">Portal URL / PDF</text>
+        <text x="151" y="306" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">On-Demand Click</text>
+
+        <line x1="266" y1="286" x2="332" y2="286" stroke="#0D9488" stroke-width="3" marker-end="url(#arr-t7)"/>
+
+        <rect x="342" y="250" width="265" height="72" rx="12" fill="#FFFFFF" stroke="#0D9488" stroke-width="2"/>
+        <text x="474" y="282" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">Live Deep Fetcher</text>
+        <text x="474" y="306" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">TLS-Safe Page &amp; PDF</text>
+
+        <line x1="607" y1="286" x2="673" y2="286" stroke="#0D9488" stroke-width="3" marker-end="url(#arr-t7)"/>
+
+        <rect x="683" y="250" width="215" height="72" rx="12" fill="#FFFFFF" stroke="#0D9488" stroke-width="2"/>
+        <text x="790" y="282" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">Entity Extractor</text>
+        <text x="790" y="306" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Funding &middot; Dates &middot; Rules</text>
+
+        <line x1="898" y1="286" x2="958" y2="286" stroke="#0D9488" stroke-width="3" marker-end="url(#arr-t7)"/>
+
+        <rect x="968" y="250" width="214" height="72" rx="12" fill="#0D9488"/>
+        <text x="1075" y="282" text-anchor="middle" font-size="16" font-weight="800" fill="#FFFFFF">Action Brief</text>
+        <text x="1075" y="306" text-anchor="middle" font-size="13" font-weight="600" fill="#CCFBF1">Structured Summary</text>
+
+        <!-- LANE 3: LIVE AI DRAFTER -->
+        <rect x="18" y="362" width="1184" height="150" rx="16" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="2"/>
+        <rect x="36" y="378" width="245" height="28" rx="14" fill="#7C3AED"/>
+        <text x="158" y="397" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">3. AI SOP &amp; GRANT DRAFTER</text>
+
+        <rect x="36" y="422" width="230" height="72" rx="12" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2"/>
+        <text x="151" y="454" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">Profile + Grant</text>
+        <text x="151" y="478" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Student or Researcher</text>
+
+        <line x1="266" y1="458" x2="332" y2="458" stroke="#7C3AED" stroke-width="3" marker-end="url(#arr-p7)"/>
+
+        <rect x="342" y="422" width="265" height="72" rx="12" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2"/>
+        <text x="474" y="454" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">Gemini 2.5 Flash</text>
+        <text x="474" y="478" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Live LLM + Offline Fallback</text>
+
+        <line x1="607" y1="458" x2="673" y2="458" stroke="#7C3AED" stroke-width="3" marker-end="url(#arr-p7)"/>
+
+        <rect x="683" y="422" width="215" height="72" rx="12" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2"/>
+        <text x="790" y="454" text-anchor="middle" font-size="16" font-weight="800" fill="#0F172A">Mode Auto-Detect</text>
+        <text x="790" y="478" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">SOP vs. R&amp;D Proposal</text>
+
+        <line x1="898" y1="458" x2="958" y2="458" stroke="#7C3AED" stroke-width="3" marker-end="url(#arr-p7)"/>
+
+        <rect x="968" y="422" width="214" height="72" rx="12" fill="#7C3AED"/>
+        <text x="1075" y="454" text-anchor="middle" font-size="16" font-weight="800" fill="#FFFFFF">Tailored Draft</text>
+        <text x="1075" y="478" text-anchor="middle" font-size="13" font-weight="600" fill="#EDE9FE">Copy &amp; Export Ready</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>End-to-End Automation: From Resume Upload to Application Draft</span>
+      <span class="mono">07 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 8: MULTI-TENANT AUTH & ISOLATION ==================== -->
+  <div class="slide" id="slide-8">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-panel">&#9733; Panel Directive #2</span>
+          <span class="pill pill-blue">Security &amp; Multi-Tenancy</span>
+        </div>
+        <h1 class="slide-title">Multi-Tenant Auth &amp; Strict Tenant Isolation</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-b8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+          </marker>
+          <marker id="arr-a8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#D97706"/>
+          </marker>
+        </defs>
+
+        <!-- USER -->
+        <circle cx="88" cy="245" r="54" fill="#0F172A"/>
+        <text x="88" y="242" text-anchor="middle" font-size="18" font-weight="800" fill="#FFFFFF">USER</text>
+        <text x="88" y="264" text-anchor="middle" font-size="12" font-weight="600" fill="#94A3B8">Browser</text>
+
+        <line x1="142" y1="245" x2="205" y2="245" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b8)"/>
+
+        <!-- GOOGLE OAUTH -->
+        <rect x="215" y="170" width="200" height="150" rx="16" fill="#EFF6FF" stroke="#2563EB" stroke-width="2.5"/>
+        <text x="315" y="214" text-anchor="middle" font-size="12" font-weight="800" fill="#2563EB">IDENTITY</text>
+        <text x="315" y="248" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Google</text>
+        <text x="315" y="274" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">OAuth 2.0</text>
+        <text x="315" y="302" text-anchor="middle" font-size="12" font-weight="600" fill="#475569">Verified Email + ID</text>
+
+        <line x1="415" y1="245" x2="475" y2="245" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b8)"/>
+
+        <!-- JWT + SILENT REFRESH -->
+        <rect x="485" y="155" width="225" height="180" rx="16" fill="#FFFBEB" stroke="#D97706" stroke-width="3"/>
+        <text x="597" y="196" text-anchor="middle" font-size="12" font-weight="800" fill="#B45309">SESSION SECURITY</text>
+        <text x="597" y="228" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">HTTP-Only</text>
+        <text x="597" y="254" text-anchor="middle" font-size="19" font-weight="800" fill="#0F172A">Rotating JWT</text>
+        <text x="597" y="286" text-anchor="middle" font-size="13" font-weight="700" fill="#92400E">Strict user_id Isolation</text>
+        <text x="597" y="310" text-anchor="middle" font-size="12" font-weight="600" fill="#78350F">Prod Dev-Auth Lock</text>
+
+        <!-- Silent Refresh Loop -->
+        <path d="M 650 335 C 650 420, 545 420, 545 345" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr-a8)"/>
+        <rect x="475" y="425" width="245" height="44" rx="22" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+        <text x="597" y="452" text-anchor="middle" font-size="13" font-weight="800" fill="#92400E">401 &rarr; Silent Auto-Refresh</text>
+
+        <!-- Branch to Isolated Tenant Resources -->
+        <path d="M 710 215 C 765 215, 765 100, 825 100" fill="none" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b8)"/>
+        <path d="M 710 245 L 825 245" fill="none" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b8)"/>
+        <path d="M 710 275 C 765 275, 765 390, 825 390" fill="none" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b8)"/>
+
+        <!-- ISOLATED TENANT CONTAINER -->
+        <rect x="820" y="22" width="376" height="474" rx="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="1008" y="48" text-anchor="middle" font-size="13" font-weight="800" fill="#475569">PER-USER ISOLATED WORKSPACE</text>
+
+        <!-- Scope 1 -->
+        <rect x="842" y="64" width="332" height="122" rx="14" fill="#EFF6FF" stroke="#2563EB" stroke-width="2.5"/>
+        <text x="866" y="102" font-size="20" font-weight="800" fill="#1E3A8A">Private Document Vault</text>
+        <text x="866" y="132" font-size="14" font-weight="700" fill="#2563EB">PDFs &middot; Notes &middot; Web URLs</text>
+        <text x="866" y="158" font-size="13" font-weight="600" fill="#475569">WHERE user_id = current_user</text>
+
+        <!-- Scope 2 -->
+        <rect x="842" y="204" width="332" height="122" rx="14" fill="#F0FDFA" stroke="#0D9488" stroke-width="2.5"/>
+        <text x="866" y="242" font-size="20" font-weight="800" fill="#115E59">Private Chat Sessions</text>
+        <text x="866" y="272" font-size="14" font-weight="700" fill="#0D9488">Multi-Turn Cited History</text>
+        <text x="866" y="298" font-size="13" font-weight="600" fill="#475569">Delete &amp; Resume Anytime</text>
+
+        <!-- Scope 3 -->
+        <rect x="842" y="344" width="332" height="122" rx="14" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2.5"/>
+        <text x="866" y="382" font-size="20" font-weight="800" fill="#5B21B6">Protected Tracker &amp; Alerts</text>
+        <text x="866" y="412" font-size="14" font-weight="700" fill="#7C3AED">Board &middot; Timeline &middot; Reminders</text>
+        <text x="866" y="438" font-size="13" font-weight="600" fill="#475569">JWT Ownership Enforced</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>Zero Cross-Tenant Leaks &middot; Strict Server-Side JWT Ownership</span>
+      <span class="mono">08 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 9: MULTI-TENANT GEMINI RAG ==================== -->
+  <div class="slide" id="slide-9">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-panel">&#9733; Panel Directive #2 (Cont.)</span>
+          <span class="pill pill-blue">Saral AI &middot; google-genai</span>
+        </div>
+        <h1 class="slide-title">Multi-Tenant Gemini 2.5 RAG Architecture</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-t9" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#0D9488"/>
+          </marker>
+          <marker id="arr-b9" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+          </marker>
+        </defs>
+
+        <!-- TOP LANE: DOCUMENT INGESTION -->
+        <rect x="20" y="22" width="1180" height="190" rx="16" fill="#F0FDFA" stroke="#99F6E4" stroke-width="2"/>
+        <rect x="40" y="38" width="230" height="28" rx="14" fill="#0D9488"/>
+        <text x="155" y="57" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">PRIVATE DOC INGESTION</text>
+
+        <rect x="40" y="88" width="225" height="96" rx="14" fill="#FFFFFF" stroke="#0D9488" stroke-width="2.5"/>
+        <text x="152" y="128" text-anchor="middle" font-size="17" font-weight="800" fill="#0F172A">User PDFs / URLs</text>
+        <text x="152" y="156" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Notes &middot; Guidelines</text>
+
+        <line x1="265" y1="136" x2="345" y2="136" stroke="#0D9488" stroke-width="3" marker-end="url(#arr-t9)"/>
+
+        <rect x="355" y="88" width="235" height="96" rx="14" fill="#FFFFFF" stroke="#0D9488" stroke-width="2.5"/>
+        <text x="472" y="128" text-anchor="middle" font-size="17" font-weight="800" fill="#0F172A">Chunk &amp; Embed</text>
+        <text x="472" y="156" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Dense Vectors + Metadata</text>
+
+        <line x1="590" y1="136" x2="670" y2="136" stroke="#0D9488" stroke-width="3" marker-end="url(#arr-t9)"/>
+
+        <!-- SHARED TENANT VECTOR STORE -->
+        <rect x="680" y="72" width="490" height="122" rx="16" fill="#0F172A" stroke="#14B8A6" stroke-width="3"/>
+        <text x="925" y="110" text-anchor="middle" font-size="13" font-weight="800" fill="#5EEAD4">TENANT-ISOLATED VECTOR STORE</text>
+        <text x="925" y="142" text-anchor="middle" font-size="20" font-weight="800" fill="#FFFFFF">SQLite WAL / PostgreSQL pgvector HNSW</text>
+        <text x="925" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#94A3B8">WHERE user_id = current_user (Zero Data Leakage)</text>
+
+        <!-- Vertical Retrieval Arrow from Vector Store down to Query Lane -->
+        <line x1="925" y1="194" x2="925" y2="285" stroke="#2563EB" stroke-width="3.5" marker-end="url(#arr-b9)"/>
+        <rect x="815" y="220" width="220" height="34" rx="17" fill="#2563EB"/>
+        <text x="925" y="242" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">Scoped Top-K Chunks</text>
+
+        <!-- BOTTOM LANE: STREAMING QUERY -->
+        <rect x="20" y="276" width="1180" height="232" rx="16" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="2"/>
+        <rect x="40" y="292" width="265" height="28" rx="14" fill="#2563EB"/>
+        <text x="172" y="311" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">GROUNDED STREAMING CHAT</text>
+
+        <rect x="40" y="346" width="225" height="120" rx="14" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <text x="152" y="394" text-anchor="middle" font-size="17" font-weight="800" fill="#0F172A">User Question</text>
+        <text x="152" y="424" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">+ Chat Session History</text>
+
+        <line x1="265" y1="406" x2="345" y2="406" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b9)"/>
+
+        <rect x="355" y="346" width="235" height="120" rx="14" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <text x="472" y="394" text-anchor="middle" font-size="17" font-weight="800" fill="#0F172A">Prompt Builder</text>
+        <text x="472" y="424" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Grounded Context + Citations</text>
+
+        <line x1="590" y1="406" x2="670" y2="406" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b9)"/>
+
+        <rect x="680" y="346" width="245" height="120" rx="14" fill="#2563EB"/>
+        <text x="802" y="388" text-anchor="middle" font-size="13" font-weight="800" fill="#BFDBFE">OFFICIAL SDK</text>
+        <text x="802" y="416" text-anchor="middle" font-size="20" font-weight="800" fill="#FFFFFF">Gemini 2.5 Flash</text>
+        <text x="802" y="444" text-anchor="middle" font-size="13" font-weight="600" fill="#DBEAFE">SSE Token Stream</text>
+
+        <line x1="925" y1="406" x2="972" y2="406" stroke="#2563EB" stroke-width="3" marker-end="url(#arr-b9)"/>
+
+        <rect x="982" y="346" width="194" height="120" rx="14" fill="#F0FDF4" stroke="#15803D" stroke-width="3"/>
+        <text x="1079" y="388" text-anchor="middle" font-size="17" font-weight="800" fill="#166534">Grounded</text>
+        <text x="1079" y="414" text-anchor="middle" font-size="17" font-weight="800" fill="#166534">Answer</text>
+        <text x="1079" y="444" text-anchor="middle" font-size="13" font-weight="800" fill="#15803D">Clickable [1][2]</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>Real-Time Streaming Answers Backed Strictly by User's Own Documents</span>
+      <span class="mono">09 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 10: CLEAN UI & REAL ALERTS ==================== -->
+  <div class="slide" id="slide-10">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-panel">&#9733; Panel Directive #1: Real Alerts</span>
+          <span class="pill pill-green">&#10022; Bonus: Clean Consumer UI</span>
+        </div>
+        <h1 class="slide-title">Consumer-Polished UI &amp; Multi-Channel Alerts</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-p10" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#7C3AED"/>
+          </marker>
+        </defs>
+
+        <!-- LEFT HALF: CLEAN UI WIREFRAME -->
+        <rect x="18" y="18" width="600" height="494" rx="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+        <text x="318" y="52" text-anchor="middle" font-size="17" font-weight="800" fill="#0F172A">CONSUMER-READY 4-TAB WEB UI</text>
+
+        <!-- Jargon Stripped Strip -->
+        <rect x="42" y="70" width="250" height="40" rx="10" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="167" y="95" text-anchor="middle" font-size="13" font-weight="700" fill="#B91C1C" text-decoration="line-through">HTTP 200 &middot; RRF &middot; JWT &middot; XAI</text>
+
+        <text x="318" y="96" text-anchor="middle" font-size="20" font-weight="800" fill="#15803D">&rarr;</text>
+
+        <rect x="344" y="70" width="250" height="40" rx="10" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+        <text x="469" y="95" text-anchor="middle" font-size="13" font-weight="800" fill="#15803D">Zero Technical Jargon</text>
+
+        <!-- App Browser Mockup -->
+        <rect x="42" y="130" width="552" height="358" rx="14" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/>
+        <!-- Top Browser Bar -->
+        <rect x="42" y="130" width="552" height="42" rx="12" fill="#0F172A"/>
+        <circle cx="68" cy="151" r="6" fill="#EF4444"/>
+        <circle cx="88" cy="151" r="6" fill="#F59E0B"/>
+        <circle cx="108" cy="151" r="6" fill="#10B981"/>
+        <text x="318" y="156" text-anchor="middle" font-size="13" font-weight="700" fill="#CBD5E1">MadadgaarAI &mdash; localhost:8000</text>
+
+        <!-- 4 Tabs -->
+        <rect x="58" y="188" width="122" height="38" rx="8" fill="#2563EB"/>
+        <text x="119" y="212" text-anchor="middle" font-size="13" font-weight="800" fill="#FFFFFF">1. Discover</text>
+
+        <rect x="190" y="188" width="122" height="38" rx="8" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
+        <text x="251" y="212" text-anchor="middle" font-size="13" font-weight="700" fill="#1E3A8A">2. Eligibility</text>
+
+        <rect x="322" y="188" width="122" height="38" rx="8" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
+        <text x="383" y="212" text-anchor="middle" font-size="13" font-weight="700" fill="#1E3A8A">3. Tracker</text>
+
+        <rect x="454" y="188" width="124" height="38" rx="8" fill="#F0FDFA" stroke="#5EEAD4" stroke-width="1.5"/>
+        <text x="516" y="212" text-anchor="middle" font-size="13" font-weight="700" fill="#0F766E">4. Saral AI</text>
+
+        <!-- Search Bar Mock -->
+        <rect x="58" y="242" width="520" height="44" rx="10" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+        <text x="78" y="269" font-size="13" font-weight="600" fill="#64748B">Search scholarships, grants, or drop resume...</text>
+        <rect x="478" y="249" width="90" height="30" rx="7" fill="#0F172A"/>
+        <text x="523" y="269" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">Search</text>
+
+        <!-- Result Cards Mock -->
+        <rect x="58" y="302" width="252" height="166" rx="12" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
+        <rect x="74" y="318" width="84" height="22" rx="6" fill="#DCFCE7"/>
+        <text x="116" y="333" text-anchor="middle" font-size="11" font-weight="800" fill="#166534">VERIFIED</text>
+        <text x="74" y="366" font-size="15" font-weight="800" fill="#0F172A">SERB Core Grant</text>
+        <text x="74" y="392" font-size="12" font-weight="600" fill="#64748B">Analyze &middot; Draft &middot; Save</text>
+        <rect x="74" y="416" width="102" height="34" rx="8" fill="#2563EB"/>
+        <text x="125" y="438" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">Apply Now</text>
+
+        <rect x="326" y="302" width="252" height="166" rx="12" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
+        <rect x="342" y="318" width="100" height="22" rx="6" fill="#FEF3C7"/>
+        <text x="392" y="333" text-anchor="middle" font-size="11" font-weight="800" fill="#92400E">94% MATCH</text>
+        <text x="342" y="366" font-size="15" font-weight="800" fill="#0F172A">NSP Merit Award</text>
+        <text x="342" y="392" font-size="12" font-weight="600" fill="#64748B">Eligibility Passed &#10003;</text>
+        <rect x="342" y="416" width="112" height="34" rx="8" fill="#0D9488"/>
+        <text x="398" y="438" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">Draft SOP</text>
+
+        <!-- RIGHT HALF: AUTOMATED ALERTS FLOW -->
+        <rect x="642" y="18" width="560" height="494" rx="18" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="2"/>
+        <text x="922" y="52" text-anchor="middle" font-size="17" font-weight="800" fill="#5B21B6">AUTOMATED REMINDER ENGINE</text>
+
+        <!-- Tracker Board -->
+        <rect x="732" y="76" width="380" height="78" rx="14" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.5"/>
+        <text x="922" y="110" text-anchor="middle" font-size="17" font-weight="800" fill="#0F172A">JWT-Protected Tracker Board</text>
+        <text x="922" y="136" text-anchor="middle" font-size="13" font-weight="600" fill="#64748B">Saved &middot; In Progress &middot; Deadlines</text>
+
+        <line x1="922" y1="154" x2="922" y2="208" stroke="#7C3AED" stroke-width="3" marker-end="url(#arr-p10)"/>
+
+        <!-- Cron Dispatcher -->
+        <rect x="732" y="216" width="380" height="78" rx="14" fill="#7C3AED"/>
+        <text x="922" y="250" text-anchor="middle" font-size="17" font-weight="800" fill="#FFFFFF">Background Dispatch Cron</text>
+        <text x="922" y="276" text-anchor="middle" font-size="13" font-weight="600" fill="#EDE9FE">Scans Active Deadlines Automatically</text>
+
+        <!-- Fan Out Arrows -->
+        <path d="M 810 294 L 748 366" fill="none" stroke="#7C3AED" stroke-width="3" marker-end="url(#arr-p10)"/>
+        <line x1="922" y1="294" x2="922" y2="366" stroke="#7C3AED" stroke-width="3" marker-end="url(#arr-p10)"/>
+        <path d="M 1034 294 L 1096 366" fill="none" stroke="#7C3AED" stroke-width="3" marker-end="url(#arr-p10)"/>
+
+        <!-- 3 Channels -->
+        <rect x="666" y="376" width="162" height="110" rx="14" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <text x="747" y="418" text-anchor="middle" font-size="16" font-weight="800" fill="#1E3A8A">SMTP Email</text>
+        <text x="747" y="446" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">STARTTLS</text>
+        <text x="747" y="468" text-anchor="middle" font-size="12" font-weight="700" fill="#2563EB">Real Inbox</text>
+
+        <rect x="841" y="376" width="162" height="110" rx="14" fill="#FFFFFF" stroke="#0D9488" stroke-width="2.5"/>
+        <text x="922" y="418" text-anchor="middle" font-size="16" font-weight="800" fill="#115E59">Webhooks</text>
+        <text x="922" y="446" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Slack / Teams</text>
+        <text x="922" y="468" text-anchor="middle" font-size="12" font-weight="700" fill="#0D9488">HTTP POST</text>
+
+        <rect x="1016" y="376" width="162" height="110" rx="14" fill="#FFFFFF" stroke="#15803D" stroke-width="2.5"/>
+        <text x="1097" y="418" text-anchor="middle" font-size="16" font-weight="800" fill="#166534">Web Push</text>
+        <text x="1097" y="446" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Browser API</text>
+        <text x="1097" y="468" text-anchor="middle" font-size="12" font-weight="700" fill="#15803D">Desktop Alert</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>Polished End-User Experience + Real Multi-Channel Deadline Delivery</span>
+      <span class="mono">10 / 11</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 11: BENCHMARKS & LIVE DEMO ==================== -->
+  <div class="slide" id="slide-11">
+    <div class="top-bar">
+      <div class="title-group">
+        <div class="badges">
+          <span class="pill pill-green">100% Complete &middot; Verified</span>
+          <span class="pill pill-blue">&#10022; Empirical Benchmarks</span>
+        </div>
+        <h1 class="slide-title">Verified Benchmarks &amp; Live Demo Flow</h1>
+      </div>
+    </div>
+
+    <div class="diagram-stage">
+      <svg viewBox="0 0 1220 530" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-g11" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+          </marker>
+        </defs>
+
+        <!-- LEFT HALF: BENCHMARK BAR CHART -->
+        <rect x="18" y="18" width="635" height="494" rx="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+        <text x="44" y="54" font-size="18" font-weight="800" fill="#0F172A">EMPIRICAL RESULTS (40-QUERY CPU ABLATION)</text>
+
+        <!-- Bar 1 -->
+        <text x="44" y="102" font-size="15" font-weight="700" fill="#334155">Canonical Live Retrieval (MRR)</text>
+        <rect x="44" y="114" width="520" height="34" rx="8" fill="#E2E8F0"/>
+        <rect x="44" y="114" width="520" height="34" rx="8" fill="#15803D"/>
+        <text x="580" y="137" font-size="16" font-weight="800" fill="#15803D" font-family="JetBrains Mono, monospace">100%</text>
+
+        <!-- Bar 2 -->
+        <text x="44" y="182" font-size="15" font-weight="700" fill="#334155">Hybrid RRF Hit@5 (4.28 ms p50)</text>
+        <rect x="44" y="194" width="520" height="34" rx="8" fill="#E2E8F0"/>
+        <rect x="44" y="194" width="455" height="34" rx="8" fill="#2563EB"/>
+        <text x="580" y="217" font-size="16" font-weight="800" fill="#2563EB" font-family="JetBrains Mono, monospace">87.5%</text>
+
+        <!-- Bar 3 -->
+        <text x="44" y="262" font-size="15" font-weight="700" fill="#334155">Entity Extraction Accuracy (F1)</text>
+        <rect x="44" y="274" width="520" height="34" rx="8" fill="#E2E8F0"/>
+        <rect x="44" y="274" width="442" height="34" rx="8" fill="#0D9488"/>
+        <text x="580" y="297" font-size="16" font-weight="800" fill="#0D9488" font-family="JetBrains Mono, monospace">85.0%</text>
+
+        <!-- Bar 4 -->
+        <text x="44" y="342" font-size="15" font-weight="700" fill="#334155">RRF + Reranker MRR (11.78 ms p50)</text>
+        <rect x="44" y="354" width="520" height="34" rx="8" fill="#E2E8F0"/>
+        <rect x="44" y="354" width="396" height="34" rx="8" fill="#7C3AED"/>
+        <text x="580" y="377" font-size="16" font-weight="800" fill="#7C3AED" font-family="JetBrains Mono, monospace">76.2%</text>
+
+        <!-- Bottom Verification Strip -->
+        <rect x="44" y="420" width="182" height="68" rx="12" fill="#F0FDF4" stroke="#86EFAC" stroke-width="2"/>
+        <text x="135" y="452" text-anchor="middle" font-size="22" font-weight="800" fill="#15803D" font-family="JetBrains Mono, monospace">47 / 47</text>
+        <text x="135" y="474" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">Pytest Pass</text>
+
+        <rect x="244" y="420" width="182" height="68" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="2"/>
+        <text x="335" y="452" text-anchor="middle" font-size="22" font-weight="800" fill="#2563EB" font-family="JetBrains Mono, monospace">45</text>
+        <text x="335" y="474" text-anchor="middle" font-size="12" font-weight="700" fill="#1E3A8A">API Endpoints</text>
+
+        <rect x="444" y="420" width="182" height="68" rx="12" fill="#FFFBEB" stroke="#FCD34D" stroke-width="2"/>
+        <text x="535" y="452" text-anchor="middle" font-size="22" font-weight="800" fill="#B45309" font-family="JetBrains Mono, monospace">100%</text>
+        <text x="535" y="474" text-anchor="middle" font-size="12" font-weight="700" fill="#92400E">Completed</text>
+
+        <!-- RIGHT HALF: 4-STEP LIVE DEMO FLOW -->
+        <rect x="675" y="18" width="527" height="494" rx="18" fill="#0F172A"/>
+        <text x="938" y="56" text-anchor="middle" font-size="18" font-weight="800" fill="#FFFFFF">LIVE DEMO WALKTHROUGH</text>
+
+        <!-- Step 1 -->
+        <rect x="708" y="80" width="460" height="72" rx="14" fill="#1E293B" stroke="#3B82F6" stroke-width="2"/>
+        <circle cx="748" cy="116" r="20" fill="#2563EB"/>
+        <text x="748" y="122" text-anchor="middle" font-size="15" font-weight="800" fill="#FFFFFF">1</text>
+        <text x="786" y="112" font-size="17" font-weight="800" fill="#FFFFFF">Sign In (Google OAuth / JWT)</text>
+        <text x="786" y="135" font-size="13" font-weight="600" fill="#94A3B8">Isolated Private Workspace</text>
+
+        <line x1="748" y1="152" x2="748" y2="176" stroke="#60A5FA" stroke-width="2.5" marker-end="url(#arr-g11)"/>
+
+        <!-- Step 2 -->
+        <rect x="708" y="180" width="460" height="72" rx="14" fill="#1E293B" stroke="#14B8A6" stroke-width="2"/>
+        <circle cx="748" cy="216" r="20" fill="#0D9488"/>
+        <text x="748" y="222" text-anchor="middle" font-size="15" font-weight="800" fill="#FFFFFF">2</text>
+        <text x="786" y="212" font-size="17" font-weight="800" fill="#FFFFFF">Hybrid Search &amp; Resume Upload</text>
+        <text x="786" y="235" font-size="13" font-weight="600" fill="#94A3B8">Live Verified Feed + Fit Score</text>
+
+        <line x1="748" y1="252" x2="748" y2="276" stroke="#60A5FA" stroke-width="2.5" marker-end="url(#arr-g11)"/>
+
+        <!-- Step 3 -->
+        <rect x="708" y="280" width="460" height="72" rx="14" fill="#1E293B" stroke="#8B5CF6" stroke-width="2"/>
+        <circle cx="748" cy="316" r="20" fill="#7C3AED"/>
+        <text x="748" y="322" text-anchor="middle" font-size="15" font-weight="800" fill="#FFFFFF">3</text>
+        <text x="786" y="312" font-size="17" font-weight="800" fill="#FFFFFF">Deep Analyze &amp; Draft SOP</text>
+        <text x="786" y="335" font-size="13" font-weight="600" fill="#94A3B8">On-Demand Circular + Gemini 2.5</text>
+
+        <line x1="748" y1="352" x2="748" y2="376" stroke="#60A5FA" stroke-width="2.5" marker-end="url(#arr-g11)"/>
+
+        <!-- Step 4 -->
+        <rect x="708" y="380" width="460" height="72" rx="14" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+        <circle cx="748" cy="416" r="20" fill="#D97706"/>
+        <text x="748" y="422" text-anchor="middle" font-size="15" font-weight="800" fill="#FFFFFF">4</text>
+        <text x="786" y="412" font-size="17" font-weight="800" fill="#FFFFFF">Saral AI Private RAG &amp; Alerts</text>
+        <text x="786" y="435" font-size="13" font-weight="600" fill="#94A3B8">Cited Streaming Chat + Tracker</text>
+
+        <!-- Live URL Banner -->
+        <rect x="780" y="466" width="316" height="32" rx="16" fill="#10B981"/>
+        <text x="938" y="487" text-anchor="middle" font-size="13" font-weight="800" fill="#064E3B" font-family="JetBrains Mono, monospace">LIVE &rarr; http://localhost:8000</text>
+      </svg>
+    </div>
+
+    <div class="slide-footer">
+      <span>Thank You &middot; Questions &amp; Live Demonstration</span>
+      <span class="mono">11 / 11</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation Controls -->
+<div id="controls">
+  <button class="ctrl-btn" id="btn-prev" onclick="changeSlide(-1)">&larr; Prev</button>
+  <div id="dots"></div>
+  <span id="slide-counter">1 / 11</span>
+  <button class="ctrl-btn" id="btn-next" onclick="changeSlide(1)">Next &rarr;</button>
+  <button class="ctrl-btn" onclick="toggleFullscreen()">&#x26F6; Full</button>
+  <button class="ctrl-btn primary" onclick="window.print()">&#128424; PDF</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsEl = document.getElementById('dots');
+  const counterEl = document.getElementById('slide-counter');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  let current = 0;
+
+  slides.forEach((_, idx) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (idx === 0 ? ' active' : '');
+    dot.title = 'Slide ' + (idx + 1);
+    dot.addEventListener('click', () => goToSlide(idx));
+    dotsEl.appendChild(dot);
+  });
+
+  const dots = Array.from(dotsEl.querySelectorAll('.dot'));
+
+  function goToSlide(index) {
+    if (index < 0 || index >= slides.length) return;
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = index;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    counterEl.textContent = (current + 1) + ' / ' + slides.length;
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === slides.length - 1;
+  }
+
+  function changeSlide(delta) {
+    goToSlide(current + delta);
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      changeSlide(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      changeSlide(-1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goToSlide(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goToSlide(slides.length - 1);
+    } else if (e.key === 'f' || e.key === 'F') {
+      toggleFullscreen();
+    }
+  });
+
+  goToSlide(0);
+</script>
+</body>
+</html>

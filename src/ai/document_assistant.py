@@ -1,7 +1,6 @@
 """Intelligent Document Assistant for Scholarship Certificates, Marksheets, CVs, and Research Proposals."""
 from datetime import date
 import logging
-import os
 import re
 from typing import Any, Dict, List, Optional
 
@@ -18,32 +17,6 @@ class IntelligentDocumentAssistant:
     def __init__(self):
         self.pdf_parser = PDFLayoutParser()
         self.ocr_worker = OCRWorker()
-
-    def _extract_image_text_with_gemini(self, file_bytes: bytes, filename: Optional[str]) -> str:
-        """Uses official google-genai multimodal Vision when local Tesseract OCR binary is absent."""
-        api_key = (os.getenv("GEMINI_API_KEY") or "").strip()
-        if not api_key:
-            return ""
-        try:
-            from google import genai
-            from google.genai import types
-
-            fname = (filename or "document.png").lower()
-            mime = "image/jpeg" if fname.endswith((".jpg", ".jpeg")) else ("image/webp" if fname.endswith(".webp") else "image/png")
-            model = (os.getenv("SARAL_GEMINI_MODEL") or os.getenv("MADADGAAR_GEMINI_MODEL") or "gemini-2.5-flash").strip()
-            client = genai.Client(api_key=api_key)
-            resp = client.models.generate_content(
-                model=model,
-                contents=[
-                    types.Part.from_bytes(data=file_bytes, mime_type=mime),
-                    "Transcribe all visible text, numbers, dates, certificate IDs, and issuing authority stamps from this document verbatim. Do not add commentary.",
-                ],
-                config=types.GenerateContentConfig(temperature=0.0, max_output_tokens=1000),
-            )
-            return (getattr(resp, "text", None) or "").strip()
-        except Exception as exc:
-            logger.debug(f"Gemini Vision OCR fallback unavailable: {exc}")
-            return ""
 
     def analyze_document(
         self,
@@ -62,18 +35,9 @@ class IntelligentDocumentAssistant:
                 text = parsed.raw_text or text
                 extraction_method = "PDF OCR Fallback" if parsed.is_ocr_fallback else f"PDF Layout Parser ({parsed.num_pages} pages)"
             elif any(fname_low.endswith(ext) for ext in (".png", ".jpg", ".jpeg", ".webp", ".bmp")):
-                if self.ocr_worker.tesseract_available:
-                    ocr_txt = self.ocr_worker.process_image_bytes(file_bytes)
-                    text = ocr_txt or text
-                    extraction_method = "Image OCR"
-                else:
-                    vision_txt = self._extract_image_text_with_gemini(file_bytes, filename)
-                    if vision_txt:
-                        text = vision_txt
-                        extraction_method = "Document Image Reader"
-                    else:
-                        text = text or ""
-                        extraction_method = "Image Upload (Text Unreadable Offline)"
+                ocr_txt = self.ocr_worker.process_image_bytes(file_bytes)
+                text = ocr_txt or text
+                extraction_method = "Image OCR Worker"
             else:
                 try:
                     text = file_bytes.decode("utf-8", errors="ignore")

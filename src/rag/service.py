@@ -8,7 +8,6 @@ import numpy as np
 from rank_bm25 import BM25Okapi
 
 from src.auth.database import SaralMultiTenantDB
-from src.auth.modes import ModeConfig, UserModeRegistry
 from src.config import RRF_K_CONSTANT
 from src.core.logging_utils import log_structured_event
 from src.embeddings.hybrid_search import tokenize_text
@@ -20,6 +19,18 @@ logger = logging.getLogger("MadadgaarAI.RAG.Service")
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024  # 15 MB
 ALLOWED_EXTENSIONS = {".pdf", ".md", ".markdown", ".txt"}
 ALLOWED_MIME_PREFIXES = ("application/pdf", "text/plain", "text/markdown", "application/octet-stream")
+CHUNK_SIZE_TOKENS = 800
+CHUNK_OVERLAP_TOKENS = 150
+RETRIEVAL_TOP_K = 6
+
+SARAL_SYSTEM_PROMPT = (
+    "You are Saral AI — a clear, accurate document assistant.\n"
+    "GUIDELINES:\n"
+    "1. Give clear, structured explanations grounded strictly in the provided Retrieved Context Chunks.\n"
+    "2. Highlight key definitions, deadlines, requirements, or formulas (in LaTeX $...$ / $$...$$) when relevant.\n"
+    "3. Attach inline citations immediately after factual claims using exact format: [Source: <Document Name>, Page <N> / <Section>].\n"
+    "4. If the uploaded documents do not contain enough evidence to answer the question, explicitly state that the uploaded materials do not cover this topic rather than guessing or hallucinating."
+)
 
 
 def _cosine_sim(a: List[float], b: List[float]) -> float:
@@ -40,7 +51,7 @@ class MultiTenantRAGService:
     - Async background ingestion with job status tracking (pending -> processing -> indexed / failed)
     - SHA-256 content deduplication per user
     - Gemini embeddings (`RETRIEVAL_DOCUMENT` / `RETRIEVAL_QUERY`) + Hybrid Vector/BM25 RRF retrieval
-    - Mode-aware streaming generation (`student` / `researcher` / `educator`) with clickable citations
+    - Grounded streaming generation with clickable citations
     """
 
     def __init__(
@@ -87,7 +98,6 @@ class MultiTenantRAGService:
         src_type = "pdf" if filename.lower().endswith(".pdf") or file_bytes[:4] == b"%PDF" else ("markdown" if filename.lower().endswith((".md", ".markdown")) else "text")
         doc = self.db.create_document(
             user_id=user["id"],
-            user_mode=user["user_mode"],
             title=title[:140],
             source_type=src_type,
             mime_type=clean_mime,
@@ -98,12 +108,11 @@ class MultiTenantRAGService:
         return doc, False
 
     async def process_file_job(
-        self, doc_id: str, user_id: str, user_mode: str, title: str, source_type: str, file_bytes: bytes
+        self, doc_id: str, user_id: str, title: str, source_type: str, file_bytes: bytes
     ) -> None:
         """Background job: extracts layout-aware pages, chunks, embeds via Gemini, and persists vectors."""
         self.db.update_document_status(doc_id, user_id, status="processing")
         try:
-            mode_cfg = UserModeRegistry.get(user_mode)
             if source_type == "pdf":
                 pages = await asyncio.to_thread(self.chunker.extract_pdf_pages, file_bytes)
             else:
@@ -115,8 +124,8 @@ class MultiTenantRAGService:
 
             chunks = self.chunker.chunk_pages(
                 pages,
-                chunk_size_tokens=mode_cfg.chunk_size_tokens,
-                chunk_overlap_tokens=mode_cfg.chunk_overlap_tokens,
+                chunk_size_tokens=CHUNK_SIZE_TOKENS,
+                chunk_overlap_tokens=CHUNK_OVERLAP_TOKENS,
             )
             if not chunks:
                 raise ValueError("Document did not produce any indexable text chunks.")
@@ -128,7 +137,6 @@ class MultiTenantRAGService:
             for ch, emb in zip(chunks, embeddings):
                 chunk_rows.append({
                     "id": f"chk_{uuid.uuid4().hex[:14]}",
-                    "user_mode": user_mode,
                     "doc_title": title,
                     "page_number": ch.page_number,
                     "section_header": ch.section_header,
@@ -140,7 +148,7 @@ class MultiTenantRAGService:
 
             saved_count = self.db.replace_document_chunks(doc_id=doc_id, user_id=user_id, chunks=chunk_rows)
             self.db.update_document_status(doc_id, user_id, status="indexed", chunk_count=saved_count)
-            log_structured_event(logger, "document_indexed", user_id=user_id, doc_id=doc_id, chunks=saved_count, mode=user_mode)
+            log_structured_event(logger, "document_indexed", user_id=user_id, doc_id=doc_id, chunks=saved_count)
         except Exception as exc:
             logger.error(f"Document ingestion failed for doc={doc_id}: {exc}")
             self.db.update_document_status(doc_id, user_id, status="failed", error_message=str(exc)[:240])
@@ -165,7 +173,6 @@ class MultiTenantRAGService:
 
         doc = self.db.create_document(
             user_id=user["id"],
-            user_mode=user["user_mode"],
             title=final_title,
             source_type="url",
             mime_type=mime_type,
@@ -175,18 +182,16 @@ class MultiTenantRAGService:
         )
         self.db.update_document_status(doc["id"], user["id"], status="processing")
         try:
-            mode_cfg = UserModeRegistry.get(user["user_mode"])
             chunks = self.chunker.chunk_pages(
                 pages,
-                chunk_size_tokens=mode_cfg.chunk_size_tokens,
-                chunk_overlap_tokens=mode_cfg.chunk_overlap_tokens,
+                chunk_size_tokens=CHUNK_SIZE_TOKENS,
+                chunk_overlap_tokens=CHUNK_OVERLAP_TOKENS,
             )
             texts = [f"{final_title} | {c.section_header}\n{c.content}" for c in chunks]
             embeddings = await asyncio.to_thread(self.gemini.embed_texts, texts, "RETRIEVAL_DOCUMENT")
             chunk_rows = [
                 {
                     "id": f"chk_{uuid.uuid4().hex[:14]}",
-                    "user_mode": user["user_mode"],
                     "doc_title": final_title,
                     "page_number": ch.page_number,
                     "section_header": ch.section_header,
@@ -209,8 +214,8 @@ class MultiTenantRAGService:
         self,
         user_id: str,
         query: str,
-        mode_cfg: ModeConfig,
         doc_ids: Optional[List[str]] = None,
+        top_k: int = RETRIEVAL_TOP_K,
     ) -> List[Dict[str, Any]]:
         """
         Tenant-isolated Hybrid Retrieval (Dense Vector Cosine + BM25 Lexical via Reciprocal Rank Fusion).
@@ -241,7 +246,7 @@ class MultiTenantRAGService:
         pg_hits = self.db.vector_search_user_chunks(
             user_id=user_id,
             query_embedding=q_vec,
-            top_k=max(len(chunks), mode_cfg.retrieval_top_k * 3),
+            top_k=max(len(chunks), top_k * 3),
             doc_ids=doc_ids,
         )
         if pg_hits is not None:
@@ -277,7 +282,7 @@ class MultiTenantRAGService:
 
         scored.sort(key=lambda x: x[1], reverse=True)
         top_chunks: List[Dict[str, Any]] = []
-        for ch, score in scored[: mode_cfg.retrieval_top_k]:
+        for ch, score in scored[:top_k]:
             item = {k: v for k, v in ch.items() if k != "embedding"}
             item["score"] = score
             top_chunks.append(item)
@@ -328,15 +333,13 @@ class MultiTenantRAGService:
         doc_ids: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Non-streaming grounded multi-tenant RAG chat turn."""
-        mode_cfg = UserModeRegistry.get(user["user_mode"])
         session = self.db.get_or_create_chat_session(
             user_id=user["id"],
-            user_mode=mode_cfg.mode.value,
             session_id=session_id,
             title=query[:75],
         )
         history = self.db.get_chat_messages(session["id"], user["id"], limit=12)
-        retrieved = await asyncio.to_thread(self.hybrid_retrieve, user["id"], query, mode_cfg, doc_ids)
+        retrieved = await asyncio.to_thread(self.hybrid_retrieve, user["id"], query, doc_ids)
         citations = self._format_citations(retrieved)
         prompt = self._build_generation_prompt(query, history, retrieved)
 
@@ -344,10 +347,9 @@ class MultiTenantRAGService:
 
         tokens: List[str] = []
         async for tok in self.gemini.generate_grounded_stream(
-            system_instruction=mode_cfg.system_prompt,
+            system_instruction=SARAL_SYSTEM_PROMPT,
             user_prompt=prompt,
             query=query,
-            mode_name=mode_cfg.mode.value,
             retrieved_chunks=retrieved,
         ):
             tokens.append(tok)
@@ -363,13 +365,12 @@ class MultiTenantRAGService:
             citations=citations,
         )
         log_structured_event(
-            logger, "saral_chat_completed", user_id=user["id"], mode=mode_cfg.mode.value,
+            logger, "saral_chat_completed", user_id=user["id"],
             session_id=session["id"], cited_chunks=len(cited_ids),
         )
         return {
             "session_id": session["id"],
             "message_id": assistant_msg["id"],
-            "user_mode": mode_cfg.mode.value,
             "answer": answer,
             "citations": citations,
             "cited_chunk_ids": cited_ids,
@@ -385,15 +386,13 @@ class MultiTenantRAGService:
         doc_ids: Optional[List[str]] = None,
     ) -> AsyncIterator[Dict[str, Any]]:
         """Yields structured SSE events (`meta`, `delta`, `done`) for real-time streaming chat."""
-        mode_cfg = UserModeRegistry.get(user["user_mode"])
         session = self.db.get_or_create_chat_session(
             user_id=user["id"],
-            user_mode=mode_cfg.mode.value,
             session_id=session_id,
             title=query[:75],
         )
         history = self.db.get_chat_messages(session["id"], user["id"], limit=12)
-        retrieved = await asyncio.to_thread(self.hybrid_retrieve, user["id"], query, mode_cfg, doc_ids)
+        retrieved = await asyncio.to_thread(self.hybrid_retrieve, user["id"], query, doc_ids)
         citations = self._format_citations(retrieved)
         prompt = self._build_generation_prompt(query, history, retrieved)
 
@@ -401,7 +400,6 @@ class MultiTenantRAGService:
         yield {
             "type": "meta",
             "session_id": session["id"],
-            "user_mode": mode_cfg.mode.value,
             "citations": citations,
             "grounded": len(citations) > 0,
             "backend": self.gemini.backend_label,
@@ -409,10 +407,9 @@ class MultiTenantRAGService:
 
         buf: List[str] = []
         async for tok in self.gemini.generate_grounded_stream(
-            system_instruction=mode_cfg.system_prompt,
+            system_instruction=SARAL_SYSTEM_PROMPT,
             user_prompt=prompt,
             query=query,
-            mode_name=mode_cfg.mode.value,
             retrieved_chunks=retrieved,
         ):
             buf.append(tok)
