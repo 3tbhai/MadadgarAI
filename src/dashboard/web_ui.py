@@ -49,6 +49,7 @@ def render_dashboard_html() -> str:
     }
   </script>
   <style>
+    html { scroll-behavior: smooth; }
     body {
       background-color: #FAF8F5;
       color: #1F1D1A;
