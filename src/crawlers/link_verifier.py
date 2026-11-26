@@ -66,7 +66,7 @@ async def playwright_fetch_page(url: str, timeout_ms: int = 12000) -> Tuple[int,
 
 TRACKING_PARAMS = {
     "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
-    "fbclid", "gclid", "ref", "source", "mc_cid", "mc_eid",
+    "fbclid", "gclid", "gbraid", "wbraid", "_ga", "msclkid", "ref", "source", "mc_cid", "mc_eid",
 }
 
 DEFAULT_HEADERS = {

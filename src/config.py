@@ -62,3 +62,5 @@ DEFAULT_TOP_K = 5
 API_HOST = os.getenv("MADADGAAR_HOST", "0.0.0.0")
 API_PORT = int(os.getenv("MADADGAAR_PORT", "8000"))
 DEBUG = os.getenv("MADADGAAR_DEBUG", "True").lower() in ("true", "1")
+DEFAULT_PAGE_SIZE = int(os.getenv("MADADGAAR_PAGE_SIZE", "12"))
+API_REQUEST_TIMEOUT = float(os.getenv("MADADGAAR_TIMEOUT_SEC", "15.0"))

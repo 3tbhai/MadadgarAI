@@ -1029,7 +1029,7 @@ class RSSOpportunityScraper(BaseLiveScraper):
             domain = infer_domain(combined)
 
             amt_match = re.search(
-                r"((?:\$|USD|EUR|£|₹|Rs\.?)\s?[\d,]+(?:\.\d+)?(?:\s*(?:million|lakhs?|crores?|k|per\s*(?:year|month)))?)",
+                r"((?:(?:\$|£|₹)|\b(?:USD|EUR|INR|Rs\.?))\s?\d[\d,]*(?:\.\d+)?(?:\s*(?:million|lakhs?|crores?|k|per\s*(?:year|month)))?)",
                 combined,
                 re.I,
             )
