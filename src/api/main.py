@@ -346,6 +346,7 @@ async def health_check():
         "embedding_backend": vector_store.embedder.backend_name,
         "llm_synthesis_backend": rag_engine.llm_adapter.active_backend,
         "saral_multitenant_rag_backend": saral_gemini.backend_label,
+        "saral_db_backend": saral_db.backend_name,
         "google_oauth_configured": bool(get_google_client_id()),
         "playwright_fallback_available": PLAYWRIGHT_AVAILABLE,
         "zero_mock_data": True,

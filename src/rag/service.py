@@ -235,10 +235,20 @@ class MultiTenantRAGService:
                 bm25_ranks[idx] = rank
                 bm25_raw[idx] = float(scores[idx])
 
-        # 2. Dense vector similarity scoring
+        # 2. Dense vector similarity scoring (uses native pgvector HNSW when on PostgreSQL)
         q_vecs = self.gemini.embed_texts([query], task_type="RETRIEVAL_QUERY")
         q_vec = q_vecs[0] if q_vecs else []
-        dense_sims = [_cosine_sim(q_vec, c["embedding"]) for c in chunks]
+        pg_hits = self.db.vector_search_user_chunks(
+            user_id=user_id,
+            query_embedding=q_vec,
+            top_k=max(len(chunks), mode_cfg.retrieval_top_k * 3),
+            doc_ids=doc_ids,
+        )
+        if pg_hits is not None:
+            sim_by_id = {h["id"]: float(h.get("dense_sim") or 0.0) for h in pg_hits}
+            dense_sims = [sim_by_id.get(c["id"], 0.0) for c in chunks]
+        else:
+            dense_sims = [_cosine_sim(q_vec, c["embedding"]) for c in chunks]
         ranked_dense = sorted(range(len(dense_sims)), key=lambda i: dense_sims[i], reverse=True)
         dense_ranks = {idx: rank for rank, idx in enumerate(ranked_dense, start=1)}
 

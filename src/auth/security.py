@@ -294,14 +294,52 @@ def get_optional_current_user(request: Request, db: SaralMultiTenantDB) -> Optio
 
 
 class SlidingWindowRateLimiter:
-    """In-memory per-user/IP sliding window rate limiter for /ingest and /chat protection."""
+    """
+    Multi-worker safe sliding-window rate limiter for /ingest and /chat protection.
+    Uses Redis sorted sets automatically when REDIS_URL is configured and `redis` is installed,
+    and falls back to an in-process sliding window deque otherwise.
+    """
 
     def __init__(self, max_requests: int = 30, window_seconds: int = 60):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
         self._hits: Dict[str, Deque[float]] = defaultdict(deque)
+        self._redis = None
+        redis_url = (os.getenv("REDIS_URL") or "").strip()
+        if redis_url:
+            try:
+                import redis  # type: ignore
+                client = redis.from_url(redis_url, socket_connect_timeout=1.5)
+                client.ping()
+                self._redis = client
+                logger.info("SlidingWindowRateLimiter backed by Redis.")
+            except Exception as exc:
+                logger.debug(f"Redis rate limiter unavailable, using in-memory fallback: {exc}")
 
     def check(self, key: str) -> None:
+        if self._redis is not None:
+            try:
+                now = time.time()
+                rkey = f"saral:rl:{key}"
+                pipe = self._redis.pipeline()
+                pipe.zremrangebyscore(rkey, 0, now - self.window_seconds)
+                pipe.zcard(rkey)
+                _, count = pipe.execute()
+                if int(count) >= self.max_requests:
+                    raise HTTPException(
+                        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                        detail=f"Rate limit exceeded ({self.max_requests} requests per {self.window_seconds}s). Please slow down.",
+                    )
+                pipe2 = self._redis.pipeline()
+                pipe2.zadd(rkey, {f"{now}:{secrets.token_hex(4)}": now})
+                pipe2.expire(rkey, self.window_seconds + 5)
+                pipe2.execute()
+                return
+            except HTTPException:
+                raise
+            except Exception:
+                pass
+
         now = time.monotonic()
         bucket = self._hits[key]
         cutoff = now - self.window_seconds
