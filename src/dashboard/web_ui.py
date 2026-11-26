@@ -116,6 +116,8 @@ def render_dashboard_html() -> str:
     }
     ::-webkit-scrollbar { width: 7px; height: 7px; }
     ::-webkit-scrollbar-track { background: #FAF8F5; }
+    ::-webkit-scrollbar-thumb { background: #DDD6CB; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #B9AFA1; }
   </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-claySoft selection:text-clayDark">
