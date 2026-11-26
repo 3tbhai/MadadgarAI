@@ -359,6 +359,16 @@ class ConversationalMemoryStore:
             conn.commit()
         return self.list_reminders(sid)
 
+    def list_all_active_reminders(self) -> List[Dict[str, Any]]:
+        """Returns all active reminders across all sessions for periodic background dispatching."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT * FROM deadline_reminders WHERE active = 1 ORDER BY id DESC"
+            )
+            return [dict(r) for r in cur.fetchall()]
+
     @staticmethod
     def extract_profile_facts_from_message(text: str) -> Dict[str, Any]:
         """Extracts natural-language profile facts mentioned by a user in conversation."""

@@ -79,6 +79,97 @@ rag_engine = SaralSamjhautiRAG(normalizer=normalizer, session_store=session_stor
 document_assistant = IntelligentDocumentAssistant()
 
 _background_cron_task: Optional[asyncio.Task] = None
+_background_reminder_task: Optional[asyncio.Task] = None
+
+
+def _send_smtp_email_sync(recipient: str, subject: str, body: str) -> str:
+    """Sends a real deadline digest email via STARTTLS SMTP when SMTP_HOST is configured."""
+    smtp_host = (os.getenv("SMTP_HOST") or "").strip()
+    if not smtp_host:
+        return "smtp_not_configured"
+    import smtplib
+    from email.message import EmailMessage
+
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = (os.getenv("SMTP_USER") or "").strip()
+    smtp_pass = (os.getenv("SMTP_PASS") or "").strip()
+    smtp_from = (os.getenv("SMTP_FROM") or smtp_user or "alerts@madadgaarai.local").strip()
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = smtp_from
+    msg["To"] = recipient
+    msg.set_content(body)
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+            server.ehlo()
+            if smtp_port in (587, 25):
+                try:
+                    server.starttls()
+                except smtplib.SMTPException:
+                    pass
+            if smtp_user and smtp_pass:
+                server.login(smtp_user, smtp_pass)
+            server.send_message(msg)
+        return "smtp_sent"
+    except Exception as exc:
+        logger.warning(f"SMTP reminder delivery error: {exc}")
+        return f"smtp_error:{type(exc).__name__}"
+
+
+async def _dispatch_single_reminder(rem: Dict[str, Any], due: List[Dict[str, Any]]) -> Dict[str, Any]:
+    import httpx as _httpx
+
+    summary_lines = [
+        f"- {d['title']} ({d['days_left']}d left, closes {d['deadline']}): {d['source_url']}"
+        for d in due[:5]
+    ]
+    msg_text = (
+        f"MadadgaarAI Deadline Alert ({len(due)} saved opportunities closing within {rem['lead_days']} days):\n"
+        + ("\n".join(summary_lines) if summary_lines else "No saved items closing within your alert window right now.")
+    )
+    status = "browser_ready" if rem["channel"] == "browser" else "queued_preview"
+    if rem["channel"] == "webhook" and rem["target"].startswith(("http://", "https://")):
+        try:
+            async with _httpx.AsyncClient(timeout=6.0) as hc:
+                wr = await hc.post(rem["target"], json={"content": msg_text, "text": msg_text, "alerts": due})
+                status = f"webhook_http_{wr.status_code}"
+        except Exception as exc:
+            status = f"webhook_error:{type(exc).__name__}"
+    elif rem["channel"] == "email" and "@" in (rem.get("target") or ""):
+        subject = f"MadadgaarAI Deadline Alert ({len(due)} closing soon)"
+        status = await asyncio.to_thread(_send_smtp_email_sync, rem["target"], subject, msg_text)
+    return {
+        "reminder_id": rem["id"],
+        "channel": rem["channel"],
+        "target": rem["target"],
+        "due_count": len(due),
+        "status": status,
+        "preview": msg_text,
+    }
+
+
+async def _background_reminder_dispatch_loop():
+    """Periodically evaluates saved deadlines and dispatches webhook/SMTP reminders automatically."""
+    interval_sec = max(300.0, float(os.getenv("REMINDER_DISPATCH_INTERVAL_SECONDS", "21600")))
+    while True:
+        try:
+            await asyncio.sleep(interval_sec)
+            active_reminders = session_store.list_all_active_reminders()
+            sent = 0
+            for rem in active_reminders:
+                if rem.get("channel") not in ("webhook", "email"):
+                    continue
+                due = _compute_due_kanban_alerts(rem["session_id"], max_lead_days=int(rem.get("lead_days") or 7))
+                if due:
+                    await _dispatch_single_reminder(rem, due)
+                    sent += 1
+            if sent:
+                logger.info(f"Background reminder cron dispatched {sent} due alert(s).")
+        except asyncio.CancelledError:
+            break
+        except Exception as exc:
+            logger.error(f"Background reminder cron error: {exc}")
 
 
 async def _background_auto_refresh_loop():
@@ -103,8 +194,8 @@ async def _background_auto_refresh_loop():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Refreshes live verified opportunities on startup and starts the periodic background cron."""
-    global _background_cron_task
+    """Refreshes live verified opportunities on startup and starts the periodic background crons."""
+    global _background_cron_task, _background_reminder_task
     try:
         report = await live_pipeline.refresh_live_data(force=False)
         logger.info(
@@ -117,15 +208,17 @@ async def lifespan(app: FastAPI):
         logger.error(f"Startup live refresh encountered an error (no mock fallback used): {exc}")
 
     _background_cron_task = asyncio.create_task(_background_auto_refresh_loop())
+    _background_reminder_task = asyncio.create_task(_background_reminder_dispatch_loop())
     try:
         yield
     finally:
-        if _background_cron_task and not _background_cron_task.done():
-            _background_cron_task.cancel()
-            try:
-                await _background_cron_task
-            except asyncio.CancelledError:
-                pass
+        for task in (_background_cron_task, _background_reminder_task):
+            if task and not task.done():
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
 
 
 app = FastAPI(
@@ -576,38 +669,13 @@ async def delete_tracker_reminder(session_id: str, reminder_id: int, request: Re
 
 @app.post("/api/tracker/{session_id}/reminders/dispatch")
 async def dispatch_tracker_reminders(session_id: str, request: Request):
-    """Evaluates approaching deadlines and dispatches webhook alerts (or returns email/browser summary)."""
+    """Evaluates approaching deadlines and dispatches webhook, SMTP email, or browser alerts."""
     _enforce_tracker_ownership(session_id, request)
-    import httpx as _httpx
-
     reminders = session_store.list_reminders(session_id)
     dispatched: List[Dict[str, Any]] = []
     for rem in reminders:
         due = _compute_due_kanban_alerts(session_id, max_lead_days=rem["lead_days"])
-        summary_lines = [
-            f"- {d['title']} ({d['days_left']}d left, closes {d['deadline']}): {d['source_url']}"
-            for d in due[:5]
-        ]
-        msg_text = (
-            f"MadadgaarAI Deadline Alert ({len(due)} saved opportunities closing within {rem['lead_days']} days):\n"
-            + ("\n".join(summary_lines) if summary_lines else "No saved items closing within your alert window right now.")
-        )
-        status = "queued_preview"
-        if rem["channel"] == "webhook" and rem["target"].startswith(("http://", "https://")):
-            try:
-                async with _httpx.AsyncClient(timeout=6.0) as hc:
-                    wr = await hc.post(rem["target"], json={"content": msg_text, "text": msg_text, "alerts": due})
-                    status = f"webhook_http_{wr.status_code}"
-            except Exception as exc:
-                status = f"webhook_error:{type(exc).__name__}"
-        dispatched.append({
-            "reminder_id": rem["id"],
-            "channel": rem["channel"],
-            "target": rem["target"],
-            "due_count": len(due),
-            "status": status,
-            "preview": msg_text,
-        })
+        dispatched.append(await _dispatch_single_reminder(rem, due))
     return {"session_id": session_id, "dispatched": dispatched}
 
 
