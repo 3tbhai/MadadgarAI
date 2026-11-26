@@ -122,6 +122,8 @@ def render_dashboard_html() -> str:
     :focus-visible { outline: 2px solid #B44C2E; outline-offset: 2px; }
     .stype-pill { transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease; }
     .stype-pill:hover { transform: translateY(-0.5px); }
+    @keyframes toastSlideUp { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .toast-entry { animation: toastSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-claySoft selection:text-clayDark">
