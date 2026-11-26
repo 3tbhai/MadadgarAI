@@ -13,6 +13,8 @@ logger = logging.getLogger("MadadgaarAI.Embeddings.HybridSearch")
 
 def tokenize_text(text: str) -> List[str]:
     """Simple alphanumeric tokenizer for BM25."""
+    if not text or not isinstance(text, str):
+        return []
     clean = "".join(c.lower() if c.isalnum() else " " for c in text)
     return [w for w in clean.split() if len(w) > 2]
 
