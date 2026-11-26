@@ -1,4 +1,4 @@
-"""Clean, Simplified Neo-Brutalist Web UI for MadadgaarAI v3.0 — Real-Time Opportunities."""
+"""Handcrafted Editorial Web UI for Madadgaar — Scholarships, Internships, Grants & Study Desk."""
 
 
 def render_dashboard_html() -> str:
@@ -7,11 +7,11 @@ def render_dashboard_html() -> str:
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>MadadgaarAI — Live Internships, Scholarships &amp; Research Grants</title>
+  <title>Madadgaar — Scholarships, Internships &amp; Research Grants</title>
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&family=Noto+Sans+Devanagari:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
@@ -21,18 +21,27 @@ def render_dashboard_html() -> str:
       theme: {
         extend: {
           colors: {
-            ink: "#18181b",
-            cream: "#f7f3eb",
-            sand: "#ede7db",
-            accent: "#ffcc00",
-            vermilion: "#e63b2e",
-            cobalt: "#0055ff",
-            forest: "#138808",
+            paper: "#FAF8F5",
+            parchment: "#F2EDE6",
+            surface: "#FFFFFF",
+            line: "#E5DFD6",
+            ink: "#1F1D1A",
+            muted: "#6B655E",
+            clay: "#B44C2E",
+            clayDark: "#943A20",
+            claySoft: "#FBF1ED",
+            slateBlue: "#2B4C7E",
+            slateSoft: "#EEF3FA",
+            sage: "#276749",
+            sageSoft: "#EDF7F1",
+            ochre: "#9A6700",
+            ochreSoft: "#FDF6E7",
+            crimson: "#B91C1C",
+            crimsonSoft: "#FEF2F2",
           },
           fontFamily: {
-            display: ["Space Grotesk", "Inter", "sans-serif"],
-            sans: ["Inter", "system-ui", "sans-serif"],
-            mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
+            serif: ["Newsreader", "Georgia", "serif"],
+            sans: ["Plus Jakarta Sans", "system-ui", "-apple-system", "sans-serif"],
             devanagari: ["Noto Sans Devanagari", "sans-serif"],
           }
         }
@@ -40,30 +49,65 @@ def render_dashboard_html() -> str:
     }
   </script>
   <style>
-    body { background-color: #f7f3eb; color: #18181b; }
-    .nb-card {
-      background: #ffffff;
-      border: 2px solid #18181b;
-      box-shadow: 3px 3px 0px #18181b;
-      transition: transform 0.14s ease, box-shadow 0.14s ease;
+    body {
+      background-color: #FAF8F5;
+      color: #1F1D1A;
+      background-image: radial-gradient(rgba(120, 108, 94, 0.045) 1px, transparent 0);
+      background-size: 24px 24px;
     }
-    .nb-card:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 5px 5px 0px #18181b;
+    .paper-card {
+      background: #FFFFFF;
+      border: 1px solid #E5DFD6;
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(31, 29, 26, 0.04);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     }
-    .nb-btn {
-      border: 2px solid #18181b;
-      box-shadow: 2px 2px 0px #18181b;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.12s ease;
+    .paper-card-hover:hover {
+      border-color: #D2C8BB;
+      box-shadow: 0 8px 24px rgba(31, 29, 26, 0.06);
+      transform: translateY(-1px);
     }
-    .nb-btn:active {
-      transform: translate(1px, 1px);
-      box-shadow: 1px 1px 0px #18181b;
+    .btn-primary {
+      background: #1F1D1A;
+      color: #FAF8F5;
+      border-radius: 8px;
+      transition: background-color 0.15s ease, transform 0.12s ease;
+    }
+    .btn-primary:hover { background: #36322D; }
+    .btn-primary:active { transform: translateY(1px); }
+    .btn-clay {
+      background: #B44C2E;
+      color: #FFFFFF;
+      border-radius: 8px;
+      transition: background-color 0.15s ease, transform 0.12s ease;
+    }
+    .btn-clay:hover { background: #943A20; }
+    .btn-clay:active { transform: translateY(1px); }
+    .btn-secondary {
+      background: #FFFFFF;
+      color: #1F1D1A;
+      border: 1px solid #DDD6CB;
+      border-radius: 8px;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+    .btn-secondary:hover { background: #F5F1EB; border-color: #C8BEB0; }
+    .field-input {
+      background: #FCFBF9;
+      border: 1px solid #DDD6CB;
+      border-radius: 8px;
+      transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .field-input:focus {
+      outline: none;
+      background: #FFFFFF;
+      border-color: #B44C2E;
+      box-shadow: 0 0 0 3px rgba(180, 76, 46, 0.10);
     }
     .skeleton-pulse {
-      background: linear-gradient(90deg, #ece6da 25%, #f5f1e8 50%, #ece6da 75%);
+      background: linear-gradient(90deg, #F0EBE3 25%, #F8F5F0 50%, #F0EBE3 75%);
       background-size: 200% 100%;
-      animation: shimmer 1.2s infinite linear;
+      animation: shimmer 1.35s infinite linear;
+      border-radius: 6px;
     }
     @keyframes shimmer {
       0% { background-position: 200% 0; }
@@ -71,74 +115,73 @@ def render_dashboard_html() -> str:
     }
   </style>
 </head>
-<body class="font-sans antialiased min-h-screen flex flex-col selection:bg-accent selection:text-ink">
+<body class="font-sans antialiased min-h-screen flex flex-col selection:bg-claySoft selection:text-clayDark">
 
 <!-- ================= TOASTS ================= -->
-<div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+<div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
 
-<!-- ================= CLEAN STICKY HEADER ================= -->
-<header class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b-2 border-ink">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
+<!-- ================= HEADER ================= -->
+<header class="sticky top-0 z-40 bg-paper/95 backdrop-blur-md border-b border-line">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
     <!-- Brand -->
-    <button onclick="switchWorkspace('opportunities')" class="flex items-center gap-2.5 text-left">
-      <div class="w-8 h-8 bg-ink text-accent border-2 border-ink flex items-center justify-center font-display font-bold text-lg shadow-[2px_2px_0px_#ffcc00]">M</div>
-      <div class="leading-none">
-        <span class="font-display font-bold text-base tracking-tight block">MadadgaarAI</span>
-        <span class="font-devanagari text-[10px] text-neutral-600 hidden sm:block mt-0.5">मददगार एआई</span>
+    <button onclick="switchWorkspace('opportunities')" class="flex items-center gap-2.5 text-left group shrink-0">
+      <svg class="w-8 h-8 shrink-0" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="2" y="2" width="32" height="32" rx="9" fill="#B44C2E"/>
+        <path d="M11 25V12.5C11 11.67 11.67 11 12.5 11H15.2L18 16.4L20.8 11H23.5C24.33 11 25 11.67 25 12.5V25" stroke="#FAF8F5" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="18" cy="22.5" r="1.8" fill="#F6D7C9"/>
+      </svg>
+      <div class="leading-tight">
+        <span class="font-serif font-semibold text-xl tracking-tight text-ink block">Madadgaar</span>
+        <span class="font-devanagari text-[10px] text-muted hidden sm:block -mt-0.5">मददगार · छात्रवृत्ति एवं शोध</span>
       </div>
     </button>
 
     <!-- Primary 4-Tab Navigation -->
-    <nav class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto">
-      <button id="navOpportunities" onclick="switchWorkspace('opportunities')" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b] shrink-0">
+    <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto h-full">
+      <button id="navOpportunities" onclick="switchWorkspace('opportunities')" class="relative h-full px-2.5 sm:px-3 text-[13px] font-semibold text-clay border-b-2 border-clay inline-flex items-center shrink-0">
         Opportunities
       </button>
-      <button id="navMatcher" onclick="switchWorkspace('matcher')" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink shrink-0">
+      <button id="navMatcher" onclick="switchWorkspace('matcher')" class="relative h-full px-2.5 sm:px-3 text-[13px] font-medium text-muted hover:text-ink border-b-2 border-transparent inline-flex items-center shrink-0">
         Match &amp; Resume
       </button>
-      <button id="navTracker" onclick="switchWorkspace('tracker')" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink inline-flex items-center gap-1.5 shrink-0">
+      <button id="navTracker" onclick="switchWorkspace('tracker')" class="relative h-full px-2.5 sm:px-3 text-[13px] font-medium text-muted hover:text-ink border-b-2 border-transparent inline-flex items-center gap-1.5 shrink-0">
         <span>My Tracker</span>
-        <span id="navTrackerCount" class="px-1.5 py-0.2 bg-ink text-accent font-mono text-[10px] font-bold">0</span>
+        <span id="navTrackerCount" class="px-1.5 py-0.5 rounded-full bg-parchment text-ink text-[11px] font-semibold leading-none">0</span>
       </button>
-      <button id="navAssistant" onclick="switchWorkspace('assistant')" class="px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink shrink-0">
-        Saral AI &amp; Docs
+      <button id="navAssistant" onclick="switchWorkspace('assistant')" class="relative h-full px-2.5 sm:px-3 text-[13px] font-medium text-muted hover:text-ink border-b-2 border-transparent inline-flex items-center shrink-0">
+        Saral Desk
       </button>
     </nav>
 
-    <!-- Auth, User Mode & Refresh Controls -->
-    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-      <!-- Active User Mode Selector Badge (Visible when signed in) -->
-      <select id="headerModeSelect" onchange="handleModeSwitch(this.value)" class="hidden px-2 py-1 text-[11px] font-mono font-bold border-2 border-ink bg-accent text-ink cursor-pointer" title="Switch your study mode">
-        <option value="student">Student Mode</option>
-        <option value="researcher">Researcher Mode</option>
-        <option value="educator">Educator Mode</option>
+    <!-- Account, Mode & Refresh -->
+    <div class="flex items-center gap-2 shrink-0">
+      <select id="headerModeSelect" onchange="handleModeSwitch(this.value)" class="hidden px-2.5 py-1.5 text-xs font-medium rounded-lg border border-line bg-white text-ink cursor-pointer" title="Switch your study mode">
+        <option value="student">Student</option>
+        <option value="researcher">Researcher</option>
+        <option value="educator">Educator</option>
       </select>
 
-      <!-- Sign In Button (Logged out) -->
-      <button id="authSignInBtn" onclick="openAuthModal()" class="nb-btn px-2.5 py-1.5 bg-white hover:bg-accent text-ink text-xs font-bold inline-flex items-center gap-1.5" title="Sign in to access your personal study space">
-        <span class="material-symbols-outlined text-[15px]">login</span>
-        <span class="hidden md:inline">Sign In</span>
+      <button id="authSignInBtn" onclick="openAuthModal()" class="btn-secondary px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5" title="Sign in to access your personal study desk">
+        <span>Sign in</span>
       </button>
 
-      <!-- Authenticated User Avatar Menu (Logged in) -->
       <div id="authUserMenu" class="hidden relative">
-        <button onclick="toggleUserDropdown()" class="nb-btn px-2 py-1 bg-white hover:bg-sand text-xs font-bold inline-flex items-center gap-1.5">
-          <span id="authUserAvatar" class="w-5 h-5 bg-ink text-accent font-mono text-[10px] font-bold flex items-center justify-center rounded-none">U</span>
-          <span id="authUserName" class="hidden lg:inline max-w-[90px] truncate">User</span>
+        <button onclick="toggleUserDropdown()" class="btn-secondary px-2.5 py-1.5 text-xs font-medium inline-flex items-center gap-2">
+          <span id="authUserAvatar" class="w-5 h-5 rounded-full bg-clay text-white text-[11px] font-semibold flex items-center justify-center">U</span>
+          <span id="authUserName" class="hidden lg:inline max-w-[95px] truncate">Account</span>
         </button>
-        <div id="authUserDropdown" class="hidden absolute right-0 mt-1.5 w-52 bg-white border-2 border-ink shadow-[4px_4px_0px_#18181b] p-3 text-xs space-y-2 z-50">
-          <div class="border-b border-neutral-200 pb-2">
-            <div id="authDropName" class="font-display font-bold text-ink truncate"></div>
-            <div id="authDropEmail" class="text-[11px] text-neutral-500 font-mono truncate"></div>
+        <div id="authUserDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white border border-line rounded-xl shadow-lg p-2 text-xs space-y-1 z-50">
+          <div class="px-2.5 py-2 border-b border-line">
+            <div id="authDropName" class="font-semibold text-ink truncate"></div>
+            <div id="authDropEmail" class="text-[11px] text-muted truncate mt-0.5"></div>
           </div>
-          <button onclick="switchWorkspace('assistant'); switchAssistantSubmode('private'); toggleUserDropdown();" class="w-full text-left px-2 py-1.5 hover:bg-sand font-semibold">My Study Assistant</button>
-          <button onclick="logoutUser()" class="w-full text-left px-2 py-1.5 text-vermilion hover:bg-red-50 font-bold">Sign Out</button>
+          <button onclick="switchWorkspace('assistant'); switchAssistantSubmode('private'); toggleUserDropdown();" class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-parchment font-medium text-ink">My Study Desk</button>
+          <button onclick="logoutUser()" class="w-full text-left px-2.5 py-2 rounded-lg text-crimson hover:bg-crimsonSoft font-medium">Sign out</button>
         </div>
       </div>
 
-      <!-- Refresh Live Button -->
-      <button id="refreshLiveBtn" onclick="triggerLiveRefresh()" class="nb-btn px-2.5 sm:px-3 py-1.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-60" title="Check for the latest opportunities">
-        <span id="refreshIcon" class="material-symbols-outlined text-[16px]">sync</span>
+      <button id="refreshLiveBtn" onclick="triggerLiveRefresh()" class="btn-clay px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-60" title="Check official portals for new listings">
+        <span id="refreshIcon" class="material-symbols-outlined text-[15px]">refresh</span>
         <span id="refreshBtnLabel" class="hidden sm:inline">Refresh Live Data</span>
       </button>
     </div>
@@ -146,183 +189,179 @@ def render_dashboard_html() -> str:
 </header>
 
 <!-- ================= MAIN CONTAINER ================= -->
-<main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+<main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-7">
 
   <!-- ======================================================== -->
-  <!-- VIEW 1: SIMPLIFIED LIVE OPPORTUNITIES HUB                -->
+  <!-- VIEW 1: OPPORTUNITIES                                    -->
   <!-- ======================================================== -->
-  <div id="workspaceOpportunities" class="space-y-5">
+  <div id="workspaceOpportunities" class="space-y-6">
 
-    <!-- Compact Top Title + Quick Source Pills -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div>
-        <h1 class="font-display font-bold text-2xl sm:text-3xl tracking-tight text-ink">
-          Live Verified Opportunities
+    <!-- Editorial Header & Source Tabs -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-line/80">
+      <div class="max-w-2xl">
+        <h1 class="font-serif font-semibold text-3xl sm:text-[34px] leading-tight tracking-tight text-ink">
+          Scholarships, internships &amp; research grants
         </h1>
-        <p class="text-xs sm:text-sm text-neutral-600 mt-1">
-          Up-to-date internships, scholarships &amp; grants from official government portals and leading companies. Every link is verified.
+        <p class="text-sm text-muted mt-1.5 leading-relaxed">
+          Collected directly from government ministries, universities, and company hiring boards so every listing opens on its official page.
         </p>
       </div>
 
-      <!-- Clickable Source Filter Pills -->
-      <div class="flex flex-wrap items-center gap-2 text-xs">
-        <button data-stype="All" onclick="setSourceType('All')" class="stype-pill px-3 py-1.5 border-2 border-ink bg-ink text-accent font-semibold">
-          All <span id="statAll" class="font-mono ml-1 opacity-85">--</span>
+      <div class="flex flex-wrap items-center gap-1.5 text-xs">
+        <button data-stype="All" onclick="setSourceType('All')" class="stype-pill px-3 py-1.5 rounded-full bg-ink text-paper font-medium">
+          All <span id="statAll" class="ml-1 opacity-80">--</span>
         </button>
-        <button data-stype="Government" onclick="setSourceType('Government')" class="stype-pill px-3 py-1.5 border-2 border-ink bg-white hover:bg-sand font-semibold">
-          Govt Portals <span id="statGovt" class="font-mono ml-1 text-cobalt">--</span>
+        <button data-stype="Government" onclick="setSourceType('Government')" class="stype-pill px-3 py-1.5 rounded-full bg-white border border-line text-muted hover:text-ink hover:border-ink/30 font-medium">
+          Government <span id="statGovt" class="ml-1 text-slateBlue">--</span>
         </button>
-        <button data-stype="Company / Corporate" onclick="setSourceType('Company / Corporate')" class="stype-pill px-3 py-1.5 border-2 border-ink bg-white hover:bg-sand font-semibold">
-          Companies <span id="statCompany" class="font-mono ml-1 text-vermilion">--</span>
+        <button data-stype="Company / Corporate" onclick="setSourceType('Company / Corporate')" class="stype-pill px-3 py-1.5 rounded-full bg-white border border-line text-muted hover:text-ink hover:border-ink/30 font-medium">
+          Companies <span id="statCompany" class="ml-1 text-clay">--</span>
         </button>
-        <button data-stype="Foundation / University" onclick="setSourceType('Foundation / University')" class="stype-pill px-3 py-1.5 border-2 border-ink bg-white hover:bg-sand font-semibold">
-          Universities <span id="statFound" class="font-mono ml-1 text-forest">--</span>
+        <button data-stype="Foundation / University" onclick="setSourceType('Foundation / University')" class="stype-pill px-3 py-1.5 rounded-full bg-white border border-line text-muted hover:text-ink hover:border-ink/30 font-medium">
+          Universities <span id="statFound" class="ml-1 text-sage">--</span>
         </button>
       </div>
     </div>
 
-    <!-- Actionable Error Banner (only if a live source fails) -->
-    <div id="sourceErrorBanner" class="hidden p-3.5 bg-red-50 border-2 border-vermilion text-vermilion text-xs flex items-start gap-2">
-      <span class="material-symbols-outlined text-[18px] shrink-0">warning</span>
+    <!-- Subtle Portal Warning Banner -->
+    <div id="sourceErrorBanner" class="hidden px-4 py-3 bg-ochreSoft border border-ochre/25 rounded-xl text-ochre text-xs flex items-start gap-2.5">
+      <span class="material-symbols-outlined text-[17px] shrink-0 mt-0.5">info</span>
       <div>
-        <strong>Some portals are temporarily unavailable:</strong>
-        <span id="sourceErrorList" class="font-mono block mt-0.5 text-[11px]"></span>
+        <strong class="font-semibold">Some portals took too long to respond:</strong>
+        <span id="sourceErrorList" class="block mt-0.5 text-[11px] opacity-90"></span>
       </div>
     </div>
 
-    <!-- Clean Single-Bar Search + Category + Collapsible More Filters -->
-    <div class="bg-white border-2 border-ink shadow-[3px_3px_0px_#18181b] p-3.5 space-y-3">
+    <!-- Search & Filter Bar -->
+    <div class="paper-card p-3.5 sm:p-4 space-y-3">
       <div class="flex flex-col lg:flex-row gap-3">
-        <!-- Search -->
         <div class="relative flex-1">
-          <span class="material-symbols-outlined absolute left-3 top-2.5 text-neutral-400 text-[18px]">search</span>
-          <input id="filterSearch" type="text" oninput="debouncedFetch()" placeholder="Search by role, agency, company, or skill (e.g. Stripe, ANRF, UGC, AI, Python)..." class="w-full bg-cream/70 border-2 border-ink pl-9 pr-8 py-2 text-sm focus:outline-none focus:bg-white"/>
-          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-2 text-neutral-500 hover:text-ink">
+          <span class="material-symbols-outlined absolute left-3 top-2.5 text-muted text-[18px]">search</span>
+          <input id="filterSearch" type="text" oninput="debouncedFetch()" placeholder="Search by role, organization, field, or skill..." class="field-input w-full pl-9 pr-9 py-2 text-sm text-ink placeholder:text-muted/70"/>
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-2 text-muted hover:text-ink" aria-label="Clear search">
             <span class="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
 
-        <!-- Category Segmented Control -->
         <div class="flex flex-wrap items-center gap-1.5">
-          <button data-cat="All" onclick="setCategory('All')" class="cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-accent text-ink">All</button>
-          <button data-cat="Internship" onclick="setCategory('Internship')" class="cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-white hover:bg-sand">Internships</button>
-          <button data-cat="Scholarship" onclick="setCategory('Scholarship')" class="cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-white hover:bg-sand">Scholarships</button>
-          <button data-cat="Funding" onclick="setCategory('Funding')" class="cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-white hover:bg-sand">Grants</button>
+          <button data-cat="All" onclick="setCategory('All')" class="cat-pill px-3.5 py-2 text-xs font-semibold rounded-lg bg-claySoft text-clayDark border border-clay/25">All</button>
+          <button data-cat="Internship" onclick="setCategory('Internship')" class="cat-pill px-3.5 py-2 text-xs font-medium rounded-lg bg-white text-muted border border-line hover:text-ink">Internships</button>
+          <button data-cat="Scholarship" onclick="setCategory('Scholarship')" class="cat-pill px-3.5 py-2 text-xs font-medium rounded-lg bg-white text-muted border border-line hover:text-ink">Scholarships</button>
+          <button data-cat="Funding" onclick="setCategory('Funding')" class="cat-pill px-3.5 py-2 text-xs font-medium rounded-lg bg-white text-muted border border-line hover:text-ink">Research Grants</button>
 
-          <button id="toggleFiltersBtn" onclick="toggleAdvancedFilters()" class="px-3 py-2 text-xs font-semibold border-2 border-ink bg-sand hover:bg-accent inline-flex items-center gap-1">
+          <button id="toggleFiltersBtn" onclick="toggleAdvancedFilters()" class="btn-secondary px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5 ml-auto lg:ml-1">
             <span class="material-symbols-outlined text-[16px]">tune</span>
             <span>Filters</span>
-            <span id="activeFilterCount" class="hidden px-1.5 bg-ink text-accent font-mono text-[10px]">0</span>
+            <span id="activeFilterCount" class="hidden px-1.5 py-0.5 rounded-full bg-clay text-white text-[10px] font-semibold leading-none">0</span>
           </button>
         </div>
       </div>
 
-      <!-- Collapsible Advanced Filters Row -->
-      <div id="advancedFiltersRow" class="hidden pt-3 border-t border-neutral-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <!-- Collapsible More Filters -->
+      <div id="advancedFiltersRow" class="hidden pt-3 border-t border-line grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <div>
-          <label for="filterDomain" class="block text-[11px] font-semibold text-neutral-500 mb-1">Domain</label>
-          <select id="filterDomain" onchange="onFilterChange()" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-xs font-medium">
-            <option value="All">All Domains</option>
+          <label for="filterDomain" class="block text-[11px] font-medium text-muted mb-1">Field</label>
+          <select id="filterDomain" onchange="onFilterChange()" class="field-input w-full px-2.5 py-1.5 text-xs text-ink">
+            <option value="All">All fields</option>
           </select>
         </div>
         <div>
-          <label for="filterDegree" class="block text-[11px] font-semibold text-neutral-500 mb-1">Degree / Level</label>
-          <select id="filterDegree" onchange="onFilterChange()" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-xs font-medium">
-            <option value="All">All Levels</option>
+          <label for="filterDegree" class="block text-[11px] font-medium text-muted mb-1">Academic level</label>
+          <select id="filterDegree" onchange="onFilterChange()" class="field-input w-full px-2.5 py-1.5 text-xs text-ink">
+            <option value="All">All levels</option>
             <option value="Undergraduate">Undergraduate</option>
             <option value="Postgraduate">Postgraduate</option>
             <option value="PhD / Faculty">PhD / Faculty</option>
           </select>
         </div>
         <div>
-          <label for="filterFundingType" class="block text-[11px] font-semibold text-neutral-500 mb-1">Funding Type</label>
-          <select id="filterFundingType" onchange="onFilterChange()" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-xs font-medium">
-            <option value="All">All Types</option>
+          <label for="filterFundingType" class="block text-[11px] font-medium text-muted mb-1">Support type</label>
+          <select id="filterFundingType" onchange="onFilterChange()" class="field-input w-full px-2.5 py-1.5 text-xs text-ink">
+            <option value="All">All types</option>
           </select>
         </div>
         <div>
-          <label for="filterDeadline" class="block text-[11px] font-semibold text-neutral-500 mb-1">Deadline</label>
-          <select id="filterDeadline" onchange="onFilterChange()" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-xs font-medium">
-            <option value="all">Any Active</option>
-            <option value="urgent_14d">Urgent (≤ 14 days)</option>
+          <label for="filterDeadline" class="block text-[11px] font-medium text-muted mb-1">Closing date</label>
+          <select id="filterDeadline" onchange="onFilterChange()" class="field-input w-full px-2.5 py-1.5 text-xs text-ink">
+            <option value="all">Any active</option>
+            <option value="urgent_14d">Within 14 days</option>
             <option value="30d">Next 30 days</option>
             <option value="rolling">Rolling / Open</option>
           </select>
         </div>
         <div>
-          <label for="filterSort" class="block text-[11px] font-semibold text-neutral-500 mb-1">Sort By</label>
-          <select id="filterSort" onchange="onFilterChange()" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-xs font-medium">
-            <option value="deadline_asc">Deadline: Soonest</option>
-            <option value="recent_desc">Newest First</option>
-            <option value="title_asc">Title: A → Z</option>
+          <label for="filterSort" class="block text-[11px] font-medium text-muted mb-1">Sort by</label>
+          <select id="filterSort" onchange="onFilterChange()" class="field-input w-full px-2.5 py-1.5 text-xs text-ink">
+            <option value="deadline_asc">Closing soonest</option>
+            <option value="recent_desc">Newest first</option>
+            <option value="title_asc">Title A to Z</option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Subtle Status Strip -->
-    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-600 px-0.5">
-      <div id="resultsSummaryText" class="font-medium">Loading live opportunities...</div>
-      <div class="flex flex-wrap items-center gap-3.5">
-        <span id="cacheStatusLabel" class="font-mono text-[11px] text-neutral-500"></span>
-        <button id="resetFiltersLink" onclick="resetAllFilters()" class="hidden text-vermilion hover:underline font-semibold">Clear filters</button>
-        <button onclick="copyShareableFilterUrl()" class="text-ink hover:text-cobalt hover:underline font-semibold inline-flex items-center gap-1" title="Copy shareable filtered link">
-          <span class="material-symbols-outlined text-[15px]">share</span> Share View
+    <!-- Quiet Status & Utility Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-muted px-0.5">
+      <div id="resultsSummaryText" class="font-medium">Loading listings...</div>
+      <div class="flex flex-wrap items-center gap-4">
+        <span id="cacheStatusLabel" class="text-[11px] text-muted"></span>
+        <button id="resetFiltersLink" onclick="resetAllFilters()" class="hidden text-clay hover:underline font-medium">Clear filters</button>
+        <button onclick="copyShareableFilterUrl()" class="hover:text-ink inline-flex items-center gap-1 font-medium" title="Copy a link to this filtered view">
+          <span class="material-symbols-outlined text-[15px]">share</span> Share
         </button>
-        <a id="exportCsvLink" href="/api/opportunities/export.csv" download class="text-forest hover:underline font-semibold inline-flex items-center gap-1" title="Download filtered results as CSV">
-          <span class="material-symbols-outlined text-[15px]">download</span> Export CSV
+        <a id="exportCsvLink" href="/api/opportunities/export.csv" download class="hover:text-ink inline-flex items-center gap-1 font-medium" title="Download as spreadsheet">
+          <span class="material-symbols-outlined text-[15px]">download</span> CSV
         </a>
-        <a href="/api/calendar/upcoming.ics" download class="text-cobalt hover:underline font-semibold inline-flex items-center gap-1">
-          <span class="material-symbols-outlined text-[15px]">calendar_month</span> Add to Calendar
+        <a href="/api/calendar/upcoming.ics" download class="hover:text-ink inline-flex items-center gap-1 font-medium">
+          <span class="material-symbols-outlined text-[15px]">calendar_month</span> Calendar
         </a>
       </div>
     </div>
 
-    <!-- Clean Opportunity Cards Grid -->
+    <!-- Opportunities Grid -->
     <div id="opportunitiesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
 
-    <!-- Pagination / Load More -->
+    <!-- Pagination -->
     <div id="loadMoreWrapper" class="hidden pt-2 text-center">
-      <button id="loadMoreBtn" onclick="loadMoreCards()" class="nb-btn px-6 py-2.5 bg-white hover:bg-accent text-ink text-xs font-bold">
-        Show More Opportunities
+      <button id="loadMoreBtn" onclick="loadMoreCards()" class="btn-secondary px-6 py-2.5 text-xs font-semibold">
+        Load more opportunities
       </button>
     </div>
   </div>
 
   <!-- ======================================================== -->
-  <!-- VIEW 2: ELIGIBILITY MATCHER & RESUME MATCHER             -->
+  <!-- VIEW 2: ELIGIBILITY & RESUME MATCHER                     -->
   <!-- ======================================================== -->
   <div id="workspaceMatcher" class="hidden space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2 border-b border-line/80">
       <div>
-        <h2 class="font-display font-bold text-2xl tracking-tight text-ink">Eligibility &amp; Resume Matcher</h2>
-        <p class="text-xs sm:text-sm text-neutral-600 mt-0.5">
-          Check your eligibility for scholarships and research grants, or upload your resume to discover your best matches.
+        <h2 class="font-serif font-semibold text-3xl tracking-tight text-ink">Eligibility &amp; Resume Match</h2>
+        <p class="text-sm text-muted mt-1">
+          Check which scholarships or grants fit your background, or upload a resume to see matching openings.
         </p>
       </div>
-      <div class="flex items-center gap-1.5">
-        <button id="matchModeStudent" onclick="switchMatcherMode('student')" class="px-3 py-1.5 text-xs font-bold border-2 border-ink bg-ink text-accent">Student Profile</button>
-        <button id="matchModeResearcher" onclick="switchMatcherMode('researcher')" class="px-3 py-1.5 text-xs font-bold border-2 border-ink bg-white hover:bg-sand">Researcher / PI</button>
+      <div class="inline-flex rounded-lg bg-parchment p-1 border border-line">
+        <button id="matchModeStudent" onclick="switchMatcherMode('student')" class="px-3.5 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs">Student</button>
+        <button id="matchModeResearcher" onclick="switchMatcherMode('researcher')" class="px-3.5 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink">Researcher / Faculty</button>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <!-- Left Column: Profile Form (Student or Researcher) -->
       <div class="lg:col-span-5 space-y-5">
-        <!-- Student Eligibility Form -->
-        <form id="studentMatcherForm" onsubmit="event.preventDefault(); runStudentEligibilityMatch();" class="nb-card p-5 space-y-3.5 text-xs">
-          <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-            <h3 class="font-display font-bold text-sm">Student Eligibility Profile</h3>
-            <span class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold">ELIGIBILITY</span>
+        <!-- Student Form -->
+        <form id="studentMatcherForm" onsubmit="event.preventDefault(); runStudentEligibilityMatch();" class="paper-card p-5 space-y-3.5 text-xs">
+          <div class="pb-2 border-b border-line">
+            <h3 class="font-serif font-semibold text-lg text-ink">Student profile</h3>
+            <p class="text-[11px] text-muted mt-0.5">Used only to check eligibility criteria on this request.</p>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Full Name</label>
-              <input id="smName" type="text" value="Aarav Sharma" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+              <label class="block font-medium text-muted mb-1">Your name</label>
+              <input id="smName" type="text" placeholder="e.g. Rohan Kulkarni" class="field-input w-full px-3 py-2 text-ink"/>
             </div>
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Gender</label>
-              <select id="smGender" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5">
+              <label class="block font-medium text-muted mb-1">Gender</label>
+              <select id="smGender" class="field-input w-full px-3 py-2 text-ink">
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
                 <option value="Transgender">Transgender</option>
@@ -331,8 +370,8 @@ def render_dashboard_html() -> str:
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">State Domicile</label>
-              <select id="smState" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5">
+              <label class="block font-medium text-muted mb-1">Home state</label>
+              <select id="smState" class="field-input w-full px-3 py-2 text-ink">
                 <option value="All India">All India</option>
                 <option value="Uttar Pradesh">Uttar Pradesh</option>
                 <option value="Maharashtra">Maharashtra</option>
@@ -344,114 +383,110 @@ def render_dashboard_html() -> str:
               </select>
             </div>
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Social Category</label>
-              <select id="smCategory" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5">
+              <label class="block font-medium text-muted mb-1">Category</label>
+              <select id="smCategory" class="field-input w-full px-3 py-2 text-ink">
                 <option value="General / Open">General / Open</option>
                 <option value="OBC (Non-Creamy Layer)">OBC (Non-Creamy Layer)</option>
                 <option value="SC (Scheduled Caste)">SC (Scheduled Caste)</option>
                 <option value="ST (Scheduled Tribe)">ST (Scheduled Tribe)</option>
-                <option value="EWS (Economically Weaker Section)">EWS (Economically Weaker Section)</option>
+                <option value="EWS (Economically Weaker Section)">EWS</option>
                 <option value="Minority (Muslim/Christian/Sikh/Buddhist/Jain/Parsi)">Minority</option>
               </select>
             </div>
           </div>
           <div>
-            <label class="block font-semibold text-neutral-600 mb-1">Education Level</label>
-            <select id="smEdu" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5">
-              <option value="UG - Engineering / Technology (B.Tech/B.E.)">UG - Engineering / B.Tech / B.E.</option>
-              <option value="UG - General (B.Sc / B.Com / B.A. / BBA / BCA)">UG - General (B.Sc / B.A / B.Com)</option>
-              <option value="UG - Medical / Paramedical (MBBS/BDS/B.Pharm/Nursing)">UG - Medical / Nursing</option>
-              <option value="Postgraduate (M.Tech / M.Sc / M.Com / M.A. / MBA / MCA)">Postgraduate (M.Tech / M.Sc / MBA)</option>
+            <label class="block font-medium text-muted mb-1">Current degree or programme</label>
+            <select id="smEdu" class="field-input w-full px-3 py-2 text-ink">
+              <option value="UG - Engineering / Technology (B.Tech/B.E.)">UG — Engineering / B.Tech / B.E.</option>
+              <option value="UG - General (B.Sc / B.Com / B.A. / BBA / BCA)">UG — B.Sc / B.A. / B.Com</option>
+              <option value="UG - Medical / Paramedical (MBBS/BDS/B.Pharm/Nursing)">UG — Medical / Nursing</option>
+              <option value="Postgraduate (M.Tech / M.Sc / M.Com / M.A. / MBA / MCA)">Postgraduate — M.Tech / M.Sc / MBA</option>
               <option value="PhD / Doctoral Research">PhD / Doctoral Research</option>
               <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
             </select>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Family Income (INR / yr)</label>
-              <input id="smIncome" type="number" value="250000" min="0" step="25000" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+              <label class="block font-medium text-muted mb-1">Annual family income (INR)</label>
+              <input id="smIncome" type="number" value="250000" min="0" step="25000" class="field-input w-full px-3 py-2 text-ink"/>
             </div>
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Marks / % (Optional)</label>
-              <input id="smPct" type="number" value="86" min="0" max="100" step="0.5" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+              <label class="block font-medium text-muted mb-1">Percentage (optional)</label>
+              <input id="smPct" type="number" placeholder="e.g. 84" min="0" max="100" step="0.5" class="field-input w-full px-3 py-2 text-ink"/>
             </div>
           </div>
-          <div class="flex flex-wrap gap-4 pt-1">
-            <label class="inline-flex items-center gap-1.5 font-medium"><input id="smSingleGirl" type="checkbox" class="accent-ink"/> Single Girl Child</label>
-            <label class="inline-flex items-center gap-1.5 font-medium"><input id="smPwd" type="checkbox" class="accent-ink"/> PwD (&ge;40%)</label>
+          <div class="flex flex-wrap gap-5 pt-1 text-ink">
+            <label class="inline-flex items-center gap-2 font-medium cursor-pointer"><input id="smSingleGirl" type="checkbox" class="accent-clay rounded"/> Single girl child</label>
+            <label class="inline-flex items-center gap-2 font-medium cursor-pointer"><input id="smPwd" type="checkbox" class="accent-clay rounded"/> PwD (&ge;40%)</label>
           </div>
-          <button type="submit" class="nb-btn w-full py-2.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-bold">
-            Find Eligible Scholarships &amp; Internships
+          <button type="submit" class="btn-primary w-full py-2.5 text-xs font-semibold">
+            Find eligible scholarships &amp; internships
           </button>
         </form>
 
-        <!-- Researcher / PI Grant Compliance Form -->
-        <form id="researcherMatcherForm" onsubmit="event.preventDefault(); runResearcherGrantMatch();" class="hidden nb-card p-5 space-y-3.5 text-xs">
-          <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-            <h3 class="font-display font-bold text-sm">Researcher / Faculty Grant Matcher</h3>
-            <span class="px-2 py-0.5 bg-cobalt text-white border border-ink font-mono text-[10px] font-bold">GRANT MATCH</span>
+        <!-- Researcher Form -->
+        <form id="researcherMatcherForm" onsubmit="event.preventDefault(); runResearcherGrantMatch();" class="hidden paper-card p-5 space-y-3.5 text-xs">
+          <div class="pb-2 border-b border-line">
+            <h3 class="font-serif font-semibold text-lg text-ink">Researcher &amp; faculty profile</h3>
+            <p class="text-[11px] text-muted mt-0.5">Match your research focus against active funding calls.</p>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Researcher / PI Name</label>
-              <input id="rmName" type="text" value="Dr. Priya Nair" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+              <label class="block font-medium text-muted mb-1">Investigator name</label>
+              <input id="rmName" type="text" placeholder="e.g. Dr. Meenakshi Iyer" class="field-input w-full px-3 py-2 text-ink"/>
             </div>
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Highest Degree</label>
-              <input id="rmDegree" type="text" value="Ph.D. in Computer Science" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+              <label class="block font-medium text-muted mb-1">Highest qualification</label>
+              <input id="rmDegree" type="text" value="Ph.D." placeholder="e.g. Ph.D. in Biotechnology" class="field-input w-full px-3 py-2 text-ink"/>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Institution</label>
-              <input id="rmInst" type="text" value="Recognized Indian University" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+              <label class="block font-medium text-muted mb-1">Institution</label>
+              <input id="rmInst" type="text" placeholder="University or research institute" class="field-input w-full px-3 py-2 text-ink"/>
             </div>
             <div>
-              <label class="block font-semibold text-neutral-600 mb-1">Age (Optional)</label>
-              <input id="rmAge" type="number" value="34" min="18" max="75" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
+              <label class="block font-medium text-muted mb-1">Age (optional)</label>
+              <input id="rmAge" type="number" placeholder="e.g. 34" min="18" max="75" class="field-input w-full px-3 py-2 text-ink"/>
             </div>
           </div>
           <div>
-            <label class="block font-semibold text-neutral-600 mb-1">Research Focus &amp; Proposal Abstract</label>
-            <textarea id="rmSummary" rows="3" class="w-full bg-cream/60 border-2 border-ink p-2.5" placeholder="e.g. Indigenous AI diagnostics for healthcare biotech, robotics, or space propulsion...">Artificial intelligence and edge computing for affordable medical diagnostics and climate-resilient biotechnology</textarea>
+            <label class="block font-medium text-muted mb-1">Research summary or abstract</label>
+            <textarea id="rmSummary" rows="3" class="field-input w-full p-3 text-ink" placeholder="Describe your area of research, methods, or proposed study..."></textarea>
           </div>
-          <button type="submit" class="nb-btn w-full py-2.5 bg-cobalt text-white hover:bg-ink hover:text-accent text-xs font-bold">
-            Match Research Grants &amp; Verify Compliance
+          <button type="submit" class="btn-clay w-full py-2.5 text-xs font-semibold">
+            Find matching research grants
           </button>
         </form>
 
-        <!-- Resume / CV Upload Opportunity Matcher -->
-        <div id="resumeMatcherMount" class="nb-card p-5 space-y-3.5 text-xs">
-          <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-            <h3 class="font-display font-bold text-sm">Resume Matcher</h3>
-            <span class="px-2 py-0.5 bg-forest text-white border border-ink font-mono text-[10px] font-bold">RESUME FIT</span>
+        <!-- Resume Upload -->
+        <div id="resumeMatcherMount" class="paper-card p-5 space-y-3.5 text-xs">
+          <div class="pb-2 border-b border-line">
+            <h3 class="font-serif font-semibold text-lg text-ink">Match from your resume</h3>
+            <p class="text-[11px] text-muted mt-0.5">Upload a PDF, Word file, or paste your skills below.</p>
           </div>
-          <p class="text-[11px] text-neutral-600">
-            Upload your resume or paste your skills below to see the opportunities that fit your background best.
-          </p>
-          <div class="flex items-center gap-2 p-2 bg-cream/70 border-2 border-ink">
-            <input type="file" id="resumeFile" accept=".pdf,.docx,.txt,.md" class="flex-1 text-xs"/>
-            <select id="resumeCatFilter" class="bg-white border border-ink px-2 py-1 text-[11px] font-semibold">
-              <option value="All">All Types</option>
+          <div class="flex items-center gap-2 p-2.5 bg-paper border border-line rounded-lg">
+            <input type="file" id="resumeFile" accept=".pdf,.docx,.txt,.md" class="flex-1 text-xs text-muted file:mr-2.5 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-parchment file:text-ink hover:file:bg-line"/>
+            <select id="resumeCatFilter" class="field-input px-2 py-1 text-[11px] font-medium text-ink">
+              <option value="All">All types</option>
               <option value="Internship">Internships</option>
               <option value="Scholarship">Scholarships</option>
               <option value="Funding">Grants</option>
             </select>
           </div>
-          <textarea id="resumeRawText" rows="3" placeholder="Or paste your resume / skills / research keywords (e.g. B.Tech CSE, Python, PyTorch, FastAPI, Machine Learning, Robotics)..." class="w-full bg-cream/60 border-2 border-ink p-2.5 text-xs font-mono focus:outline-none focus:bg-white"></textarea>
-          <button type="button" onclick="runResumeSemanticMatch()" class="nb-btn w-full py-2.5 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold">
-            Find Matches From My Resume
+          <textarea id="resumeRawText" rows="3" placeholder="Or paste your resume text or key skills (e.g. B.Tech CSE, Python, PyTorch, Embedded Systems, Molecular Biology)..." class="field-input w-full p-3 text-xs text-ink"></textarea>
+          <button type="button" onclick="runResumeSemanticMatch()" class="btn-secondary w-full py-2.5 text-xs font-semibold">
+            Find matches from resume
           </button>
         </div>
       </div>
 
-      <!-- Right Column: Match Results -->
+      <!-- Results Column -->
       <div class="lg:col-span-7 space-y-4">
-        <div id="matcherResultsContainer" class="nb-card p-6 text-center space-y-2">
-          <span class="material-symbols-outlined text-4xl text-neutral-400">fact_check</span>
-          <h3 class="font-display font-bold text-base">Ready to Check Eligibility</h3>
-          <p class="text-xs text-neutral-600 max-w-md mx-auto">
-            Fill in your Student or Researcher profile on the left to see tailored matches, clear eligibility notes, and quick SOP or proposal drafts.
+        <div id="matcherResultsContainer" class="paper-card p-8 text-left space-y-2">
+          <h3 class="font-serif font-semibold text-xl text-ink">Your matches will appear here</h3>
+          <p class="text-sm text-muted leading-relaxed max-w-lg">
+            Fill in your student or researcher details on the left, or attach a resume, to see ranked opportunities with eligibility notes and quick draft outlines.
           </p>
         </div>
       </div>
@@ -459,53 +494,53 @@ def render_dashboard_html() -> str:
   </div>
 
   <!-- ======================================================== -->
-  <!-- VIEW 3: PERSONAL APPLICATION KANBAN TRACKER & TIMELINE   -->
+  <!-- VIEW 3: MY TRACKER                                       -->
   <!-- ======================================================== -->
-  <div id="workspaceTracker" class="hidden space-y-5">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+  <div id="workspaceTracker" class="hidden space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2 border-b border-line/80">
       <div>
-        <h2 class="font-display font-bold text-2xl tracking-tight text-ink">My Applications &amp; Deadlines</h2>
-        <p class="text-xs sm:text-sm text-neutral-600 mt-0.5">
-          Organize your saved opportunities by stage or deadline, set reminders, and add dates to your calendar.
+        <h2 class="font-serif font-semibold text-3xl tracking-tight text-ink">My Applications</h2>
+        <p class="text-sm text-muted mt-1">
+          Keep track of saved opportunities by stage or closing date, add personal notes, and set deadline reminders.
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <div class="inline-flex border-2 border-ink bg-white">
-          <button id="trackerModeKanban" onclick="switchTrackerView('kanban')" class="px-3 py-1.5 text-xs font-bold bg-ink text-accent">Board</button>
-          <button id="trackerModeTimeline" onclick="switchTrackerView('timeline')" class="px-3 py-1.5 text-xs font-bold bg-white text-ink hover:bg-sand">Timeline</button>
+        <div class="inline-flex rounded-lg bg-parchment p-1 border border-line">
+          <button id="trackerModeKanban" onclick="switchTrackerView('kanban')" class="px-3 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs">Board</button>
+          <button id="trackerModeTimeline" onclick="switchTrackerView('timeline')" class="px-3 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink">Timeline</button>
         </div>
-        <button onclick="exportSavedKanbanIcs()" class="nb-btn px-3.5 py-2 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
+        <button onclick="exportSavedKanbanIcs()" class="btn-secondary px-3.5 py-2 text-xs font-semibold inline-flex items-center gap-1.5">
           <span class="material-symbols-outlined text-[16px]">calendar_month</span>
-          <span>Add Saved to Calendar</span>
+          <span>Add saved to calendar</span>
         </button>
       </div>
     </div>
 
-    <!-- Deadline Reminders Bar -->
-    <div class="nb-card p-4 bg-cream/60 space-y-3 text-xs">
+    <!-- Deadline Reminders -->
+    <div class="paper-card p-4 sm:p-5 space-y-3 text-xs">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="font-display font-bold text-sm flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-[18px] text-vermilion">notifications_active</span>
-          <span>Deadline Reminders</span>
+        <div>
+          <h3 class="font-serif font-semibold text-base text-ink">Deadline reminders</h3>
+          <p class="text-[11px] text-muted">Get notified before your saved applications close.</p>
         </div>
-        <button onclick="dispatchTrackerReminders()" class="px-2.5 py-1 bg-white border-2 border-ink hover:bg-accent text-[11px] font-bold">
-          Check Reminders
+        <button onclick="dispatchTrackerReminders()" class="btn-secondary px-3 py-1.5 text-xs font-medium">
+          Check upcoming deadlines
         </button>
       </div>
-      <form onsubmit="event.preventDefault(); addTrackerReminder();" class="grid grid-cols-1 sm:grid-cols-12 gap-2">
-        <select id="remChannel" class="sm:col-span-3 bg-white border-2 border-ink px-2.5 py-1.5 font-semibold">
-          <option value="browser">Browser Alert</option>
-          <option value="webhook">Slack / Discord Alert</option>
-          <option value="email">Email Digest</option>
+      <form onsubmit="event.preventDefault(); addTrackerReminder();" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+        <select id="remChannel" class="sm:col-span-3 field-input px-3 py-2 font-medium text-ink">
+          <option value="browser">Browser alert</option>
+          <option value="email">Email digest</option>
+          <option value="webhook">Slack / Discord alert</option>
         </select>
-        <input id="remTarget" type="text" placeholder="Email address, alert label, or notification link..." class="sm:col-span-5 bg-white border-2 border-ink px-2.5 py-1.5"/>
-        <select id="remLeadDays" class="sm:col-span-2 bg-white border-2 border-ink px-2 py-1.5 font-semibold">
+        <input id="remTarget" type="text" placeholder="Email address, label, or notification link..." class="sm:col-span-5 field-input px-3 py-2 text-ink"/>
+        <select id="remLeadDays" class="sm:col-span-2 field-input px-2.5 py-2 font-medium text-ink">
           <option value="2">2 days before</option>
           <option value="7" selected>7 days before</option>
           <option value="14">14 days before</option>
         </select>
-        <button type="submit" class="sm:col-span-2 nb-btn py-1.5 bg-ink text-accent hover:bg-accent hover:text-ink font-bold">
-          Add Alert
+        <button type="submit" class="sm:col-span-2 btn-primary py-2 font-semibold">
+          Save alert
         </button>
       </form>
       <div id="trackerRemindersList" class="flex flex-wrap gap-2"></div>
@@ -516,16 +551,19 @@ def render_dashboard_html() -> str:
   </div>
 
   <!-- ======================================================== -->
-  <!-- VIEW 4: SARAL AI STUDY ASSISTANT & DOCUMENT CHECKER      -->
+  <!-- VIEW 4: SARAL STUDY DESK & DOCUMENT CHECK                -->
   <!-- ======================================================== -->
   <div id="workspaceAssistant" class="hidden space-y-5">
-    <!-- Sub-mode Switcher Bar -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div class="inline-flex border-2 border-ink bg-white self-start">
-        <button id="submodePrivateBtn" onclick="switchAssistantSubmode('private')" class="px-3.5 py-2 text-xs font-bold bg-ink text-accent">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2 border-b border-line/80">
+      <div>
+        <h2 class="font-serif font-semibold text-3xl tracking-tight text-ink">Saral Study Desk</h2>
+        <p class="text-sm text-muted mt-1">Study from your own PDFs and notes with page citations, or check scheme rules and certificates.</p>
+      </div>
+      <div class="inline-flex rounded-lg bg-parchment p-1 border border-line self-start">
+        <button id="submodePrivateBtn" onclick="switchAssistantSubmode('private')" class="px-3.5 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs">
           My Study Assistant
         </button>
-        <button id="submodePublicBtn" onclick="switchAssistantSubmode('public')" class="px-3.5 py-2 text-xs font-bold bg-white text-ink hover:bg-sand">
+        <button id="submodePublicBtn" onclick="switchAssistantSubmode('public')" class="px-3.5 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink">
           Schemes &amp; Document Check
         </button>
       </div>
@@ -533,172 +571,162 @@ def render_dashboard_html() -> str:
 
     <!-- SUB-VIEW A: PERSONAL STUDY SPACE -->
     <div id="assistantPrivatePanel" class="space-y-4">
-      <!-- Login Gate (Shown when unauthenticated) -->
-      <div id="privateAuthGate" class="nb-card p-8 text-center space-y-4">
-        <div class="w-12 h-12 mx-auto bg-accent border-2 border-ink flex items-center justify-center shadow-[3px_3px_0px_#18181b]">
-          <span class="material-symbols-outlined text-2xl text-ink">lock_person</span>
+      <div id="privateAuthGate" class="paper-card p-8 sm:p-10 max-w-2xl mx-auto text-center space-y-4">
+        <h3 class="font-serif font-semibold text-2xl text-ink">Sign in to open your study desk</h3>
+        <p class="text-sm text-muted leading-relaxed max-w-md mx-auto">
+          Keep your lecture PDFs, markdown notes, and research papers in your own private library. Switch between Student, Researcher, and Educator styles anytime.
+        </p>
+        <div class="pt-1">
+          <button onclick="openAuthModal()" class="btn-primary px-5 py-2.5 text-xs font-semibold inline-flex items-center gap-2">
+            <span>Continue with Google</span>
+          </button>
         </div>
-        <div class="space-y-1 max-w-lg mx-auto">
-          <h2 class="font-display font-bold text-xl text-ink">Sign In to Your Personal Study Space</h2>
-          <p class="text-xs text-neutral-600 leading-relaxed">
-            Upload your PDFs, lecture notes, or research papers to get clear, cited answers tailored to <strong>Student</strong>, <strong>Researcher</strong>, or <strong>Educator</strong> mode.
-          </p>
-        </div>
-        <button onclick="openAuthModal()" class="nb-btn px-5 py-2.5 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-bold inline-flex items-center gap-2">
-          <span class="material-symbols-outlined text-[18px]">passkey</span>
-          <span>Continue with Google</span>
-        </button>
       </div>
 
-      <!-- Authenticated Private Workspace -->
       <div id="privateWorkspaceGrid" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        <!-- Left: Document Library & Chat Sessions -->
+        <!-- Left: Library & Recent Chats -->
         <div class="lg:col-span-5 space-y-4">
-          <div class="nb-card p-4 space-y-3 text-xs">
-            <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-              <h3 class="font-display font-bold text-sm">My Documents</h3>
-              <span id="privateDocCount" class="px-2 py-0.5 bg-cream border border-ink font-mono text-[10px] font-bold">0 docs</span>
+          <div class="paper-card p-4 space-y-3 text-xs">
+            <div class="flex items-center justify-between pb-2 border-b border-line">
+              <h3 class="font-serif font-semibold text-base text-ink">My Documents</h3>
+              <span id="privateDocCount" class="text-[11px] text-muted font-medium">0 files</span>
             </div>
 
-            <!-- Upload PDF/MD/TXT -->
-            <div class="flex items-center gap-2 p-2 bg-cream/70 border-2 border-ink">
-              <input type="file" id="privateDocFile" accept=".pdf,.md,.markdown,.txt" class="flex-1 text-[11px]"/>
-              <button type="button" onclick="uploadPrivateDocument()" class="nb-btn px-3 py-1 bg-ink text-accent hover:bg-accent hover:text-ink text-[11px] font-bold shrink-0">Upload</button>
+            <div class="flex items-center gap-2 p-2 bg-paper border border-line rounded-lg">
+              <input type="file" id="privateDocFile" accept=".pdf,.md,.markdown,.txt" class="flex-1 text-[11px] text-muted file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-medium file:bg-parchment file:text-ink"/>
+              <button type="button" onclick="uploadPrivateDocument()" class="btn-primary px-3 py-1.5 text-[11px] font-semibold shrink-0">Upload</button>
             </div>
 
-            <!-- Add Link / Paper -->
-            <form onsubmit="event.preventDefault(); ingestPrivateUrl();" class="flex gap-1.5">
-              <input id="privateUrlInput" type="url" placeholder="Paste an article or paper link (https://...)" class="flex-1 bg-cream/60 border-2 border-ink px-2.5 py-1.5 text-[11px]"/>
-              <button type="submit" class="nb-btn px-3 py-1.5 bg-white hover:bg-accent text-[11px] font-bold shrink-0">Add Link</button>
+            <form onsubmit="event.preventDefault(); ingestPrivateUrl();" class="flex gap-2">
+              <input id="privateUrlInput" type="url" placeholder="Paste an article or paper link (https://...)" class="field-input flex-1 px-3 py-1.5 text-[11px] text-ink"/>
+              <button type="submit" class="btn-secondary px-3 py-1.5 text-[11px] font-semibold shrink-0">Add link</button>
             </form>
 
-            <!-- Document Status List -->
             <div id="privateDocsList" class="space-y-2 max-h-60 overflow-y-auto"></div>
           </div>
 
-          <!-- Persisted Multi-Turn Sessions -->
-          <div class="nb-card p-4 space-y-2.5 text-xs">
-            <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-              <h3 class="font-display font-bold text-sm">Recent Chats</h3>
-              <button onclick="startNewPrivateSession()" class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold hover:bg-ink hover:text-accent">+ New Chat</button>
+          <div class="paper-card p-4 space-y-2.5 text-xs">
+            <div class="flex items-center justify-between pb-2 border-b border-line">
+              <h3 class="font-serif font-semibold text-base text-ink">Recent Chats</h3>
+              <button onclick="startNewPrivateSession()" class="text-xs font-semibold text-clay hover:underline">+ New chat</button>
             </div>
-            <div id="privateSessionsList" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
+            <div id="privateSessionsList" class="space-y-1.5 max-h-44 overflow-y-auto"></div>
           </div>
         </div>
 
-        <!-- Right: Study Assistant Chat -->
-        <div class="lg:col-span-7 nb-card flex flex-col h-[620px]">
-          <div id="privateChatHeader" class="px-4 py-3 border-b-2 border-ink bg-accent flex flex-wrap items-center justify-between gap-2">
+        <!-- Right: Study Chat -->
+        <div class="lg:col-span-7 paper-card flex flex-col h-[620px] overflow-hidden">
+          <div id="privateChatHeader" class="px-5 py-3.5 border-b border-line bg-paper flex flex-wrap items-center justify-between gap-2">
             <div>
-              <div class="flex items-center gap-2">
-                <h2 class="font-display font-bold text-base">Saral AI</h2>
-                <span id="privateModeBadge" class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">Student Mode</span>
+              <div class="flex items-center gap-2.5">
+                <h3 class="font-serif font-semibold text-lg text-ink">Saral</h3>
+                <span id="privateModeBadge" class="px-2.5 py-0.5 rounded-full bg-claySoft text-clayDark text-[11px] font-semibold">Student Mode</span>
               </div>
-              <p id="privateModeDesc" class="text-[11px] text-neutral-800 mt-0.5">Step-by-step explanations with clickable page citations.</p>
+              <p id="privateModeDesc" class="text-xs text-muted mt-0.5">Clear explanations grounded in your uploaded files.</p>
             </div>
           </div>
 
-          <div id="privateChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm bg-cream/50">
-            <div class="p-3.5 bg-white border-2 border-ink text-xs text-neutral-700 leading-relaxed">
-              Upload your notes, PDFs, or links on the left, then ask any question here. Click any citation badge to inspect the exact source passage.
+          <div id="privateChatMessages" class="flex-1 p-5 overflow-y-auto space-y-3.5 text-sm bg-paper/40">
+            <div class="p-4 bg-white border border-line rounded-xl text-xs text-muted leading-relaxed">
+              Upload a PDF, note, or paper link on the left, then ask a question here. Click any source citation below a reply to read the exact passage.
             </div>
           </div>
 
-          <form onsubmit="event.preventDefault(); sendPrivateRagStream();" class="p-3 border-t-2 border-ink bg-white flex gap-2">
-            <input id="privateChatInput" type="text" placeholder="Ask about your uploaded notes, formulas, or research papers..." class="flex-1 bg-cream/60 border-2 border-ink px-3 py-2 text-sm focus:outline-none focus:bg-white"/>
-            <button id="privateChatSendBtn" type="submit" class="nb-btn px-4 py-2 bg-ink text-accent text-xs font-bold hover:bg-accent hover:text-ink">Ask</button>
+          <form onsubmit="event.preventDefault(); sendPrivateRagStream();" class="p-3.5 border-t border-line bg-white flex gap-2">
+            <input id="privateChatInput" type="text" placeholder="Ask about your notes, formulas, or papers..." class="field-input flex-1 px-3.5 py-2 text-sm text-ink"/>
+            <button id="privateChatSendBtn" type="submit" class="btn-clay px-4 py-2 text-xs font-semibold">Ask</button>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- SUB-VIEW B: EXISTING PUBLIC SARAL SAMJHAUTI & DOCUMENT CHECKER -->
+    <!-- SUB-VIEW B: PUBLIC SCHEMES & DOCUMENT CHECKER -->
     <div id="assistantPublicPanel" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-    <!-- Chat -->
-    <div class="lg:col-span-7 nb-card flex flex-col h-[600px]">
-      <div class="px-4 py-3 border-b-2 border-ink bg-accent flex items-center justify-between gap-2">
-        <div>
-          <div class="flex items-center gap-2">
-            <h2 class="font-display font-bold text-base">Saral Samjhauti AI</h2>
-            <span class="px-1.5 py-0.5 bg-ink text-accent font-mono text-[9px] font-bold">BILINGUAL</span>
+      <div class="lg:col-span-7 paper-card flex flex-col h-[600px] overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-line bg-paper flex items-center justify-between gap-2">
+          <div>
+            <h3 class="font-serif font-semibold text-lg text-ink">Saral Samjhauti</h3>
+            <p class="text-xs text-muted">Ask in English or Hinglish about certificates, bank seeding, or scheme rules.</p>
           </div>
-          <p class="text-[11px] text-neutral-800">Ask in English or Hinglish about certificates, DBT seeding, or live schemes.</p>
+          <select id="ragLang" class="field-input px-2.5 py-1.5 text-xs font-medium text-ink">
+            <option value="auto">Auto language</option>
+            <option value="en">English</option>
+            <option value="hinglish">Hinglish</option>
+          </select>
         </div>
-        <select id="ragLang" class="bg-white border-2 border-ink px-2 py-1 text-xs font-semibold">
-          <option value="auto">Auto Lang</option>
-          <option value="en">English</option>
-          <option value="hinglish">Hinglish</option>
-        </select>
-      </div>
 
-      <div class="px-4 py-2 bg-sand/70 border-b border-neutral-300 flex flex-wrap gap-1.5 text-[11px]">
-        <button onclick="quickAsk('Aadhaar-NPCI DBT bank seeding kaise karwayein?')" class="px-2.5 py-1 bg-white border border-ink hover:bg-accent font-medium">NPCI-DBT Seeding</button>
-        <button onclick="quickAsk('What are Income and OBC-NCL certificate validity rules?')" class="px-2.5 py-1 bg-white border border-ink hover:bg-accent font-medium">Certificate Validity</button>
-        <button onclick="quickAsk('What are GFR 2017 and JRF/SRF research grant stipend norms?')" class="px-2.5 py-1 bg-white border border-ink hover:bg-accent font-medium">GFR 2017 &amp; JRF Rules</button>
-      </div>
-
-      <div id="ragMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm bg-cream/50">
-        <div class="p-3.5 bg-white border-2 border-ink text-xs sm:text-sm text-neutral-700 leading-relaxed">
-          Namaste! Ask me anything in <strong>English</strong> or <strong>Hinglish</strong> about live ANRF/UGC/ICMR/BIRAC grants, company internships, Aadhaar-NPCI DBT seeding, or certificate rules.
+        <div class="px-5 py-2.5 bg-parchment/50 border-b border-line flex flex-wrap gap-2 text-xs">
+          <button onclick="quickAsk('Aadhaar-NPCI DBT bank seeding kaise karwayein?')" class="px-2.5 py-1 rounded-full bg-white border border-line hover:border-clay/40 text-muted hover:text-ink font-medium">NPCI-DBT seeding</button>
+          <button onclick="quickAsk('What are Income and OBC-NCL certificate validity rules?')" class="px-2.5 py-1 rounded-full bg-white border border-line hover:border-clay/40 text-muted hover:text-ink font-medium">Certificate validity</button>
+          <button onclick="quickAsk('What are GFR 2017 and JRF/SRF research grant stipend norms?')" class="px-2.5 py-1 rounded-full bg-white border border-line hover:border-clay/40 text-muted hover:text-ink font-medium">JRF &amp; grant norms</button>
         </div>
+
+        <div id="ragMessages" class="flex-1 p-5 overflow-y-auto space-y-3 text-sm bg-paper/40">
+          <div class="p-4 bg-white border border-line rounded-xl text-xs sm:text-sm text-muted leading-relaxed">
+            Ask any question in <strong class="text-ink">English</strong> or <strong class="text-ink">Hinglish</strong> about scholarship paperwork, Aadhaar-NPCI seeding, income or category certificates, or grant guidelines.
+          </div>
+        </div>
+
+        <form onsubmit="event.preventDefault(); sendRagQuery();" class="p-3.5 border-t border-line bg-white flex gap-2">
+          <input id="ragInput" type="text" placeholder="Type your question in English or Hinglish..." class="field-input flex-1 px-3.5 py-2 text-sm text-ink"/>
+          <button type="submit" class="btn-primary px-4 py-2 text-xs font-semibold">Send</button>
+        </form>
       </div>
 
-      <form onsubmit="event.preventDefault(); sendRagQuery();" class="p-3 border-t-2 border-ink bg-white flex gap-2">
-        <input id="ragInput" type="text" placeholder="Type your question in English or Hinglish..." class="flex-1 bg-cream/60 border-2 border-ink px-3 py-2 text-sm focus:outline-none focus:bg-white"/>
-        <button type="submit" class="nb-btn px-4 py-2 bg-ink text-accent text-xs font-bold hover:bg-accent hover:text-ink">Send</button>
-      </form>
-    </div>
+      <div class="lg:col-span-5 paper-card p-5 space-y-4">
+        <div class="pb-2 border-b border-line">
+          <h3 class="font-serif font-semibold text-lg text-ink">Document readiness check</h3>
+          <p class="text-xs text-muted mt-0.5">Upload a PDF or photo, or paste text from an Income Certificate, Marksheet, or CV to check for missing fields.</p>
+        </div>
 
-    <!-- Document Checker -->
-    <div class="lg:col-span-5 nb-card p-5 space-y-4">
-      <div>
-        <h2 class="font-display font-bold text-base">Document Readiness Checker</h2>
-        <p class="text-xs text-neutral-600 mt-0.5">Upload a PDF/Image or paste text from an Income Certificate, Marksheet, or CV to spot missing fields.</p>
+        <div class="flex items-center gap-2 p-2.5 bg-paper border border-line rounded-lg">
+          <input type="file" id="docFile" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt" class="flex-1 text-xs text-muted file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-parchment file:text-ink"/>
+          <button type="button" onclick="uploadAndAnalyzeDoc()" class="btn-primary px-3 py-1.5 text-xs font-semibold">Scan</button>
+        </div>
+
+        <textarea id="docText" rows="5" placeholder="Or paste certificate, marksheet, or CV text here..." class="field-input w-full p-3 text-xs text-ink"></textarea>
+
+        <button type="button" onclick="analyzeDocText()" class="btn-clay w-full py-2.5 text-xs font-semibold">
+          Check completeness
+        </button>
+
+        <div id="docOutput" class="space-y-2 text-xs"></div>
       </div>
-
-      <div class="flex items-center gap-2 p-2 bg-cream/70 border-2 border-ink">
-        <input type="file" id="docFile" accept=".pdf,.png,.jpg,.jpeg,.txt" class="flex-1 text-xs"/>
-        <button type="button" onclick="uploadAndAnalyzeDoc()" class="nb-btn px-3 py-1 bg-ink text-white text-xs font-semibold">Scan</button>
-      </div>
-
-      <textarea id="docText" rows="5" placeholder="Or paste certificate, marksheet, or CV text here..." class="w-full bg-cream/60 border-2 border-ink p-3 text-xs font-mono focus:outline-none focus:bg-white"></textarea>
-
-      <button type="button" onclick="analyzeDocText()" class="nb-btn w-full py-2.5 bg-accent text-ink text-xs font-bold hover:bg-ink hover:text-accent">
-        Check Completeness
-      </button>
-
-      <div id="docOutput" class="space-y-2 text-xs"></div>
-    </div>
     </div>
   </div>
 
 </main>
 
 <!-- ================= AUTH SIGN-IN MODAL ================= -->
-<div id="authModal" class="hidden fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeAuthModal()">
-  <div class="bg-white border-2 border-ink shadow-[6px_6px_0px_#18181b] max-w-md w-full overflow-hidden">
-    <div class="p-4 border-b-2 border-ink bg-accent flex items-center justify-between">
-      <h3 class="font-display font-bold text-base text-ink">Sign In to Saral AI</h3>
-      <button onclick="closeAuthModal()" class="p-1 border-2 border-ink bg-white hover:bg-sand"><span class="material-symbols-outlined text-[16px] block">close</span></button>
+<div id="authModal" class="hidden fixed inset-0 z-50 bg-ink/40 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeAuthModal()">
+  <div class="bg-white border border-line rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+    <div class="px-5 py-4 border-b border-line bg-paper flex items-center justify-between">
+      <h3 class="font-serif font-semibold text-xl text-ink">Sign in to Madadgaar</h3>
+      <button onclick="closeAuthModal()" class="p-1.5 rounded-lg text-muted hover:bg-parchment hover:text-ink"><span class="material-symbols-outlined text-[18px] block">close</span></button>
     </div>
     <div class="p-5 space-y-4 text-xs">
-      <p class="text-neutral-600 leading-relaxed">
-        Sign in to save your study documents, keep your chat history, and switch between <strong>Student</strong>, <strong>Researcher</strong>, and <strong>Educator</strong> modes.
+      <p class="text-muted leading-relaxed text-sm">
+        Sign in to sync your saved applications, keep your study documents private, and switch between Student, Researcher, and Educator modes.
       </p>
-      <a id="googleOAuthBtn" href="/api/auth/google/login" class="nb-btn w-full py-2.5 bg-white hover:bg-cream text-ink font-bold inline-flex items-center justify-center gap-2">
-        <span class="font-display font-bold text-base text-cobalt">G</span>
+      <a id="googleOAuthBtn" href="/api/auth/google/login" class="btn-secondary w-full py-2.5 text-sm font-semibold inline-flex items-center justify-center gap-2.5">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
+          <path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.565 24 12.255 24z"/>
+          <path fill="#FBBC05" d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 000 10.76l3.98-3.09z"/>
+          <path fill="#EA4335" d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.69 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/>
+        </svg>
         <span>Continue with Google</span>
       </a>
-      <div id="googleOAuthHint" class="hidden p-2 bg-cream border border-ink/40 text-[11px] text-neutral-600">
-        Google sign-in is currently unavailable. You can continue with Guest Access below.
+      <div id="googleOAuthHint" class="hidden p-3 bg-paper border border-line rounded-lg text-xs text-muted">
+        Google sign-in is unavailable right now. You can continue as a guest below.
       </div>
-      <div id="devLoginSection" class="pt-3 border-t-2 border-ink/15 space-y-2.5">
-        <div class="font-mono text-[10px] font-bold uppercase text-neutral-500">Quick Guest Sign-In</div>
-        <form onsubmit="event.preventDefault(); submitDevLogin();" class="space-y-2">
-          <input id="devLoginName" type="text" value="Aarav Student" placeholder="Full Name" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
-          <input id="devLoginEmail" type="email" value="student@madadgaarai.local" placeholder="Email Address" class="w-full bg-cream/60 border-2 border-ink px-2.5 py-1.5"/>
-          <button type="submit" class="nb-btn w-full py-2 bg-ink text-accent hover:bg-accent hover:text-ink font-bold">
-            Continue as Guest
+      <div id="devLoginSection" class="pt-3 border-t border-line space-y-2.5">
+        <div class="text-[11px] font-semibold text-muted">Quick guest access</div>
+        <form onsubmit="event.preventDefault(); submitDevLogin();" class="space-y-2.5">
+          <input id="devLoginName" type="text" placeholder="Your name" class="field-input w-full px-3 py-2 text-ink"/>
+          <input id="devLoginEmail" type="email" placeholder="you@example.com" class="field-input w-full px-3 py-2 text-ink"/>
+          <button type="submit" class="btn-primary w-full py-2 font-semibold">
+            Continue as guest
           </button>
         </form>
       </div>
@@ -707,44 +735,44 @@ def render_dashboard_html() -> str:
 </div>
 
 <!-- ================= CITATION PASSAGE DRAWER ================= -->
-<div id="citationModal" class="hidden fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeCitationModal()">
-  <div class="bg-white border-2 border-ink shadow-[6px_6px_0px_#18181b] max-w-xl w-full max-h-[82vh] flex flex-col overflow-hidden">
-    <div class="p-4 border-b-2 border-ink bg-cream flex items-start justify-between gap-2">
+<div id="citationModal" class="hidden fixed inset-0 z-50 bg-ink/40 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeCitationModal()">
+  <div class="bg-white border border-line rounded-2xl shadow-xl max-w-xl w-full max-h-[82vh] flex flex-col overflow-hidden">
+    <div class="px-5 py-4 border-b border-line bg-paper flex items-start justify-between gap-2">
       <div>
-        <div id="citMetaBadges" class="flex flex-wrap gap-1.5 mb-1"></div>
-        <h3 id="citDocTitle" class="font-display font-bold text-base text-ink">Source Passage</h3>
+        <div id="citMetaBadges" class="flex flex-wrap gap-1.5 mb-1.5"></div>
+        <h3 id="citDocTitle" class="font-serif font-semibold text-lg text-ink">Source Passage</h3>
       </div>
-      <button onclick="closeCitationModal()" class="p-1 border-2 border-ink bg-white hover:bg-accent"><span class="material-symbols-outlined text-[16px] block">close</span></button>
+      <button onclick="closeCitationModal()" class="p-1.5 rounded-lg text-muted hover:bg-parchment hover:text-ink"><span class="material-symbols-outlined text-[18px] block">close</span></button>
     </div>
-    <div id="citChunkBody" class="p-5 overflow-y-auto text-xs leading-relaxed text-neutral-800 whitespace-pre-wrap bg-cream/40"></div>
+    <div id="citChunkBody" class="p-5 overflow-y-auto text-sm leading-relaxed text-ink/90 whitespace-pre-wrap bg-white"></div>
   </div>
 </div>
 
-<!-- ================= DETAIL MODAL ================= -->
-<div id="detailModal" class="hidden fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeDetailModal()">
-  <div class="bg-white border-2 border-ink shadow-[6px_6px_0px_#18181b] max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
-    <div class="p-4 border-b-2 border-ink bg-cream flex items-start justify-between gap-3">
+<!-- ================= OPPORTUNITY DETAIL MODAL ================= -->
+<div id="detailModal" class="hidden fixed inset-0 z-50 bg-ink/40 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) closeDetailModal()">
+  <div class="bg-white border border-line rounded-2xl shadow-xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+    <div class="px-5 py-4 border-b border-line bg-paper flex items-start justify-between gap-3">
       <div>
         <div id="dmBadges" class="flex flex-wrap gap-1.5 mb-1.5"></div>
-        <h3 id="dmTitle" class="font-display font-bold text-lg leading-snug"></h3>
-        <div id="dmOrg" class="text-xs font-semibold text-cobalt mt-0.5"></div>
+        <h3 id="dmTitle" class="font-serif font-semibold text-xl leading-snug text-ink"></h3>
+        <div id="dmOrg" class="text-xs font-medium text-muted mt-1"></div>
       </div>
-      <button onclick="closeDetailModal()" class="p-1 border-2 border-ink bg-white hover:bg-accent">
+      <button onclick="closeDetailModal()" class="p-1.5 rounded-lg text-muted hover:bg-parchment hover:text-ink">
         <span class="material-symbols-outlined text-[18px] block">close</span>
       </button>
     </div>
-    <div id="dmBody" class="p-5 overflow-y-auto space-y-4 text-sm text-neutral-700"></div>
-    <div class="p-4 border-t-2 border-ink bg-cream flex flex-wrap items-center justify-between gap-2">
+    <div id="dmBody" class="p-5 overflow-y-auto space-y-4 text-sm text-ink/85"></div>
+    <div class="px-5 py-3.5 border-t border-line bg-paper flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2">
-        <button id="dmSaveBtn" onclick="toggleSaveCurrentModalOpp()" class="nb-btn px-3 py-2 bg-white hover:bg-accent text-xs font-bold inline-flex items-center gap-1">
-          <span class="material-symbols-outlined text-[16px]">bookmark_add</span>
-          <span id="dmSaveLabel">Save to Tracker</span>
+        <button id="dmSaveBtn" onclick="toggleSaveCurrentModalOpp()" class="btn-secondary px-3 py-2 text-xs font-semibold inline-flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">bookmark_border</span>
+          <span id="dmSaveLabel">Save</span>
         </button>
-        <a id="dmCal" href="#" download class="nb-btn px-3 py-2 bg-white hover:bg-sand text-xs font-semibold inline-flex items-center gap-1">
+        <a id="dmCal" href="#" download class="btn-secondary px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5">
           <span class="material-symbols-outlined text-[16px]">calendar_month</span> Calendar
         </a>
       </div>
-      <a id="dmApply" href="#" target="_blank" rel="noopener noreferrer" class="nb-btn px-5 py-2 bg-ink text-accent hover:bg-accent hover:text-ink text-xs font-bold inline-flex items-center gap-1.5">
+      <a id="dmApply" href="#" target="_blank" rel="noopener noreferrer" class="btn-clay px-4 py-2 text-xs font-semibold inline-flex items-center gap-1.5">
         <span>Apply / View Official Source</span>
         <span class="material-symbols-outlined text-[15px]">open_in_new</span>
       </a>
@@ -753,10 +781,10 @@ def render_dashboard_html() -> str:
 </div>
 
 <!-- ================= FOOTER ================= -->
-<footer class="border-t-2 border-ink bg-sand/60 py-4 text-xs text-neutral-600">
+<footer class="border-t border-line bg-paper py-5 text-xs text-muted mt-8">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-    <div><strong class="text-ink">MadadgaarAI</strong> — Verified Scholarships, Internships &amp; Research Grants</div>
-    <div class="text-[11px] text-neutral-500">Official Sources · Updated Regularly</div>
+    <div><span class="font-serif font-semibold text-sm text-ink">Madadgaar</span> &middot; Scholarships, internships &amp; research grants from official portals</div>
+    <div class="text-[11px] text-muted">Always verify final dates on the official portal before submitting</div>
   </div>
 </footer>
 
@@ -806,16 +834,16 @@ def render_dashboard_html() -> str:
     const container = document.getElementById('toastContainer');
     if (!container) return;
     const styles = {
-      success: 'bg-forest text-white',
-      error: 'bg-vermilion text-white',
-      warning: 'bg-accent text-ink',
-      info: 'bg-ink text-accent'
+      success: 'bg-sage text-white border-sage',
+      error: 'bg-crimson text-white border-crimson',
+      warning: 'bg-ochreSoft text-ochre border-ochre/30',
+      info: 'bg-ink text-paper border-ink'
     };
     const toast = document.createElement('div');
-    toast.className = `pointer-events-auto px-3.5 py-2.5 border-2 border-ink shadow-[3px_3px_0px_#18181b] text-xs font-semibold flex items-center justify-between gap-3 ${styles[type] || styles.info}`;
-    toast.innerHTML = `<span>${escapeHtml(message)}</span><button onclick="this.parentElement.remove()" class="font-bold opacity-80 hover:opacity-100">✕</button>`;
+    toast.className = `pointer-events-auto px-4 py-3 rounded-xl border shadow-lg text-xs font-medium flex items-center justify-between gap-3 ${styles[type] || styles.info}`;
+    toast.innerHTML = `<span>${escapeHtml(message)}</span><button onclick="this.parentElement.remove()" class="opacity-75 hover:opacity-100 text-sm leading-none">&times;</button>`;
     container.appendChild(toast);
-    setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4500);
+    setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4200);
   }
 
   function switchWorkspace(ws) {
@@ -823,8 +851,8 @@ def render_dashboard_html() -> str:
     document.getElementById('workspaceMatcher').classList.toggle('hidden', ws !== 'matcher');
     document.getElementById('workspaceTracker').classList.toggle('hidden', ws !== 'tracker');
     document.getElementById('workspaceAssistant').classList.toggle('hidden', ws !== 'assistant');
-    const act = 'px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-ink bg-accent text-ink shadow-[2px_2px_0px_#18181b] inline-flex items-center gap-1.5 shrink-0';
-    const inact = 'px-2.5 sm:px-3 py-1.5 text-xs font-semibold border-2 border-transparent text-neutral-600 hover:border-ink hover:text-ink inline-flex items-center gap-1.5 shrink-0';
+    const act = 'relative h-full px-2.5 sm:px-3 text-[13px] font-semibold text-clay border-b-2 border-clay inline-flex items-center gap-1.5 shrink-0';
+    const inact = 'relative h-full px-2.5 sm:px-3 text-[13px] font-medium text-muted hover:text-ink border-b-2 border-transparent inline-flex items-center gap-1.5 shrink-0';
     document.getElementById('navOpportunities').className = ws === 'opportunities' ? act : inact;
     document.getElementById('navMatcher').className = ws === 'matcher' ? act : inact;
     document.getElementById('navTracker').className = ws === 'tracker' ? act : inact;
@@ -841,16 +869,16 @@ def render_dashboard_html() -> str:
     document.getElementById('studentMatcherForm').classList.toggle('hidden', !isStu);
     document.getElementById('researcherMatcherForm').classList.toggle('hidden', isStu);
     document.getElementById('matchModeStudent').className = isStu
-      ? 'px-3 py-1.5 text-xs font-bold border-2 border-ink bg-ink text-accent'
-      : 'px-3 py-1.5 text-xs font-bold border-2 border-ink bg-white hover:bg-sand';
+      ? 'px-3.5 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs'
+      : 'px-3.5 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink';
     document.getElementById('matchModeResearcher').className = !isStu
-      ? 'px-3 py-1.5 text-xs font-bold border-2 border-ink bg-ink text-accent'
-      : 'px-3 py-1.5 text-xs font-bold border-2 border-ink bg-white hover:bg-sand';
+      ? 'px-3.5 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs'
+      : 'px-3.5 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink';
   }
 
   async function runStudentEligibilityMatch() {
     const out = document.getElementById('matcherResultsContainer');
-    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Evaluating live opportunities against your student profile...</div>';
+    out.innerHTML = '<div class="p-6 text-sm text-muted animate-pulse">Checking opportunities for your profile...</div>';
     const payload = {
       full_name: document.getElementById('smName').value.trim() || 'Student',
       gender: document.getElementById('smGender').value,
@@ -869,57 +897,59 @@ def render_dashboard_html() -> str:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Request failed');
       const results = await res.json();
       if (!results.length) {
-        out.innerHTML = '<div class="nb-card p-6 text-xs text-neutral-600">No matching student opportunities found in the current live dataset.</div>';
+        out.innerHTML = '<div class="paper-card p-6 text-sm text-muted">No matching opportunities found for those criteria right now.</div>';
         return;
       }
-      out.innerHTML = `<div class="space-y-3 text-left">` + results.map(r => {
+      out.innerHTML = `<div class="space-y-3.5 text-left">` + results.map(r => {
         const badgeCls = r.eligibility_status === 'ELIGIBLE'
-          ? 'bg-forest text-white'
-          : (r.eligibility_status === 'HIGH_PROBABILITY' ? 'bg-accent text-ink' : 'bg-vermilion text-white');
-        const statusLabels = { ELIGIBLE: 'Eligible', HIGH_PROBABILITY: 'Strong Match', INELIGIBLE: 'Not Eligible' };
+          ? 'bg-sageSoft text-sage'
+          : (r.eligibility_status === 'HIGH_PROBABILITY' ? 'bg-ochreSoft text-ochre' : 'bg-crimsonSoft text-crimson');
+        const statusLabels = { ELIGIBLE: 'Eligible', HIGH_PROBABILITY: 'Strong match', INELIGIBLE: 'Not eligible' };
         const friendlyStatus = statusLabels[r.eligibility_status] || r.eligibility_status;
-        const reasons = (r.match_reasons || []).slice(0, 3).map(x => `<li class="text-[11px] text-neutral-700">${escapeHtml(x)}</li>`).join('');
-        const disq = (r.disqualifying_conditions || []).slice(0, 2).map(x => `<li class="text-[11px] text-vermilion font-medium">${escapeHtml(x)}</li>`).join('');
+        const cleanNote = s => String(s || '').replace(/^[\u2705\u274c\u26a0\ufe0f\u2b50\s]+/, '');
+        const reasons = (r.match_reasons || []).slice(0, 3).map(x => `<li class="text-xs text-muted">${escapeHtml(cleanNote(x))}</li>`).join('');
+        const disq = (r.disqualifying_conditions || []).slice(0, 2).map(x => `<li class="text-xs text-crimson font-medium">${escapeHtml(cleanNote(x))}</li>`).join('');
+        const applyUrl = r.foa.direct_apply_url || r.foa.source_url;
         return `
-          <div class="nb-card p-4 space-y-2">
+          <div class="paper-card p-5 space-y-2.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5">
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold border border-ink ${badgeCls}">${escapeHtml(friendlyStatus)}</span>
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-cream border border-ink">${Math.round(r.match_percentage || 0)}% Fit</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${badgeCls}">${escapeHtml(friendlyStatus)}</span>
+                <span class="text-xs text-muted font-medium">${Math.round(r.match_percentage || 0)}% match</span>
               </div>
-              <span class="text-[11px] font-mono text-neutral-500">${escapeHtml(r.foa.agency)}</span>
+              <span class="text-xs text-muted">${escapeHtml(r.foa.issuing_authority || r.foa.agency)}</span>
             </div>
-            <h4 class="font-display font-bold text-sm text-ink">${escapeHtml(r.foa.title)}</h4>
-            <p class="text-xs text-neutral-600 line-clamp-2">${escapeHtml(r.foa.brief_summary)}</p>
-            <ul class="space-y-0.5">${reasons}${disq}</ul>
-            <div class="pt-2 border-t border-neutral-200 flex flex-wrap items-center justify-between gap-2">
-              <span class="text-[11px] font-mono font-semibold text-neutral-700">💰 ${escapeHtml(r.foa.financials?.raw_budget_text || 'See official notice')}</span>
-              <div class="flex items-center gap-1.5">
-                <button onclick="openDraftModalForFoa('${escapeHtml(r.foa.foa_id)}', '${escapeHtml(r.foa.title).replace(/'/g, '')}')" class="px-2.5 py-1 text-[11px] font-bold border-2 border-ink bg-accent hover:bg-ink hover:text-accent">Draft SOP / Proposal</button>
-                <a href="${escapeHtml(r.foa.direct_apply_url || r.foa.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1 bg-ink text-white text-[11px] font-bold">Apply ↗</a>
+            <h4 class="font-serif font-semibold text-lg leading-snug text-ink">${escapeHtml(r.foa.title)}</h4>
+            <p class="text-xs text-muted line-clamp-2 leading-relaxed">${escapeHtml(r.foa.brief_summary)}</p>
+            <ul class="space-y-1 pl-3.5 list-disc">${reasons}${disq}</ul>
+            <div class="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-medium text-ink">${escapeHtml(r.foa.financials?.raw_budget_text || 'See official notice')}</span>
+              <div class="flex items-center gap-2">
+                <button onclick="openDraftModalForFoa('${escapeHtml(r.foa.foa_id)}', '${escapeHtml(r.foa.title).replace(/'/g, '')}', '${escapeHtml(applyUrl)}')" class="btn-secondary px-3 py-1.5 text-xs font-medium">Draft SOP</button>
+                <a href="${escapeHtml(applyUrl)}" target="_blank" rel="noopener noreferrer" class="btn-primary px-3.5 py-1.5 text-xs font-semibold">Apply</a>
               </div>
             </div>
           </div>
         `;
       }).join('') + `</div>`;
-      showToast(`Found ${results.length} matching opportunities for your profile!`, 'success');
+      showToast(`Found ${results.length} matching opportunities.`, 'success');
     } catch (e) {
-      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Could not check eligibility right now. Please try again.</div>`;
+      out.innerHTML = '<div class="paper-card p-5 text-crimson text-sm">Could not check eligibility right now. Please try again.</div>';
     }
   }
 
   async function runResearcherGrantMatch() {
     const out = document.getElementById('matcherResultsContainer');
-    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Finding matching research grants for your profile...</div>';
+    out.innerHTML = '<div class="p-6 text-sm text-muted animate-pulse">Finding matching research grants...</div>';
     const payload = {
-      researcher_name: document.getElementById('rmName').value.trim() || 'Dr. Principal Investigator',
+      researcher_name: document.getElementById('rmName').value.trim() || 'Principal Investigator',
       highest_degree: document.getElementById('rmDegree').value.trim() || 'Ph.D.',
-      institution_name: document.getElementById('rmInst').value.trim() || 'University',
+      institution_name: document.getElementById('rmInst').value.trim() || 'Academic Institution',
       applicant_age: parseInt(document.getElementById('rmAge').value || '35', 10) || null,
-      research_summary: document.getElementById('rmSummary').value.trim() || 'AI and scientific research',
+      research_summary: document.getElementById('rmSummary').value.trim() || 'Scientific research',
       top_k: 10
     };
     try {
@@ -931,41 +961,42 @@ def render_dashboard_html() -> str:
       if (!res.ok) throw new Error('Request failed');
       const results = await res.json();
       if (!results.length) {
-        out.innerHTML = '<div class="nb-card p-6 text-xs text-neutral-600">No matching research grants found.</div>';
+        out.innerHTML = '<div class="paper-card p-6 text-sm text-muted">No matching research grants found.</div>';
         return;
       }
-      out.innerHTML = `<div class="space-y-3 text-left">` + results.map(m => {
+      out.innerHTML = `<div class="space-y-3.5 text-left">` + results.map(m => {
         const st = m.compliance?.status || 'ELIGIBLE';
-        const badgeCls = st === 'ELIGIBLE' ? 'bg-forest text-white' : (st === 'WARNING' ? 'bg-accent text-ink' : 'bg-vermilion text-white');
-        const stLabels = { ELIGIBLE: 'Eligible', WARNING: 'Check Criteria', INELIGIBLE: 'Not Eligible' };
+        const badgeCls = st === 'ELIGIBLE' ? 'bg-sageSoft text-sage' : (st === 'WARNING' ? 'bg-ochreSoft text-ochre' : 'bg-crimsonSoft text-crimson');
+        const stLabels = { ELIGIBLE: 'Eligible', WARNING: 'Check criteria', INELIGIBLE: 'Not eligible' };
         const friendlySt = stLabels[st] || st;
-        const kws = (m.matching_keywords || []).slice(0, 4).map(k => `<span class="px-1.5 py-0.5 bg-cream border border-ink/50 font-mono text-[10px]">${escapeHtml(k)}</span>`).join('');
+        const kws = (m.matching_keywords || []).slice(0, 4).map(k => `<span class="px-2 py-0.5 rounded-md bg-parchment text-muted text-[11px]">${escapeHtml(k)}</span>`).join('');
+        const applyUrl = m.foa.direct_apply_url || m.foa.source_url;
         return `
-          <div class="nb-card p-4 space-y-2">
+          <div class="paper-card p-5 space-y-2.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5">
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold border border-ink ${badgeCls}">${escapeHtml(friendlySt)}</span>
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-cream border border-ink">${(m.relevance_score * 100).toFixed(0)}% Match</span>
-                <span class="text-[10px] font-mono text-cobalt font-semibold">${escapeHtml(m.deadline_status || 'OPEN')}</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${badgeCls}">${escapeHtml(friendlySt)}</span>
+                <span class="text-xs text-muted font-medium">${(m.relevance_score * 100).toFixed(0)}% fit</span>
+                <span class="text-xs text-slateBlue font-medium">${escapeHtml(m.deadline_status || 'Open')}</span>
               </div>
-              <span class="text-[11px] font-mono text-neutral-500">${escapeHtml(m.foa.agency)}</span>
+              <span class="text-xs text-muted">${escapeHtml(m.foa.issuing_authority || m.foa.agency)}</span>
             </div>
-            <h4 class="font-display font-bold text-sm text-ink">${escapeHtml(m.foa.title)}</h4>
-            <p class="text-xs text-neutral-700 leading-relaxed">${escapeHtml(m.explanation?.why_grant_matches || m.foa.brief_summary)}</p>
-            <div class="flex flex-wrap gap-1">${kws}</div>
-            <div class="pt-2 border-t border-neutral-200 flex flex-wrap items-center justify-between gap-2">
-              <span class="text-[11px] font-mono font-semibold text-neutral-700">💰 ${escapeHtml(m.foa.financials?.raw_budget_text || 'See call ceiling')}</span>
-              <div class="flex items-center gap-1.5">
-                <button onclick="openDraftModalForFoa('${escapeHtml(m.foa.foa_id)}', '${escapeHtml(m.foa.title).replace(/'/g, '')}')" class="px-2.5 py-1 text-[11px] font-bold border-2 border-ink bg-accent hover:bg-ink hover:text-accent">📝 Draft Proposal</button>
-                <a href="${escapeHtml(m.foa.direct_apply_url || m.foa.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1 bg-ink text-white text-[11px] font-bold">Official Call ↗</a>
+            <h4 class="font-serif font-semibold text-lg leading-snug text-ink">${escapeHtml(m.foa.title)}</h4>
+            <p class="text-xs text-muted leading-relaxed">${escapeHtml(m.explanation?.why_grant_matches || m.foa.brief_summary)}</p>
+            ${kws ? `<div class="flex flex-wrap gap-1.5">${kws}</div>` : ''}
+            <div class="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-medium text-ink">${escapeHtml(m.foa.financials?.raw_budget_text || 'See call ceiling')}</span>
+              <div class="flex items-center gap-2">
+                <button onclick="openDraftModalForFoa('${escapeHtml(m.foa.foa_id)}', '${escapeHtml(m.foa.title).replace(/'/g, '')}', '${escapeHtml(applyUrl)}')" class="btn-secondary px-3 py-1.5 text-xs font-medium">Draft proposal</button>
+                <a href="${escapeHtml(applyUrl)}" target="_blank" rel="noopener noreferrer" class="btn-primary px-3.5 py-1.5 text-xs font-semibold">Official call</a>
               </div>
             </div>
           </div>
         `;
       }).join('') + `</div>`;
-      showToast(`Found ${results.length} matching research grants!`, 'success');
+      showToast(`Found ${results.length} matching research grants.`, 'success');
     } catch (e) {
-      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Could not match research grants right now. Please try again.</div>`;
+      out.innerHTML = '<div class="paper-card p-5 text-crimson text-sm">Could not match research grants right now. Please try again.</div>';
     }
   }
 
@@ -974,11 +1005,11 @@ def render_dashboard_html() -> str:
     const rawTxt = document.getElementById('resumeRawText').value.trim();
     const cat = document.getElementById('resumeCatFilter').value;
     if ((!fileInp.files || !fileInp.files.length) && !rawTxt) {
-      showToast('Upload a resume file or paste resume text first.', 'warning');
+      showToast('Upload a resume file or paste your skills first.', 'warning');
       return;
     }
     const out = document.getElementById('matcherResultsContainer');
-    out.innerHTML = '<div class="p-6 font-mono text-xs animate-pulse">Analyzing your resume and finding best matches...</div>';
+    out.innerHTML = '<div class="p-6 text-sm text-muted animate-pulse">Reading your resume and finding relevant openings...</div>';
 
     const fd = new FormData();
     if (fileInp.files && fileInp.files.length) fd.append('file', fileInp.files[0]);
@@ -990,50 +1021,49 @@ def render_dashboard_html() -> str:
       const res = await fetch('/api/resume/match', { method: 'POST', body: fd });
       if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
-      const skillsHtml = (data.detected_skills || []).map(s => `<span class="px-2 py-0.5 bg-accent/70 border border-ink font-mono text-[10px] font-bold">${escapeHtml(s)}</span>`).join('');
+      const skillsHtml = (data.detected_skills || []).map(s => `<span class="px-2.5 py-0.5 rounded-full bg-parchment text-ink text-[11px] font-medium">${escapeHtml(s)}</span>`).join('');
       const headerHtml = `
-        <div class="nb-card p-4 bg-cream/70 text-left space-y-2">
+        <div class="paper-card p-4 bg-paper/70 text-left space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <span class="font-display font-bold text-sm">Your Resume Profile</span>
-            <span class="font-mono text-[11px] font-bold text-cobalt">${escapeHtml(data.detected_degree)} · ${(data.detected_domains || []).join(', ')}</span>
+            <span class="font-serif font-semibold text-base text-ink">Detected from your resume</span>
+            <span class="text-xs font-medium text-slateBlue">${escapeHtml(data.detected_degree)} &middot; ${(data.detected_domains || []).join(', ')}</span>
           </div>
-          ${skillsHtml ? `<div class="flex flex-wrap gap-1">${skillsHtml}</div>` : '<div class="text-[11px] text-neutral-500">General academic profile detected.</div>'}
+          ${skillsHtml ? `<div class="flex flex-wrap gap-1.5">${skillsHtml}</div>` : '<div class="text-xs text-muted">General academic profile detected.</div>'}
         </div>
       `;
 
       const cardsHtml = (data.matches || []).map(m => {
         const opp = m.opportunity;
-        const matchedChips = (m.matched_skills || []).map(s => `<span class="px-1.5 py-0.5 bg-forest/15 text-forest border border-forest/40 font-mono text-[10px] font-bold">✓ ${escapeHtml(s)}</span>`).join('');
-        const gapChips = (m.missing_prerequisites || []).map(g => `<li class="text-[11px] text-vermilion">⚠ ${escapeHtml(g)}</li>`).join('');
+        const matchedChips = (m.matched_skills || []).map(s => `<span class="px-2 py-0.5 rounded-md bg-sageSoft text-sage text-[11px] font-medium">${escapeHtml(s)}</span>`).join('');
+        const gapChips = (m.missing_prerequisites || []).map(g => `<li class="text-xs text-ochre">${escapeHtml(g)}</li>`).join('');
         return `
-          <div class="nb-card p-4 text-left space-y-2">
+          <div class="paper-card p-5 text-left space-y-2.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5">
-                <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold border border-ink">${m.fit_score}% Fit</span>
-                <span class="px-2 py-0.5 bg-cream border border-ink font-mono text-[10px] font-bold">${escapeHtml(opp.category)}</span>
-                <span class="text-[10px] font-mono text-neutral-500">${escapeHtml(opp.source_domain)}</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-claySoft text-clayDark text-[11px] font-semibold">${m.fit_score}% fit</span>
+                <span class="text-xs text-muted">${escapeHtml(opp.category)} &middot; ${escapeHtml(opp.source_domain)}</span>
               </div>
-              <span class="text-[11px] font-mono font-semibold text-cobalt">${opp.deadline ? escapeHtml(opp.deadline) : 'Rolling'}</span>
+              <span class="text-xs font-medium text-slateBlue">${opp.deadline ? escapeHtml(opp.deadline) : 'Rolling'}</span>
             </div>
-            <h4 class="font-display font-bold text-sm text-ink">${escapeHtml(opp.title)}</h4>
-            <p class="text-xs text-neutral-600">${escapeHtml(m.match_summary)}</p>
-            ${matchedChips ? `<div class="flex flex-wrap gap-1">${matchedChips}</div>` : ''}
-            ${gapChips ? `<ul class="space-y-0.5">${gapChips}</ul>` : ''}
-            <div class="pt-2 border-t border-neutral-200 flex items-center justify-between gap-2">
-              <span class="text-[11px] font-mono font-semibold">💰 ${escapeHtml(opp.stipend_or_amount)}</span>
-              <div class="flex items-center gap-1.5">
-                <button onclick="openDraftModalForFoa('${escapeHtml(opp.id)}', '${escapeHtml(opp.title).replace(/'/g, '')}')" class="px-2.5 py-1 text-[11px] font-bold border-2 border-ink bg-white hover:bg-accent">Draft SOP</button>
-                <a href="${escapeHtml(opp.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1 bg-ink text-white text-[11px] font-bold">Apply ↗</a>
+            <h4 class="font-serif font-semibold text-lg leading-snug text-ink">${escapeHtml(opp.title)}</h4>
+            <p class="text-xs text-muted leading-relaxed">${escapeHtml(m.match_summary)}</p>
+            ${matchedChips ? `<div class="flex flex-wrap gap-1.5">${matchedChips}</div>` : ''}
+            ${gapChips ? `<ul class="space-y-0.5 pl-3.5 list-disc">${gapChips}</ul>` : ''}
+            <div class="pt-3 border-t border-line flex items-center justify-between gap-2">
+              <span class="text-xs font-medium text-ink">${escapeHtml(opp.stipend_or_amount)}</span>
+              <div class="flex items-center gap-2">
+                <button onclick="openDraftModalForFoa('${escapeHtml(opp.id)}', '${escapeHtml(opp.title).replace(/'/g, '')}', '${escapeHtml(opp.source_url)}')" class="btn-secondary px-3 py-1.5 text-xs font-medium">Draft SOP</button>
+                <a href="${escapeHtml(opp.source_url)}" target="_blank" rel="noopener noreferrer" class="btn-primary px-3.5 py-1.5 text-xs font-semibold">Apply</a>
               </div>
             </div>
           </div>
         `;
       }).join('');
 
-      out.innerHTML = `<div class="space-y-3">${headerHtml}${cardsHtml || '<div class="nb-card p-5 text-xs">No matching opportunities found for this filter.</div>'}</div>`;
-      showToast(`Found ${(data.matches || []).length} opportunities matching your resume!`, 'success');
+      out.innerHTML = `<div class="space-y-3.5">${headerHtml}${cardsHtml || '<div class="paper-card p-5 text-sm text-muted">No matching opportunities found for this filter.</div>'}</div>`;
+      showToast(`Found ${(data.matches || []).length} opportunities matching your resume.`, 'success');
     } catch (e) {
-      out.innerHTML = `<div class="nb-card p-5 text-vermilion text-xs font-semibold">Could not analyze your resume right now. Please try again.</div>`;
+      out.innerHTML = '<div class="paper-card p-5 text-crimson text-sm">Could not analyze your resume right now. Please try again.</div>';
     }
   }
 
@@ -1046,8 +1076,8 @@ def render_dashboard_html() -> str:
     document.querySelectorAll('.stype-pill').forEach(btn => {
       const active = btn.getAttribute('data-stype') === st;
       btn.className = active
-        ? 'stype-pill px-3 py-1.5 border-2 border-ink bg-ink text-accent font-semibold'
-        : 'stype-pill px-3 py-1.5 border-2 border-ink bg-white hover:bg-sand font-semibold';
+        ? 'stype-pill px-3 py-1.5 rounded-full bg-ink text-paper font-medium'
+        : 'stype-pill px-3 py-1.5 rounded-full bg-white border border-line text-muted hover:text-ink hover:border-ink/30 font-medium';
     });
     fetchOpportunities();
   }
@@ -1057,8 +1087,8 @@ def render_dashboard_html() -> str:
     document.querySelectorAll('.cat-pill').forEach(btn => {
       const active = btn.getAttribute('data-cat') === cat;
       btn.className = active
-        ? 'cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-accent text-ink'
-        : 'cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-white hover:bg-sand';
+        ? 'cat-pill px-3.5 py-2 text-xs font-semibold rounded-lg bg-claySoft text-clayDark border border-clay/25'
+        : 'cat-pill px-3.5 py-2 text-xs font-medium rounded-lg bg-white text-muted border border-line hover:text-ink';
     });
     fetchOpportunities();
   }
@@ -1114,12 +1144,12 @@ def render_dashboard_html() -> str:
   function renderSkeletons(count = 6) {
     document.getElementById('loadMoreWrapper').classList.add('hidden');
     document.getElementById('opportunitiesGrid').innerHTML = Array.from({ length: count }).map(() => `
-      <div class="nb-card p-5 space-y-3">
+      <div class="paper-card p-5 space-y-3.5">
         <div class="flex justify-between"><div class="h-4 w-20 skeleton-pulse"></div><div class="h-4 w-16 skeleton-pulse"></div></div>
         <div class="h-5 w-5/6 skeleton-pulse"></div>
-        <div class="h-4 w-1/2 skeleton-pulse"></div>
+        <div class="h-3.5 w-1/2 skeleton-pulse"></div>
         <div class="h-10 w-full skeleton-pulse"></div>
-        <div class="h-9 w-full skeleton-pulse"></div>
+        <div class="h-8 w-full skeleton-pulse"></div>
       </div>
     `).join('');
   }
@@ -1135,14 +1165,14 @@ def render_dashboard_html() -> str:
 
   function deadlinePill(deadlineIso, isRolling) {
     if (!deadlineIso) {
-      return `<span class="text-[11px] font-mono text-cobalt font-semibold">${isRolling ? 'Rolling' : 'Open'}</span>`;
+      return `<span class="text-xs text-slateBlue font-medium">${isRolling ? 'Rolling' : 'Open'}</span>`;
     }
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const days = Math.ceil((new Date(deadlineIso + 'T00:00:00') - today) / 86400000);
     if (days <= 14) {
-      return `<span class="px-2 py-0.5 bg-vermilion text-white text-[10px] font-mono font-bold">${days}d left</span>`;
+      return `<span class="px-2 py-0.5 rounded-full bg-crimsonSoft text-crimson text-[11px] font-semibold">${days <= 0 ? 'Closes today' : `${days}d left`}</span>`;
     }
-    return `<span class="text-[11px] font-mono text-neutral-600 font-medium">${deadlineIso}</span>`;
+    return `<span class="text-xs text-muted font-medium">${deadlineIso}</span>`;
   }
 
   let pendingDomainFromUrl = null;
@@ -1165,14 +1195,14 @@ def render_dashboard_html() -> str:
     document.querySelectorAll('.stype-pill').forEach(btn => {
       const active = btn.getAttribute('data-stype') === selectedSourceType;
       btn.className = active
-        ? 'stype-pill px-3 py-1.5 border-2 border-ink bg-ink text-accent font-semibold'
-        : 'stype-pill px-3 py-1.5 border-2 border-ink bg-white hover:bg-sand font-semibold';
+        ? 'stype-pill px-3 py-1.5 rounded-full bg-ink text-paper font-medium'
+        : 'stype-pill px-3 py-1.5 rounded-full bg-white border border-line text-muted hover:text-ink hover:border-ink/30 font-medium';
     });
     document.querySelectorAll('.cat-pill').forEach(btn => {
       const active = btn.getAttribute('data-cat') === selectedCategory;
       btn.className = active
-        ? 'cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-accent text-ink'
-        : 'cat-pill px-3 py-2 text-xs font-semibold border-2 border-ink bg-white hover:bg-sand';
+        ? 'cat-pill px-3.5 py-2 text-xs font-semibold rounded-lg bg-claySoft text-clayDark border border-clay/25'
+        : 'cat-pill px-3.5 py-2 text-xs font-medium rounded-lg bg-white text-muted border border-line hover:text-ink';
     });
     if (pendingDomainFromUrl || pendingFundingFromUrl || sp.get('degree_level') || sp.get('deadline_window')) {
       document.getElementById('advancedFiltersRow').classList.remove('hidden');
@@ -1183,7 +1213,8 @@ def render_dashboard_html() -> str:
     const cleanParams = new URLSearchParams(params.toString());
     if (cleanParams.get('sort') === 'deadline_asc') cleanParams.delete('sort');
     const qs = cleanParams.toString();
-    const newUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+    const hash = window.location.hash || '';
+    const newUrl = (qs ? `${window.location.pathname}?${qs}` : window.location.pathname) + hash;
     window.history.replaceState(null, '', newUrl);
     const csvLink = document.getElementById('exportCsvLink');
     if (csvLink) {
@@ -1194,9 +1225,9 @@ def render_dashboard_html() -> str:
   async function copyShareableFilterUrl() {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      showToast('Shareable filtered link copied to clipboard!', 'success');
+      showToast('Link copied to clipboard.', 'success');
     } catch (e) {
-      showToast('URL updated in your address bar — copy it to share.', 'info');
+      showToast('Copy the link from your browser address bar.', 'info');
     }
   }
 
@@ -1268,7 +1299,7 @@ def render_dashboard_html() -> str:
       visibleCount = 18;
 
       document.getElementById('resultsSummaryText').innerHTML =
-        `Showing <strong class="text-ink">${allFetchedItems.length}</strong> of ${data.total_in_store} verified opportunities`;
+        `Showing <strong class="text-ink font-semibold">${allFetchedItems.length}</strong> of ${data.total_in_store} active opportunities`;
       document.getElementById('cacheStatusLabel').innerText = data.last_refreshed_at
         ? `Updated ${formatRelativeTime(data.last_refreshed_at)}`
         : '';
@@ -1276,7 +1307,7 @@ def render_dashboard_html() -> str:
       const errBanner = document.getElementById('sourceErrorBanner');
       if (data.source_errors && data.source_errors.length > 0) {
         errBanner.classList.remove('hidden');
-        document.getElementById('sourceErrorList').innerText = data.source_errors.join(' | ');
+        document.getElementById('sourceErrorList').innerText = data.source_errors.join(' · ');
       } else {
         errBanner.classList.add('hidden');
       }
@@ -1284,11 +1315,10 @@ def render_dashboard_html() -> str:
       renderVisibleCards(data.total_in_store);
     } catch (err) {
       document.getElementById('opportunitiesGrid').innerHTML = `
-        <div class="col-span-full nb-card p-10 text-center space-y-3">
-          <span class="material-symbols-outlined text-4xl text-vermilion">cloud_off</span>
-          <h3 class="font-display font-bold text-lg">Unable to Load Opportunities</h3>
-          <p class="text-xs text-neutral-600">We couldn't load listings right now. Please try again in a moment.</p>
-          <button onclick="fetchOpportunities()" class="nb-btn px-4 py-2 bg-ink text-accent text-xs font-bold">Retry</button>
+        <div class="col-span-full paper-card p-10 text-center space-y-3">
+          <h3 class="font-serif font-semibold text-xl text-ink">Unable to load listings</h3>
+          <p class="text-sm text-muted">Something went wrong while loading opportunities. Please try again.</p>
+          <button onclick="fetchOpportunities()" class="btn-primary px-4 py-2 text-xs font-semibold">Try again</button>
         </div>
       `;
       showToast('Could not load opportunities right now.', 'error');
@@ -1307,17 +1337,16 @@ def render_dashboard_html() -> str:
     if (!allFetchedItems.length) {
       loadMoreWrap.classList.add('hidden');
       grid.innerHTML = `
-        <div class="col-span-full nb-card p-10 text-center space-y-3">
-          <span class="material-symbols-outlined text-4xl text-neutral-400">search_off</span>
-          <h3 class="font-display font-bold text-lg">No Live Results Found</h3>
-          <p class="text-xs text-neutral-600 max-w-md mx-auto">
+        <div class="col-span-full paper-card p-10 text-center space-y-3">
+          <h3 class="font-serif font-semibold text-xl text-ink">No Live Results Found</h3>
+          <p class="text-sm text-muted max-w-md mx-auto">
             ${totalInStore === 0
               ? 'No opportunities loaded yet. Click "Refresh Live Data" to check official portals.'
-              : 'No opportunities match your current filters.'}
+              : 'No opportunities match those filters. Try broadening your search.'}
           </p>
           <div class="flex justify-center gap-2 pt-1">
-            <button onclick="resetAllFilters()" class="nb-btn px-4 py-2 bg-white hover:bg-sand text-xs font-bold">Reset Filters</button>
-            <button onclick="triggerLiveRefresh()" class="nb-btn px-4 py-2 bg-ink text-accent text-xs font-bold">Refresh Live Data</button>
+            <button onclick="resetAllFilters()" class="btn-secondary px-4 py-2 text-xs font-semibold">Reset filters</button>
+            <button onclick="triggerLiveRefresh()" class="btn-clay px-4 py-2 text-xs font-semibold">Refresh Live Data</button>
           </div>
         </div>
       `;
@@ -1327,56 +1356,53 @@ def render_dashboard_html() -> str:
     const slice = allFetchedItems.slice(0, visibleCount);
     grid.innerHTML = slice.map((opp, idx) => {
       const catColor = opp.category === 'Funding'
-        ? 'bg-cobalt text-white'
-        : (opp.category === 'Internship' ? 'bg-ink text-accent' : 'bg-accent text-ink');
+        ? 'bg-slateSoft text-slateBlue'
+        : (opp.category === 'Internship' ? 'bg-claySoft text-clayDark' : 'bg-sageSoft text-sage');
 
       const srcShort = opp.source_type === 'Government'
-        ? 'Govt'
-        : (opp.source_type === 'Company / Corporate' ? 'Company' : 'Uni / Org');
+        ? 'Government'
+        : (opp.source_type === 'Company / Corporate' ? 'Company' : 'University');
+
+      const saved = isOppSaved(opp.id);
 
       return `
-        <article class="nb-card p-5 flex flex-col justify-between gap-4">
+        <article class="paper-card paper-card-hover p-5 flex flex-col justify-between gap-4">
           <div class="space-y-2.5">
-            <!-- Row 1: Category + Source + Deadline -->
             <div class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5">
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-ink ${catColor}">${escapeHtml(opp.category)}</span>
-                <span class="px-2 py-0.5 text-[10px] font-mono font-semibold bg-cream border border-ink/40 text-neutral-700">${srcShort}</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${catColor}">${escapeHtml(opp.category)}</span>
+                <span class="text-[11px] text-muted font-medium">${srcShort}</span>
               </div>
               ${deadlinePill(opp.deadline, opp.is_rolling)}
             </div>
 
-            <!-- Row 2: Title & Org -->
             <div>
-              <h3 onclick="openDetailModal(${idx})" class="cursor-pointer font-display font-bold text-[15px] leading-snug text-ink hover:text-cobalt line-clamp-2" title="${escapeHtml(opp.title)}">${escapeHtml(opp.title)}</h3>
-              <p class="text-xs font-medium text-neutral-600 mt-0.5 truncate">${escapeHtml(opp.organization)}</p>
+              <h3 onclick="openDetailModal(${idx})" class="cursor-pointer font-serif font-semibold text-[18px] leading-snug text-ink hover:text-clay line-clamp-2" title="${escapeHtml(opp.title)}">${escapeHtml(opp.title)}</h3>
+              <p class="text-xs text-muted mt-1 truncate">${escapeHtml(opp.organization)}</p>
             </div>
 
-            <!-- Row 3: Concise Summary -->
-            <p class="text-xs text-neutral-600 line-clamp-2 leading-relaxed">${escapeHtml(opp.summary)}</p>
+            <p class="text-xs text-muted line-clamp-2 leading-relaxed">${escapeHtml(opp.summary)}</p>
 
-            <!-- Row 4: Compact Key Meta -->
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-[11px] font-mono text-neutral-700">
-              <span class="font-semibold truncate max-w-[180px]" title="${escapeHtml(opp.stipend_or_amount)}">💰 ${escapeHtml(opp.stipend_or_amount)}</span>
-              <span class="text-neutral-400">·</span>
-              <span>${escapeHtml(opp.degree_level)}</span>
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-xs text-ink/85">
+              <span class="font-medium truncate max-w-[190px]" title="${escapeHtml(opp.stipend_or_amount)}">${escapeHtml(opp.stipend_or_amount)}</span>
+              <span class="text-line">&middot;</span>
+              <span class="text-muted">${escapeHtml(opp.degree_level)}</span>
             </div>
           </div>
 
-          <!-- Footer: Trust Signal & Clean CTA -->
-          <div class="pt-3 border-t border-neutral-200 flex items-center justify-between gap-2">
-            <div class="text-[10px] font-mono text-neutral-500 leading-tight truncate">
-              <span class="text-forest font-semibold block">Last verified: ${formatRelativeTime(opp.last_verified_at)}</span>
-              <span class="truncate block">${escapeHtml(opp.source_domain)}</span>
+          <div class="pt-3 border-t border-line flex items-center justify-between gap-2">
+            <div class="text-[11px] text-muted leading-tight truncate">
+              <span class="text-sage font-medium block">Last verified: ${formatRelativeTime(opp.last_verified_at)}</span>
+              <span class="truncate block opacity-80">${escapeHtml(opp.source_domain)}</span>
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
-              <button onclick="toggleSaveOpportunity(${idx})" class="px-2 py-1.5 text-[11px] font-bold border-2 border-ink ${isOppSaved(opp.id) ? 'bg-accent text-ink' : 'bg-white hover:bg-sand text-neutral-700'}" title="Save to My Tracker">
-                ${isOppSaved(opp.id) ? '★ Saved' : '+ Save'}
+              <button onclick="toggleSaveOpportunity(${idx})" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border ${saved ? 'bg-claySoft border-clay/30 text-clayDark' : 'bg-white border-line text-muted hover:text-ink hover:bg-parchment/60'}" title="Save to My Tracker">
+                ${saved ? 'Saved' : 'Save'}
               </button>
-              <button onclick="openDetailModal(${idx})" class="px-2.5 py-1.5 text-[11px] font-semibold border-2 border-ink bg-cream hover:bg-sand" title="View details & requirements">Details</button>
-              <a href="${escapeHtml(opp.source_url)}" target="_blank" rel="noopener noreferrer" class="nb-btn px-3 py-1.5 bg-ink text-white hover:bg-accent hover:text-ink text-[11px] font-bold inline-flex items-center gap-1">
+              <button onclick="openDetailModal(${idx})" class="btn-secondary px-2.5 py-1.5 text-xs font-medium" title="View details &amp; requirements">Details</button>
+              <a href="${escapeHtml(opp.source_url)}" target="_blank" rel="noopener noreferrer" class="btn-primary px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1">
                 <span>Apply</span>
-                <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                <span class="material-symbols-outlined text-[13px]">arrow_outward</span>
               </a>
             </div>
           </div>
@@ -1386,7 +1412,7 @@ def render_dashboard_html() -> str:
 
     if (allFetchedItems.length > visibleCount) {
       loadMoreWrap.classList.remove('hidden');
-      document.getElementById('loadMoreBtn').innerText = `Show More (${visibleCount} of ${allFetchedItems.length} shown)`;
+      document.getElementById('loadMoreBtn').innerText = `Show more (${visibleCount} of ${allFetchedItems.length})`;
     } else {
       loadMoreWrap.classList.add('hidden');
     }
@@ -1398,35 +1424,35 @@ def render_dashboard_html() -> str:
     currentModalIdx = idx;
     currentModalOpp = opp;
     document.getElementById('dmBadges').innerHTML = `
-      <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-ink bg-accent">${escapeHtml(opp.category)}</span>
-      <span class="px-2 py-0.5 text-[10px] font-mono font-semibold border border-ink bg-white">${escapeHtml(opp.source_type)}</span>
-      <span class="px-2 py-0.5 text-[10px] font-mono font-semibold border border-ink bg-white">${escapeHtml(opp.domain)}</span>
+      <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-claySoft text-clayDark">${escapeHtml(opp.category)}</span>
+      <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-parchment text-ink">${escapeHtml(opp.source_type)}</span>
+      <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-parchment text-muted">${escapeHtml(opp.domain)}</span>
     `;
     document.getElementById('dmTitle').innerText = opp.title;
     document.getElementById('dmOrg').innerText = `${opp.organization} · ${opp.source_domain}`;
     const saved = isOppSaved(opp.id);
-    document.getElementById('dmSaveLabel').innerText = saved ? '★ Saved in Tracker' : '+ Save to Tracker';
+    document.getElementById('dmSaveLabel').innerText = saved ? 'Saved in tracker' : 'Save to tracker';
 
     document.getElementById('dmBody').innerHTML = `
-      <p class="leading-relaxed">${escapeHtml(opp.summary)}</p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-cream border-2 border-ink text-xs">
-        <div><span class="text-neutral-500 block font-mono text-[10px]">AMOUNT / STIPEND</span><strong>${escapeHtml(opp.stipend_or_amount)}</strong></div>
-        <div><span class="text-neutral-500 block font-mono text-[10px]">DEADLINE</span><strong>${opp.deadline ? escapeHtml(opp.deadline) : 'Rolling / Ongoing'}</strong></div>
-        <div><span class="text-neutral-500 block font-mono text-[10px]">ELIGIBILITY</span><strong>${escapeHtml(opp.eligibility)}</strong></div>
-        <div><span class="text-neutral-500 block font-mono text-[10px]">LOCATION</span><strong>${escapeHtml(opp.location || 'Global / India')}</strong></div>
+      <p class="leading-relaxed text-ink/90">${escapeHtml(opp.summary)}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-4 bg-paper border border-line rounded-xl text-xs">
+        <div><span class="text-muted block text-[11px] mb-0.5">Award / Stipend</span><strong class="font-semibold text-ink">${escapeHtml(opp.stipend_or_amount)}</strong></div>
+        <div><span class="text-muted block text-[11px] mb-0.5">Closing date</span><strong class="font-semibold text-ink">${opp.deadline ? escapeHtml(opp.deadline) : 'Rolling / Open'}</strong></div>
+        <div><span class="text-muted block text-[11px] mb-0.5">Eligibility</span><strong class="font-semibold text-ink">${escapeHtml(opp.eligibility)}</strong></div>
+        <div><span class="text-muted block text-[11px] mb-0.5">Location</span><strong class="font-semibold text-ink">${escapeHtml(opp.location || 'India / Global')}</strong></div>
       </div>
       <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-        <div class="text-[11px] font-mono text-forest font-semibold">
-          ✓ Official link verified (${formatRelativeTime(opp.last_verified_at)})
+        <div class="text-xs text-sage font-medium">
+          Official link verified (${formatRelativeTime(opp.last_verified_at)})
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button id="deepAnalyzeBtn" onclick="runDeepPageAnalysis('${escapeHtml(opp.id)}')" class="nb-btn px-3 py-1.5 bg-accent text-ink hover:bg-ink hover:text-accent text-xs font-bold inline-flex items-center gap-1.5">
+          <button id="deepAnalyzeBtn" onclick="runDeepPageAnalysis('${escapeHtml(opp.id)}')" class="btn-secondary px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[15px]">article</span>
-            <span>Summarize Requirements</span>
+            <span>Summarize requirements</span>
           </button>
-          <button id="draftProposalBtn" onclick="runProposalDraft('${escapeHtml(opp.id)}')" class="nb-btn px-3 py-1.5 bg-white text-ink hover:bg-cobalt hover:text-white text-xs font-bold inline-flex items-center gap-1.5">
+          <button id="draftProposalBtn" onclick="runProposalDraft('${escapeHtml(opp.id)}')" class="btn-secondary px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[15px]">edit_note</span>
-            <span>Draft Proposal / SOP</span>
+            <span>Draft SOP / Proposal</span>
           </button>
         </div>
       </div>
@@ -1444,10 +1470,10 @@ def render_dashboard_html() -> str:
     if (!box) return;
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">sync</span><span>Reading Official Details...</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">refresh</span><span>Reading official page...</span>';
     }
     box.classList.remove('hidden');
-    box.innerHTML = '<div class="p-3.5 bg-cream border-2 border-ink font-mono text-xs animate-pulse">Reading the official listing and summarizing key requirements...</div>';
+    box.innerHTML = '<div class="p-4 bg-paper border border-line rounded-xl text-xs text-muted animate-pulse">Reading the official listing and summarizing key requirements...</div>';
 
     try {
       const res = await fetch(`/api/opportunities/${encodeURIComponent(oppId)}/deep-analyze`, { method: 'POST' });
@@ -1455,61 +1481,61 @@ def render_dashboard_html() -> str:
       const d = await res.json();
 
       const eligHtml = (d.eligibility_highlights || []).map(item =>
-        `<li class="flex items-start gap-1.5"><span class="text-cobalt font-bold">▪</span><span>${escapeHtml(item)}</span></li>`
+        `<li class="text-xs text-ink/85 leading-relaxed">${escapeHtml(item)}</li>`
       ).join('');
       const docsHtml = (d.required_documents || []).map(doc =>
-        `<span class="px-2 py-1 bg-white border border-ink text-[11px] font-mono font-semibold">📄 ${escapeHtml(doc)}</span>`
+        `<span class="px-2.5 py-1 rounded-md bg-white border border-line text-xs text-ink">${escapeHtml(doc)}</span>`
       ).join('');
       const stepsHtml = (d.application_steps || []).map((st, i) => {
         const cleanStep = String(st || '').replace(/^\s*\d+\.\s*/, '');
-        return `<li class="text-xs"><strong class="font-mono text-ink">${i + 1}.</strong> ${escapeHtml(cleanStep)}</li>`;
+        return `<li class="text-xs text-ink/85 leading-relaxed"><span class="font-semibold text-ink mr-1">${i + 1}.</span>${escapeHtml(cleanStep)}</li>`;
       }).join('');
       const attachmentsList = d.direct_attachments || d.direct_pdf_urls || [];
       const pdfLinksHtml = attachmentsList.map(u =>
-        `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-white border border-ink hover:bg-accent text-[11px] font-mono font-bold text-cobalt inline-flex items-center gap-1">📎 Official PDF / Circular ↗</a>`
+        `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer" class="px-3 py-1 rounded-md bg-white border border-line hover:border-clay/40 text-xs font-medium text-slateBlue inline-flex items-center gap-1">Official guideline PDF <span class="material-symbols-outlined text-[13px]">arrow_outward</span></a>`
       ).join('');
-      const deadlineDisplay = d.extracted_deadline || d.extracted_deadline_text || 'Check Official Page';
-      const sourceLabel = d.is_pdf_parsed ? 'PDF Circular' : 'Official Source';
+      const deadlineDisplay = d.extracted_deadline || d.extracted_deadline_text || 'Check official page';
+      const sourceLabel = d.is_pdf_parsed ? 'PDF circular' : 'Official page';
 
       box.innerHTML = `
-        <div class="p-4 bg-sand/70 border-2 border-ink space-y-3 text-xs">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ink/20 pb-2">
-            <span class="font-display font-bold text-sm text-ink">Requirements &amp; Application Summary</span>
-            <span class="px-2 py-0.5 bg-ink text-accent font-mono text-[10px] font-bold">${sourceLabel}</span>
+        <div class="p-4 bg-paper border border-line rounded-xl space-y-3.5 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-line">
+            <span class="font-serif font-semibold text-base text-ink">Requirements &amp; application summary</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-parchment text-muted text-[11px] font-medium">${sourceLabel}</span>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div class="p-2.5 bg-white border border-ink">
-              <span class="text-[10px] font-mono text-neutral-500 block">STIPEND / AWARD</span>
-              <strong class="text-ink">${escapeHtml(d.extracted_financials)}</strong>
+            <div class="p-3 bg-white border border-line rounded-lg">
+              <span class="text-[11px] text-muted block">Stipend / award</span>
+              <strong class="text-ink font-semibold">${escapeHtml(d.extracted_financials)}</strong>
             </div>
-            <div class="p-2.5 bg-white border border-ink">
-              <span class="text-[10px] font-mono text-neutral-500 block">DEADLINE</span>
-              <strong class="text-ink">${escapeHtml(deadlineDisplay)}</strong>
+            <div class="p-3 bg-white border border-line rounded-lg">
+              <span class="text-[11px] text-muted block">Deadline</span>
+              <strong class="text-ink font-semibold">${escapeHtml(deadlineDisplay)}</strong>
             </div>
           </div>
-          ${d.key_excerpt ? `<p class="text-[11px] text-neutral-700 bg-white/80 p-2 border border-ink/30 leading-relaxed">${escapeHtml(d.key_excerpt)}</p>` : ''}
+          ${d.key_excerpt ? `<p class="text-xs text-muted bg-white p-3 rounded-lg border border-line leading-relaxed">${escapeHtml(d.key_excerpt)}</p>` : ''}
           <div>
-            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Eligibility &amp; Key Guidelines</span>
-            <ul class="space-y-1 text-neutral-800">${eligHtml}</ul>
+            <span class="text-[11px] font-semibold text-muted block mb-1.5">Eligibility &amp; key guidelines</span>
+            <ul class="space-y-1 pl-4 list-disc">${eligHtml}</ul>
           </div>
           <div>
-            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Required Documents Checklist</span>
+            <span class="text-[11px] font-semibold text-muted block mb-1.5">Documents to keep ready</span>
             <div class="flex flex-wrap gap-1.5">${docsHtml}</div>
           </div>
-          ${pdfLinksHtml ? `<div><span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Official Guidelines &amp; Attachments</span><div class="flex flex-wrap gap-1.5">${pdfLinksHtml}</div></div>` : ''}
+          ${pdfLinksHtml ? `<div><span class="text-[11px] font-semibold text-muted block mb-1.5">Attachments</span><div class="flex flex-wrap gap-1.5">${pdfLinksHtml}</div></div>` : ''}
           <div>
-            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Application Steps</span>
-            <ol class="space-y-1 text-neutral-800">${stepsHtml}</ol>
+            <span class="text-[11px] font-semibold text-muted block mb-1.5">How to apply</span>
+            <ol class="space-y-1">${stepsHtml}</ol>
           </div>
         </div>
       `;
       showToast('Requirements summary ready.', 'success');
     } catch (err) {
-      box.innerHTML = `<div class="p-3 bg-red-50 border-2 border-vermilion text-vermilion text-xs font-semibold">Could not read details from the official page right now. Try opening the official link directly.</div>`;
+      box.innerHTML = '<div class="p-3.5 bg-crimsonSoft border border-crimson/20 rounded-xl text-crimson text-xs">Could not read details from the official page right now. Try opening the official link directly.</div>';
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">check_circle</span><span>Refresh Summary</span>';
+        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">refresh</span><span>Refresh summary</span>';
       }
     }
   }
@@ -1522,10 +1548,10 @@ def render_dashboard_html() -> str:
     if (!box) return;
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">sync</span><span>Drafting...</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">refresh</span><span>Drafting...</span>';
     }
     box.classList.remove('hidden');
-    box.innerHTML = '<div class="p-3.5 bg-cream border-2 border-ink font-mono text-xs animate-pulse">Preparing your proposal outline and checklist...</div>';
+    box.innerHTML = '<div class="p-4 bg-paper border border-line rounded-xl text-xs text-muted animate-pulse">Preparing a tailored outline and checklist...</div>';
 
     try {
       const res = await fetch(`/api/foas/${encodeURIComponent(oppId)}/draft-proposal`, {
@@ -1538,33 +1564,33 @@ def render_dashboard_html() -> str:
       const sections = (d.sections || []).slice(0, 5);
       lastDraftPlainText = (d.sections || []).map(s => `${s.section_title}\n${s.drafted_content}`).join('\n\n');
       const secHtml = sections.map(s => `
-        <div class="p-2.5 bg-white border border-ink space-y-1">
-          <div class="font-display font-bold text-xs text-ink">${escapeHtml(s.section_title)}</div>
-          <div class="text-[11px] text-neutral-700 whitespace-pre-line leading-relaxed">${escapeHtml(s.drafted_content)}</div>
+        <div class="p-3.5 bg-white border border-line rounded-lg space-y-1">
+          <div class="font-semibold text-xs text-ink">${escapeHtml(s.section_title)}</div>
+          <div class="text-xs text-muted whitespace-pre-line leading-relaxed">${escapeHtml(s.drafted_content)}</div>
         </div>
       `).join('');
-      const chkHtml = (d.compliance_checklist || []).slice(0, 4).map(c => `<li class="text-[11px]">✓ ${escapeHtml(c)}</li>`).join('');
+      const chkHtml = (d.compliance_checklist || []).slice(0, 4).map(c => `<li class="text-xs text-ink/85">${escapeHtml(c)}</li>`).join('');
 
       box.innerHTML = `
-        <div class="p-4 bg-cream border-2 border-ink space-y-3 text-xs">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ink/20 pb-2">
-            <span class="font-display font-bold text-sm text-ink">Draft Proposal / SOP Outline (${(d.sections || []).length} Sections)</span>
-            <button onclick="copyDraftToClipboard()" class="px-2.5 py-1 bg-ink text-accent border border-ink font-mono text-[10px] font-bold hover:bg-accent hover:text-ink">Copy Full Draft</button>
+        <div class="p-4 bg-paper border border-line rounded-xl space-y-3 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-line">
+            <span class="font-serif font-semibold text-base text-ink">Draft outline (${(d.sections || []).length} sections)</span>
+            <button onclick="copyDraftToClipboard()" class="btn-primary px-3 py-1 text-[11px] font-semibold">Copy full draft</button>
           </div>
           <div class="space-y-2">${secHtml}</div>
           <div>
-            <span class="text-[10px] font-mono font-bold uppercase text-neutral-600 block mb-1">Key Checklist</span>
-            <ul class="space-y-0.5 text-neutral-800">${chkHtml}</ul>
+            <span class="text-[11px] font-semibold text-muted block mb-1">Before you submit</span>
+            <ul class="space-y-1 pl-4 list-disc">${chkHtml}</ul>
           </div>
         </div>
       `;
-      showToast('Draft outline ready!', 'success');
+      showToast('Draft outline ready.', 'success');
     } catch (err) {
-      box.innerHTML = `<div class="p-3 bg-red-50 border-2 border-vermilion text-vermilion text-xs font-semibold">Could not prepare the draft right now. Please try again.</div>`;
+      box.innerHTML = '<div class="p-3.5 bg-crimsonSoft border border-crimson/20 rounded-xl text-crimson text-xs">Could not prepare the draft right now. Please try again.</div>';
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">edit_note</span><span>Regenerate Draft</span>';
+        btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">edit_note</span><span>Regenerate draft</span>';
       }
     }
   }
@@ -1573,31 +1599,38 @@ def render_dashboard_html() -> str:
     if (!lastDraftPlainText) return;
     try {
       await navigator.clipboard.writeText(lastDraftPlainText);
-      showToast('Full draft copied to clipboard!', 'success');
+      showToast('Full draft copied to clipboard.', 'success');
     } catch (e) {
       showToast('Copy failed — select and copy text manually.', 'warning');
     }
   }
 
-  function openDraftModalForFoa(foaId, title) {
+  function openDraftModalForFoa(foaId, title, applyUrl) {
     const idx = allFetchedItems.findIndex(o => o.id === foaId);
     if (idx >= 0) {
       openDetailModal(idx);
       runProposalDraft(foaId);
       return;
     }
-    currentModalOpp = { id: foaId, title: title || foaId };
-    document.getElementById('dmBadges').innerHTML = '<span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-ink bg-accent">Draft Outline</span>';
+    currentModalOpp = { id: foaId, title: title || foaId, source_url: applyUrl || '' };
+    document.getElementById('dmBadges').innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-claySoft text-clayDark">Draft outline</span>';
     document.getElementById('dmTitle').innerText = title || foaId;
     document.getElementById('dmOrg').innerText = 'Proposal & SOP Assistant';
+    document.getElementById('dmSaveLabel').innerText = isOppSaved(foaId) ? 'Saved in tracker' : 'Save to tracker';
     document.getElementById('dmBody').innerHTML = '<div id="proposalDraftContainer"></div>';
     document.getElementById('dmCal').href = `/api/foas/${encodeURIComponent(foaId)}/calendar`;
-    document.getElementById('dmApply').href = '#';
+    const applyLink = document.getElementById('dmApply');
+    if (applyUrl) {
+      applyLink.href = applyUrl;
+      applyLink.classList.remove('hidden');
+    } else {
+      applyLink.href = `/api/foas/${encodeURIComponent(foaId)}`;
+    }
     document.getElementById('detailModal').classList.remove('hidden');
     runProposalDraft(foaId);
   }
 
-  // Personal Kanban Application Tracker
+  // Personal Application Tracker
   function isOppSaved(oppId) {
     return kanbanItems.some(k => k.opp_id === oppId);
   }
@@ -1634,7 +1667,7 @@ def render_dashboard_html() -> str:
         kanbanItems = data.items || [];
         updateTrackerBadge();
         renderVisibleCards(lastTotalInStore);
-        showToast(`Saved "${opp.title.slice(0, 38)}..." to My Tracker!`, 'success');
+        showToast(`Saved "${opp.title.slice(0, 38)}..." to My Tracker.`, 'success');
       } catch (e) {
         showToast('Could not save opportunity to tracker.', 'error');
       }
@@ -1652,7 +1685,12 @@ def render_dashboard_html() -> str:
         const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ opp_id: currentModalOpp.id, stage: 'Saved' })
+          body: JSON.stringify({
+            opp_id: currentModalOpp.id,
+            stage: 'Saved',
+            title: currentModalOpp.title,
+            source_url: currentModalOpp.source_url || ''
+          })
         });
         if (!res.ok) throw new Error('Save failed');
         const data = await res.json();
@@ -1661,7 +1699,7 @@ def render_dashboard_html() -> str:
         renderVisibleCards(lastTotalInStore);
       } catch (e) {}
     }
-    document.getElementById('dmSaveLabel').innerText = isOppSaved(currentModalOpp.id) ? '★ Saved in Tracker' : '+ Save to Tracker';
+    document.getElementById('dmSaveLabel').innerText = isOppSaved(currentModalOpp.id) ? 'Saved in tracker' : 'Save to tracker';
   }
 
   async function moveKanbanStage(oppId, newStage) {
@@ -1677,9 +1715,9 @@ def render_dashboard_html() -> str:
       updateTrackerBadge();
       renderKanbanBoard();
       renderTimelineView();
-      showToast(`Moved to "${newStage}"`, 'info');
+      showToast(`Moved to ${newStage}.`, 'info');
     } catch (e) {
-      showToast('Failed to update stage.', 'error');
+      showToast('Could not update stage.', 'error');
     }
   }
 
@@ -1693,7 +1731,7 @@ def render_dashboard_html() -> str:
       if (!res.ok) throw new Error('Note save failed');
       const data = await res.json();
       kanbanItems = data.items || [];
-      showToast('Note saved to tracker.', 'success');
+      showToast('Note saved.', 'success');
     } catch (e) {
       showToast('Could not save note.', 'error');
     }
@@ -1713,7 +1751,7 @@ def render_dashboard_html() -> str:
       renderVisibleCards(lastTotalInStore);
       showToast('Removed from tracker.', 'info');
     } catch (e) {
-      showToast('Failed to remove item.', 'error');
+      showToast('Could not remove item.', 'error');
     }
   }
 
@@ -1726,11 +1764,11 @@ def render_dashboard_html() -> str:
     document.getElementById('kanbanBoardGrid').classList.toggle('hidden', !isKanban);
     document.getElementById('timelineBoardView').classList.toggle('hidden', isKanban);
     document.getElementById('trackerModeKanban').className = isKanban
-      ? 'px-3 py-1.5 text-xs font-bold bg-ink text-accent'
-      : 'px-3 py-1.5 text-xs font-bold bg-white text-ink hover:bg-sand';
+      ? 'px-3 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs'
+      : 'px-3 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink';
     document.getElementById('trackerModeTimeline').className = !isKanban
-      ? 'px-3 py-1.5 text-xs font-bold bg-ink text-accent'
-      : 'px-3 py-1.5 text-xs font-bold bg-white text-ink hover:bg-sand';
+      ? 'px-3 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs'
+      : 'px-3 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink';
     if (!isKanban) renderTimelineView();
   }
 
@@ -1738,7 +1776,7 @@ def render_dashboard_html() -> str:
     const el = document.getElementById('timelineBoardView');
     if (!el) return;
     if (!kanbanItems.length) {
-      el.innerHTML = '<div class="nb-card p-8 text-center text-xs text-neutral-500">Save opportunities to see them plotted on your chronological deadline timeline.</div>';
+      el.innerHTML = '<div class="paper-card p-8 text-center text-sm text-muted">Save opportunities to see their deadlines lined up chronologically.</div>';
       return;
     }
     const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -1751,22 +1789,22 @@ def render_dashboard_html() -> str:
     }).sort((a, b) => a.days - b.days);
 
     el.innerHTML = enriched.map(item => {
-      const urgCls = item.days <= 7 ? 'bg-vermilion text-white' : (item.days <= 30 ? 'bg-accent text-ink' : 'bg-cobalt text-white');
-      const urgLbl = item.deadline ? (item.days <= 0 ? 'Closes Today' : `${item.days}d left · ${item.deadline}`) : 'Rolling / Ongoing';
+      const urgCls = item.days <= 7 ? 'bg-crimsonSoft text-crimson' : (item.days <= 30 ? 'bg-ochreSoft text-ochre' : 'bg-slateSoft text-slateBlue');
+      const urgLbl = item.deadline ? (item.days <= 0 ? 'Closes today' : `${item.days}d left · ${item.deadline}`) : 'Rolling';
       return `
-        <div class="nb-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="paper-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="flex items-start gap-3">
-            <span class="px-2.5 py-1 text-[11px] font-mono font-bold border border-ink shrink-0 ${urgCls}">${escapeHtml(urgLbl)}</span>
+            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0 ${urgCls}">${escapeHtml(urgLbl)}</span>
             <div>
-              <a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener noreferrer" class="font-display font-bold text-sm text-ink hover:text-cobalt">${escapeHtml(item.title)} ↗</a>
-              <div class="text-xs text-neutral-600">${escapeHtml(item.organization)} · <span class="font-mono">${escapeHtml(item.stage)}</span>${item.notes ? ` · 📝 ${escapeHtml(item.notes)}` : ''}</div>
+              <a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener noreferrer" class="font-serif font-semibold text-base text-ink hover:text-clay">${escapeHtml(item.title)}</a>
+              <div class="text-xs text-muted mt-0.5">${escapeHtml(item.organization)} &middot; ${escapeHtml(item.stage)}${item.notes ? ` &middot; ${escapeHtml(item.notes)}` : ''}</div>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <select onchange="moveKanbanStage('${escapeHtml(item.opp_id)}', this.value)" class="bg-cream border-2 border-ink px-2 py-1 text-xs font-semibold">
+            <select onchange="moveKanbanStage('${escapeHtml(item.opp_id)}', this.value)" class="field-input px-2.5 py-1 text-xs font-medium text-ink">
               ${KANBAN_STAGES.map(s => `<option value="${s}" ${s === item.stage ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
-            <button onclick="removeKanbanItem('${escapeHtml(item.opp_id)}')" class="px-2 py-1 border-2 border-ink bg-white hover:bg-vermilion hover:text-white text-xs font-bold">✕</button>
+            <button onclick="removeKanbanItem('${escapeHtml(item.opp_id)}')" class="p-1.5 rounded-lg text-muted hover:text-crimson hover:bg-crimsonSoft text-xs" title="Remove">&times;</button>
           </div>
         </div>
       `;
@@ -1785,9 +1823,9 @@ def render_dashboard_html() -> str:
 
   async function addTrackerReminder() {
     const channel = document.getElementById('remChannel').value;
-    const target = document.getElementById('remTarget').value.trim() || (channel === 'browser' ? 'In-App Browser Alert' : '');
+    const target = document.getElementById('remTarget').value.trim() || (channel === 'browser' ? 'Browser Alert' : '');
     const lead_days = parseInt(document.getElementById('remLeadDays').value || '7', 10);
-    if (!target) { showToast('Enter a webhook URL or email address.', 'warning'); return; }
+    if (!target) { showToast('Enter an email address or notification link.', 'warning'); return; }
     if (channel === 'browser' && typeof Notification !== 'undefined' && Notification.permission === 'default') {
       try { await Notification.requestPermission(); } catch (e) {}
     }
@@ -1802,7 +1840,7 @@ def render_dashboard_html() -> str:
       trackerReminders = data.reminders || [];
       document.getElementById('remTarget').value = '';
       renderRemindersList(data.due_alerts || []);
-      showToast(`Reminder set for ${lead_days} days before deadline.`, 'success');
+      showToast(`Reminder saved for ${lead_days} days before deadline.`, 'success');
     } catch (e) { showToast('Could not save reminder.', 'error'); }
   }
 
@@ -1831,7 +1869,7 @@ def render_dashboard_html() -> str:
       if (totalDue > 0 && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         const bItem = list.find(x => x.channel === 'browser' && x.due_count > 0);
         if (bItem) {
-          try { new Notification('MadadgaarAI Deadline Alert', { body: bItem.preview }); } catch (e) {}
+          try { new Notification('Madadgaar Deadline Alert', { body: bItem.preview }); } catch (e) {}
         }
       }
       showToast(
@@ -1844,69 +1882,88 @@ def render_dashboard_html() -> str:
   function renderRemindersList(dueAlerts) {
     const box = document.getElementById('trackerRemindersList');
     if (!box) return;
+    const chLabels = { browser: 'Browser', email: 'Email', webhook: 'Webhook' };
     const pills = trackerReminders.map(r => `
-      <span class="px-2.5 py-1 bg-white border border-ink font-mono text-[11px] inline-flex items-center gap-1.5">
-        <strong>${escapeHtml(r.channel.toUpperCase())}</strong> (${r.lead_days}d): ${escapeHtml(r.target.slice(0, 32))}
-        <button onclick="deleteTrackerReminder(${r.id})" class="text-vermilion font-bold ml-1">✕</button>
+      <span class="px-3 py-1 rounded-full bg-paper border border-line text-xs text-ink inline-flex items-center gap-2">
+        <span class="font-semibold">${escapeHtml(chLabels[r.channel] || r.channel)}</span>
+        <span class="text-muted">${r.lead_days}d &middot; ${escapeHtml(r.target.slice(0, 32))}</span>
+        <button onclick="deleteTrackerReminder(${r.id})" class="text-muted hover:text-crimson font-semibold">&times;</button>
       </span>
     `).join('');
     const dueBadge = (dueAlerts && dueAlerts.length)
-      ? `<span class="px-2.5 py-1 bg-vermilion text-white border border-ink font-mono text-[11px] font-bold">⏰ ${dueAlerts.length} closing soon</span>`
+      ? `<span class="px-3 py-1 rounded-full bg-crimsonSoft text-crimson text-xs font-semibold">${dueAlerts.length} closing soon</span>`
       : '';
     box.innerHTML = pills + dueBadge;
   }
 
-  function exportSavedKanbanIcs() {
+  async function exportSavedKanbanIcs() {
     if (!kanbanItems.length) {
-      showToast('Save at least one opportunity to export your personal deadlines.', 'warning');
+      showToast('Save at least one opportunity first.', 'warning');
       return;
     }
-    window.location.href = `/api/tracker/${encodeURIComponent(activeSessionId)}/calendar.ics`;
+    try {
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/calendar.ics`);
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'madadgaar_saved_deadlines.ics';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      showToast('Could not download calendar right now.', 'error');
+    }
   }
 
   function renderKanbanBoard() {
     const board = document.getElementById('kanbanBoardGrid');
     if (!board) return;
-    const stageColors = {
-      'Saved': 'bg-accent text-ink',
-      'Preparing Docs': 'bg-cobalt text-white',
-      'Applied': 'bg-ink text-accent',
-      'Result': 'bg-forest text-white'
+    const stageDot = {
+      'Saved': 'bg-clay',
+      'Preparing Docs': 'bg-slateBlue',
+      'Applied': 'bg-ochre',
+      'Result': 'bg-sage'
     };
 
     board.innerHTML = KANBAN_STAGES.map(stage => {
       const colItems = kanbanItems.filter(i => i.stage === stage);
       const cardsHtml = colItems.length
         ? colItems.map(item => `
-            <div class="p-3.5 bg-cream/70 border-2 border-ink space-y-2">
+            <div class="p-3.5 bg-paper/70 border border-line rounded-xl space-y-2">
               <div class="flex items-start justify-between gap-2">
-                <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold border border-ink bg-white">${escapeHtml(item.category)}</span>
-                <button onclick="removeKanbanItem('${escapeHtml(item.opp_id)}')" class="text-neutral-400 hover:text-vermilion text-xs font-bold" title="Remove">✕</button>
+                <span class="text-[11px] font-medium text-muted">${escapeHtml(item.category)}</span>
+                <button onclick="removeKanbanItem('${escapeHtml(item.opp_id)}')" class="text-muted hover:text-crimson text-sm leading-none" title="Remove">&times;</button>
               </div>
-              <a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener noreferrer" class="block font-display font-bold text-xs text-ink hover:text-cobalt leading-snug">
-                ${escapeHtml(item.title)} ↗
+              <a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener noreferrer" class="block font-serif font-semibold text-sm text-ink hover:text-clay leading-snug">
+                ${escapeHtml(item.title)}
               </a>
-              <div class="text-[11px] text-neutral-600 truncate">${escapeHtml(item.organization)}</div>
-              <div class="flex items-center justify-between text-[10px] font-mono text-neutral-700 pt-1">
-                <span class="truncate max-w-[110px]">💰 ${escapeHtml(item.stipend_or_amount)}</span>
-                <span class="font-semibold">${item.deadline ? escapeHtml(item.deadline) : 'Rolling'}</span>
+              <div class="text-[11px] text-muted truncate">${escapeHtml(item.organization)}</div>
+              <div class="flex items-center justify-between text-[11px] text-ink/80 pt-1">
+                <span class="truncate max-w-[115px]">${escapeHtml(item.stipend_or_amount)}</span>
+                <span class="font-medium text-slateBlue">${item.deadline ? escapeHtml(item.deadline) : 'Rolling'}</span>
               </div>
-              <input type="text" value="${escapeHtml(item.notes || '')}" placeholder="Add note (e.g. pending NOC)..." onchange="saveKanbanNote('${escapeHtml(item.opp_id)}', '${escapeHtml(item.stage)}', this.value)" class="w-full bg-white border border-ink/40 px-2 py-1 text-[11px] focus:outline-none focus:border-ink"/>
-              <div class="pt-2 border-t border-neutral-300 flex items-center justify-between gap-1">
-                <label class="text-[10px] font-mono text-neutral-500">Stage:</label>
-                <select onchange="moveKanbanStage('${escapeHtml(item.opp_id)}', this.value)" class="bg-white border border-ink px-1.5 py-0.5 text-[11px] font-semibold">
+              <input type="text" value="${escapeHtml(item.notes || '')}" placeholder="Add a personal note..." onchange="saveKanbanNote('${escapeHtml(item.opp_id)}', '${escapeHtml(item.stage)}', this.value)" class="field-input w-full px-2.5 py-1.5 text-[11px] text-ink"/>
+              <div class="pt-2 border-t border-line flex items-center justify-between gap-1">
+                <label class="text-[11px] text-muted">Stage</label>
+                <select onchange="moveKanbanStage('${escapeHtml(item.opp_id)}', this.value)" class="field-input px-2 py-0.5 text-[11px] font-medium text-ink">
                   ${KANBAN_STAGES.map(s => `<option value="${s}" ${s === item.stage ? 'selected' : ''}>${s}</option>`).join('')}
                 </select>
               </div>
             </div>
           `).join('')
-        : `<div class="p-6 border-2 border-dashed border-neutral-300 text-center text-xs text-neutral-400">No items in ${escapeHtml(stage)}</div>`;
+        : `<div class="p-6 border border-dashed border-line rounded-xl text-center text-xs text-muted">No items yet</div>`;
 
       return `
-        <div class="nb-card p-3.5 space-y-3">
-          <div class="flex items-center justify-between border-b-2 border-ink pb-2">
-            <span class="px-2 py-0.5 text-xs font-display font-bold border border-ink ${stageColors[stage] || 'bg-accent'}">${escapeHtml(stage)}</span>
-            <span class="font-mono text-xs font-bold">${colItems.length}</span>
+        <div class="paper-card p-3.5 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-line">
+            <span class="inline-flex items-center gap-2 text-xs font-semibold text-ink">
+              <span class="w-2 h-2 rounded-full ${stageDot[stage] || 'bg-clay'}"></span>
+              ${escapeHtml(stage)}
+            </span>
+            <span class="text-xs text-muted font-medium">${colItems.length}</span>
           </div>
           <div class="space-y-2.5">${cardsHtml}</div>
         </div>
@@ -1926,19 +1983,19 @@ def render_dashboard_html() -> str:
     icon.classList.add('animate-spin');
     if (label) label.innerText = 'Updating...';
     renderSkeletons(6);
-    showToast('Checking official portals for the latest opportunities...', 'info');
+    showToast('Checking official portals for the latest listings...', 'info');
 
     try {
       const res = await fetch('/api/opportunities/refresh?force=true', { method: 'POST' });
       if (!res.ok) throw new Error('Request failed');
       const report = await res.json();
       facetsInitialized = false;
-      document.getElementById('filterDomain').innerHTML = '<option value="All">All Domains</option>';
-      document.getElementById('filterFundingType').innerHTML = '<option value="All">All Types</option>';
+      document.getElementById('filterDomain').innerHTML = '<option value="All">All fields</option>';
+      document.getElementById('filterFundingType').innerHTML = '<option value="All">All types</option>';
       await updateStatsCounters();
       await fetchOpportunities();
       showToast(
-        `Updated! ${report.total_live_opportunities} active opportunities available.`,
+        `Updated — ${report.total_live_opportunities} active opportunities available.`,
         report.source_errors && report.source_errors.length > 0 ? 'warning' : 'success'
       );
     } catch (err) {
@@ -1951,7 +2008,7 @@ def render_dashboard_html() -> str:
     }
   }
 
-  // Saral AI & Document Checker
+  // Public Saral Samjhauti & Document Readiness
   function quickAsk(q) { document.getElementById('ragInput').value = q; sendRagQuery(); }
 
   async function sendRagQuery() {
@@ -1960,7 +2017,7 @@ def render_dashboard_html() -> str:
     const query = inp.value.trim();
     if (!query) return;
     inp.value = '';
-    box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[80%] px-3 py-2 bg-ink text-accent border-2 border-ink text-xs font-semibold">${escapeHtml(query)}</div></div>`);
+    box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[82%] px-3.5 py-2.5 rounded-2xl rounded-br-sm bg-ink text-paper text-xs sm:text-sm">${escapeHtml(query)}</div></div>`);
     box.scrollTop = box.scrollHeight;
     try {
       const res = await fetch('/api/ai/chat', {
@@ -1969,26 +2026,26 @@ def render_dashboard_html() -> str:
         body: JSON.stringify({ query, session_id: activeSessionId, language: document.getElementById('ragLang').value })
       });
       const data = await res.json();
-      if (data.session_id) { activeSessionId = data.session_id; localStorage.setItem('madadgaar_session_id', activeSessionId); }
+      if (data.session_id && !currentUser) { activeSessionId = data.session_id; localStorage.setItem('madadgaar_session_id', activeSessionId); }
       const htmlAns = escapeHtml(data.answer || '')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*([^*\n]+)\*/g, '<em class="text-neutral-600">$1</em>')
-        .replace(/`([^`\n]+)`/g, '<code class="px-1 py-0.5 bg-sand font-mono text-[11px]">$1</code>')
-        .replace(/(https?:\/\/[^\s<)]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-cobalt underline break-all">$1</a>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-ink">$1</strong>')
+        .replace(/\*([^*\n]+)\*/g, '<em class="text-muted">$1</em>')
+        .replace(/`([^`\n]+)`/g, '<code class="px-1 py-0.5 rounded bg-parchment text-xs">$1</code>')
+        .replace(/(https?:\/\/[^\s<)]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-slateBlue underline break-all">$1</a>')
         .replace(/\n/g, '<br/>');
       const cites = (data.citations || []).slice(0, 3).map((c, i) =>
-        `<div class="text-[11px] font-mono flex justify-between gap-2 pt-1"><span class="truncate">[${i+1}] ${escapeHtml(c.title)}</span><a href="${escapeHtml(c.official_url)}" target="_blank" class="text-cobalt font-bold shrink-0 hover:underline">Source ↗</a></div>`
+        `<div class="text-xs flex justify-between gap-2 pt-1.5 text-muted"><span class="truncate">[${i+1}] ${escapeHtml(c.title)}</span><a href="${escapeHtml(c.official_url)}" target="_blank" class="text-slateBlue font-medium shrink-0 hover:underline">Source</a></div>`
       ).join('');
-      box.insertAdjacentHTML('beforeend', `<div class="p-3.5 bg-white border-2 border-ink text-xs sm:text-sm space-y-2"><div>${htmlAns}</div>${cites ? `<div class="border-t border-neutral-200 pt-1.5">${cites}</div>` : ''}</div>`);
+      box.insertAdjacentHTML('beforeend', `<div class="p-4 bg-white border border-line rounded-2xl rounded-bl-sm text-xs sm:text-sm space-y-2 leading-relaxed"><div>${htmlAns}</div>${cites ? `<div class="border-t border-line pt-1.5">${cites}</div>` : ''}</div>`);
       box.scrollTop = box.scrollHeight;
-    } catch (e) { showToast('Saral AI unavailable.', 'error'); }
+    } catch (e) { showToast('Could not reach the assistant right now.', 'error'); }
   }
 
   async function analyzeDocText() {
     const raw_text = document.getElementById('docText').value.trim();
     if (!raw_text) { showToast('Paste document text first.', 'warning'); return; }
     const out = document.getElementById('docOutput');
-    out.innerHTML = '<div class="font-mono animate-pulse">Analyzing...</div>';
+    out.innerHTML = '<div class="text-xs text-muted animate-pulse">Checking document...</div>';
     try {
       const res = await fetch('/api/documents/analyze', {
         method: 'POST',
@@ -1996,7 +2053,7 @@ def render_dashboard_html() -> str:
         body: JSON.stringify({ raw_text, document_type_hint: 'AUTO' })
       });
       renderDocResult(await res.json());
-    } catch (e) { out.innerHTML = '<div class="text-vermilion font-semibold">Analysis failed.</div>'; }
+    } catch (e) { out.innerHTML = '<div class="text-crimson text-xs">Check failed. Please try again.</div>'; }
   }
 
   async function uploadAndAnalyzeDoc() {
@@ -2006,11 +2063,11 @@ def render_dashboard_html() -> str:
     fd.append('file', inp.files[0]);
     fd.append('document_type_hint', 'AUTO');
     const out = document.getElementById('docOutput');
-    out.innerHTML = '<div class="font-mono animate-pulse">Scanning file...</div>';
+    out.innerHTML = '<div class="text-xs text-muted animate-pulse">Reading uploaded file...</div>';
     try {
       const res = await fetch('/api/documents/upload', { method: 'POST', body: fd });
       renderDocResult(await res.json());
-    } catch (e) { out.innerHTML = '<div class="text-vermilion font-semibold">File scan failed.</div>'; }
+    } catch (e) { out.innerHTML = '<div class="text-crimson text-xs">Could not read that file.</div>'; }
   }
 
   function renderDocResult(data) {
@@ -2019,13 +2076,15 @@ def render_dashboard_html() -> str:
       .replace(/_/g, ' ')
       .toLowerCase()
       .replace(/\b\w/g, c => c.toUpperCase());
+    const statusMap = { DETECTED: 'Found', MISSING: 'Missing', WARNING: 'Check' };
+    const statusColor = { DETECTED: 'text-sage', MISSING: 'text-crimson', WARNING: 'text-ochre' };
     const fields = (data.extracted_fields || []).map(f =>
-      `<div class="p-2 bg-cream border border-ink flex justify-between gap-2 font-mono text-[11px]"><span><strong>${escapeHtml(f.field_name)}:</strong> ${escapeHtml(f.extracted_value || 'Missing')}</span><span class="font-bold">${escapeHtml(f.status)}</span></div>`
+      `<div class="p-2.5 bg-paper border border-line rounded-lg flex justify-between gap-2 text-xs"><span><strong class="font-medium text-ink">${escapeHtml(f.field_name)}:</strong> <span class="text-muted">${escapeHtml(f.extracted_value || 'Not found')}</span></span><span class="font-semibold ${statusColor[f.status] || 'text-muted'}">${escapeHtml(statusMap[f.status] || f.status)}</span></div>`
     ).join('');
     out.innerHTML = `
-      <div class="font-display font-bold text-cobalt text-sm">${escapeHtml(niceDocType)}</div>
+      <div class="font-serif font-semibold text-base text-ink">${escapeHtml(niceDocType)}</div>
       <div class="space-y-1.5">${fields}</div>
-      <div class="p-2 bg-accent/60 border border-ink text-[10px] font-medium">${escapeHtml(data.authenticity_disclaimer)}</div>
+      <div class="p-3 bg-ochreSoft/70 border border-ochre/20 rounded-lg text-[11px] text-ochre leading-relaxed">${escapeHtml(data.authenticity_disclaimer)}</div>
     `;
   }
 
@@ -2038,7 +2097,7 @@ def render_dashboard_html() -> str:
   });
 
   // =================================================================
-  // Account Sign-In, Study Mode Switcher & Personal Study Assistant
+  // Account Sign-In, Study Mode Switcher & Personal Study Desk
   // =================================================================
   let authConfig = null;
   let currentUser = null;
@@ -2063,11 +2122,11 @@ def render_dashboard_html() -> str:
     document.getElementById('assistantPrivatePanel').classList.toggle('hidden', !isPriv);
     document.getElementById('assistantPublicPanel').classList.toggle('hidden', isPriv);
     document.getElementById('submodePrivateBtn').className = isPriv
-      ? 'px-3.5 py-2 text-xs font-bold bg-ink text-accent'
-      : 'px-3.5 py-2 text-xs font-bold bg-white text-ink hover:bg-sand';
+      ? 'px-3.5 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs'
+      : 'px-3.5 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink';
     document.getElementById('submodePublicBtn').className = !isPriv
-      ? 'px-3.5 py-2 text-xs font-bold bg-ink text-accent'
-      : 'px-3.5 py-2 text-xs font-bold bg-white text-ink hover:bg-sand';
+      ? 'px-3.5 py-1.5 text-xs font-semibold rounded-md bg-white text-ink shadow-xs'
+      : 'px-3.5 py-1.5 text-xs font-medium rounded-md text-muted hover:text-ink';
   }
 
   function applyAuthUIState() {
@@ -2083,18 +2142,14 @@ def render_dashboard_html() -> str:
       const mc = currentUser.mode_config || {};
       const sel = document.getElementById('headerModeSelect');
       sel.value = currentUser.user_mode || 'student';
-      sel.style.backgroundColor = mc.badge_bg || '#ffcc00';
-      sel.style.color = mc.badge_text || '#18181b';
 
-      document.getElementById('authUserName').innerText = currentUser.full_name || 'User';
+      document.getElementById('authUserName').innerText = currentUser.full_name || 'Account';
       document.getElementById('authUserAvatar').innerText = (currentUser.full_name || 'U').charAt(0).toUpperCase();
       document.getElementById('authDropName').innerText = currentUser.full_name || '';
       document.getElementById('authDropEmail').innerText = currentUser.email || '';
 
       const pBadge = document.getElementById('privateModeBadge');
       pBadge.innerText = mc.display_name || 'Student Mode';
-      pBadge.style.backgroundColor = mc.badge_bg || '#ffcc00';
-      pBadge.style.color = mc.badge_text || '#18181b';
       document.getElementById('privateModeDesc').innerText = mc.description || '';
     } else {
       activeSessionId = anonSessionId;
@@ -2146,7 +2201,7 @@ def render_dashboard_html() -> str:
       await loadKanbanTracker();
       await loadPrivateDocuments();
       await loadPrivateSessions();
-      showToast(`Signed in as ${currentUser.full_name} (${currentUser.mode_config?.display_name || 'Student Mode'})`, 'success');
+      showToast(`Signed in as ${currentUser.full_name}.`, 'success');
     } catch (e) {
       showToast('Sign-in failed. Check your email and try again.', 'error');
     }
@@ -2163,7 +2218,7 @@ def render_dashboard_html() -> str:
       const data = await res.json();
       currentUser = data.user;
       applyAuthUIState();
-      showToast(`Switched to ${currentUser.mode_config?.display_name || newMode}!`, 'info');
+      showToast(`Switched to ${currentUser.mode_config?.display_name || newMode}.`, 'info');
     } catch (e) {
       showToast('Could not switch mode right now.', 'error');
     }
@@ -2190,17 +2245,17 @@ def render_dashboard_html() -> str:
       if (!res.ok) return;
       const data = await res.json();
       const docs = data.documents || [];
-      document.getElementById('privateDocCount').innerText = `${docs.length} doc${docs.length === 1 ? '' : 's'}`;
+      document.getElementById('privateDocCount').innerText = `${docs.length} file${docs.length === 1 ? '' : 's'}`;
       const listEl = document.getElementById('privateDocsList');
       if (!docs.length) {
-        listEl.innerHTML = '<div class="p-3 border border-dashed border-neutral-300 text-center text-[11px] text-neutral-500">No documents uploaded yet.</div>';
+        listEl.innerHTML = '<div class="p-4 border border-dashed border-line rounded-lg text-center text-xs text-muted">No documents added yet.</div>';
         return;
       }
       const badgeStyles = {
-        indexed: 'bg-forest text-white',
-        processing: 'bg-cobalt text-white animate-pulse',
-        pending: 'bg-accent text-ink',
-        failed: 'bg-vermilion text-white'
+        indexed: 'bg-sageSoft text-sage',
+        processing: 'bg-slateSoft text-slateBlue animate-pulse',
+        pending: 'bg-ochreSoft text-ochre',
+        failed: 'bg-crimsonSoft text-crimson'
       };
       const statusText = {
         indexed: 'Ready',
@@ -2212,19 +2267,20 @@ def render_dashboard_html() -> str:
         pdf: 'PDF',
         markdown: 'Note',
         text: 'Text',
-        url: 'Web Link',
-        arxiv: 'Research Paper'
+        url: 'Web link',
+        arxiv: 'Paper'
       };
       listEl.innerHTML = docs.map(d => `
-        <div class="p-2.5 bg-cream/60 border border-ink flex items-center justify-between gap-2">
+        <div class="p-3 bg-paper/70 border border-line rounded-lg flex items-center justify-between gap-2">
           <div class="min-w-0">
-            <div class="font-bold text-ink truncate" title="${escapeHtml(d.title)}">${escapeHtml(d.title)}</div>
-            <div class="flex items-center gap-1.5 mt-0.5 font-mono text-[10px]">
-              <span class="px-1.5 py-0.2 border border-ink font-bold uppercase ${badgeStyles[d.status] || 'bg-sand'}">${escapeHtml(statusText[d.status] || d.status)}</span>
-              <span class="text-neutral-600">${escapeHtml(typeLabels[d.source_type] || 'Document')}</span>
+            <div class="font-medium text-ink truncate" title="${escapeHtml(d.title)}">${escapeHtml(d.title)}</div>
+            <div class="flex items-center gap-2 mt-1 text-[11px]">
+              <span class="px-2 py-0.5 rounded-full font-medium ${badgeStyles[d.status] || 'bg-parchment text-muted'}">${escapeHtml(statusText[d.status] || d.status)}</span>
+              <span class="text-muted">${escapeHtml(typeLabels[d.source_type] || 'Document')}</span>
             </div>
+            ${d.status === 'failed' && d.error_message ? `<div class="text-[11px] text-crimson mt-1 truncate" title="${escapeHtml(d.error_message)}">${escapeHtml(d.error_message)}</div>` : ''}
           </div>
-          <button onclick="deletePrivateDocument('${escapeHtml(d.id)}')" class="px-2 py-1 border border-ink bg-white hover:bg-vermilion hover:text-white text-[10px] font-bold shrink-0" title="Remove document">✕</button>
+          <button onclick="deletePrivateDocument('${escapeHtml(d.id)}')" class="p-1 rounded-md text-muted hover:text-crimson hover:bg-crimsonSoft shrink-0" title="Remove document">&times;</button>
         </div>
       `).join('');
 
@@ -2265,7 +2321,7 @@ def render_dashboard_html() -> str:
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Could not add link');
       inp.value = '';
-      showToast(`Added "${data.document?.title || 'link'}" to your documents!`, 'success');
+      showToast(`Added "${data.document?.title || 'link'}" to your documents.`, 'success');
       await loadPrivateDocuments();
     } catch (e) { showToast('Could not add that link. Please check the URL and try again.', 'error'); }
   }
@@ -2288,16 +2344,16 @@ def render_dashboard_html() -> str:
       const list = data.sessions || [];
       const el = document.getElementById('privateSessionsList');
       if (!list.length) {
-        el.innerHTML = '<div class="text-[11px] text-neutral-500">Ask a question to start saving your chats.</div>';
+        el.innerHTML = '<div class="text-xs text-muted">Ask a question to start saving your chats.</div>';
         return;
       }
       el.innerHTML = list.map(s => `
-        <div class="flex items-center gap-1 border border-ink ${s.id === activePrivateSessionId ? 'bg-accent font-bold' : 'bg-cream/50 hover:bg-sand'}">
-          <button onclick="openPrivateSession('${escapeHtml(s.id)}')" class="flex-1 min-w-0 text-left px-2.5 py-1.5 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1 rounded-lg border ${s.id === activePrivateSessionId ? 'bg-claySoft border-clay/30 text-clayDark font-medium' : 'bg-paper/60 border-line hover:bg-parchment/60 text-ink'}">
+          <button onclick="openPrivateSession('${escapeHtml(s.id)}')" class="flex-1 min-w-0 text-left px-3 py-2 flex items-center justify-between gap-2">
             <span class="truncate">${escapeHtml(s.title)}</span>
-            <span class="font-mono text-[9px] uppercase text-neutral-600 shrink-0">${escapeHtml(s.user_mode)}</span>
+            <span class="text-[10px] capitalize text-muted shrink-0">${escapeHtml(s.user_mode)}</span>
           </button>
-          <button onclick="deletePrivateSession('${escapeHtml(s.id)}')" class="px-2 py-1.5 text-[10px] font-bold text-neutral-500 hover:text-vermilion shrink-0" title="Delete chat">✕</button>
+          <button onclick="deletePrivateSession('${escapeHtml(s.id)}')" class="px-2 py-2 text-muted hover:text-crimson shrink-0" title="Delete chat">&times;</button>
         </div>
       `).join('');
     } catch (e) {}
@@ -2319,7 +2375,7 @@ def render_dashboard_html() -> str:
   function startNewPrivateSession() {
     activePrivateSessionId = null;
     document.getElementById('privateChatMessages').innerHTML = `
-      <div class="p-3.5 bg-white border-2 border-ink text-xs text-neutral-700 leading-relaxed">
+      <div class="p-4 bg-white border border-line rounded-xl text-xs text-muted leading-relaxed">
         Started a new chat. Ask anything about your uploaded documents.
       </div>
     `;
@@ -2336,10 +2392,10 @@ def render_dashboard_html() -> str:
       box.innerHTML = '';
       (data.messages || []).forEach(m => {
         if (m.role === 'user') {
-          box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[82%] px-3 py-2 bg-ink text-accent border-2 border-ink text-xs font-semibold">${escapeHtml(m.content)}</div></div>`);
+          box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[82%] px-3.5 py-2.5 rounded-2xl rounded-br-sm bg-ink text-paper text-xs sm:text-sm">${escapeHtml(m.content)}</div></div>`);
         } else {
           const wrap = document.createElement('div');
-          wrap.className = 'p-3.5 bg-white border-2 border-ink text-xs sm:text-sm space-y-2';
+          wrap.className = 'p-4 bg-white border border-line rounded-2xl rounded-bl-sm text-xs sm:text-sm space-y-2 leading-relaxed';
           wrap.innerHTML = `<div class="private-md-body">${formatMarkdownHtml(m.content)}</div>${renderCitationPillsHtml(m.citations || [])}`;
           box.appendChild(wrap);
           renderMathSafe(wrap);
@@ -2352,10 +2408,10 @@ def render_dashboard_html() -> str:
 
   function formatMarkdownHtml(raw) {
     return escapeHtml(raw || '')
-      .replace(/^###\s+(.*)$/gm, '<div class="font-display font-bold text-sm text-ink mt-1">$1</div>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*([^*\n]+)\*/g, '<em class="text-neutral-600">$1</em>')
-      .replace(/`([^`\n]+)`/g, '<code class="px-1 py-0.5 bg-sand font-mono text-[11px]">$1</code>')
+      .replace(/^###\s+(.*)$/gm, '<div class="font-serif font-semibold text-base text-ink mt-1">$1</div>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-ink">$1</strong>')
+      .replace(/\*([^*\n]+)\*/g, '<em class="text-muted">$1</em>')
+      .replace(/`([^`\n]+)`/g, '<code class="px-1 py-0.5 rounded bg-parchment text-xs">$1</code>')
       .replace(/\n/g, '<br/>');
   }
 
@@ -2376,11 +2432,11 @@ def render_dashboard_html() -> str:
   function renderCitationPillsHtml(citations) {
     if (!citations || !citations.length) return '';
     const pills = citations.map((c, idx) => `
-      <button onclick="openCitationChunk('${escapeHtml(c.doc_id)}', '${escapeHtml(c.chunk_id)}')" class="px-2 py-1 bg-cream hover:bg-accent border border-ink font-mono text-[10px] font-bold text-cobalt inline-flex items-center gap-1">
-        <span>[${idx + 1}] ${escapeHtml(c.doc_title.slice(0, 26))} · p.${c.page_number}</span>
+      <button onclick="openCitationChunk('${escapeHtml(c.doc_id)}', '${escapeHtml(c.chunk_id)}')" class="px-2.5 py-1 rounded-full bg-paper hover:bg-claySoft border border-line hover:border-clay/30 text-[11px] font-medium text-slateBlue inline-flex items-center gap-1">
+        <span>[${idx + 1}] ${escapeHtml(c.doc_title.slice(0, 26))} &middot; p.${c.page_number}</span>
       </button>
     `).join('');
-    return `<div class="pt-2 border-t border-neutral-200 flex flex-wrap gap-1.5">${pills}</div>`;
+    return `<div class="pt-2.5 border-t border-line flex flex-wrap gap-1.5">${pills}</div>`;
   }
 
   async function openCitationChunk(docId, chunkId) {
@@ -2390,8 +2446,8 @@ def render_dashboard_html() -> str:
       const data = await res.json();
       const ch = data.chunk;
       document.getElementById('citMetaBadges').innerHTML = `
-        <span class="px-2 py-0.5 bg-accent border border-ink font-mono text-[10px] font-bold">Page ${ch.page_number}</span>
-        <span class="px-2 py-0.5 bg-white border border-ink font-mono text-[10px] font-semibold">${escapeHtml(ch.section_header)}</span>
+        <span class="px-2.5 py-0.5 rounded-full bg-claySoft text-clayDark text-[11px] font-semibold">Page ${ch.page_number}</span>
+        <span class="px-2.5 py-0.5 rounded-full bg-parchment text-muted text-[11px] font-medium">${escapeHtml(ch.section_header)}</span>
       `;
       document.getElementById('citDocTitle').innerText = ch.doc_title;
       const body = document.getElementById('citChunkBody');
@@ -2412,10 +2468,10 @@ def render_dashboard_html() -> str:
     inp.value = '';
     btn.disabled = true;
 
-    box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[82%] px-3 py-2 bg-ink text-accent border-2 border-ink text-xs font-semibold">${escapeHtml(query)}</div></div>`);
+    box.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[82%] px-3.5 py-2.5 rounded-2xl rounded-br-sm bg-ink text-paper text-xs sm:text-sm">${escapeHtml(query)}</div></div>`);
     const respCard = document.createElement('div');
-    respCard.className = 'p-3.5 bg-white border-2 border-ink text-xs sm:text-sm space-y-2';
-    respCard.innerHTML = '<div class="private-md-body font-mono text-xs animate-pulse">Thinking...</div><div class="private-cites"></div>';
+    respCard.className = 'p-4 bg-white border border-line rounded-2xl rounded-bl-sm text-xs sm:text-sm space-y-2 leading-relaxed';
+    respCard.innerHTML = '<div class="private-md-body text-xs text-muted animate-pulse">Thinking...</div><div class="private-cites"></div>';
     box.appendChild(respCard);
     box.scrollTop = box.scrollHeight;
 
@@ -2451,7 +2507,7 @@ def render_dashboard_html() -> str:
             if (payload.session_id) activePrivateSessionId = payload.session_id;
             latestCitations = payload.citations || [];
             citesNode.innerHTML = renderCitationPillsHtml(latestCitations);
-            bodyNode.className = 'private-md-body leading-relaxed';
+            bodyNode.className = 'private-md-body leading-relaxed text-ink/90';
           } else if (payload.type === 'delta') {
             accText += payload.text || '';
             bodyNode.innerHTML = formatMarkdownHtml(accText);
@@ -2463,18 +2519,29 @@ def render_dashboard_html() -> str:
       }
       await loadPrivateSessions();
     } catch (e) {
-      respCard.innerHTML = `<div class="text-vermilion font-semibold text-xs">Could not generate a response right now. Please try again.</div>`;
+      respCard.innerHTML = '<div class="text-crimson text-xs font-medium">Could not generate a response right now. Please try again.</div>';
     } finally {
       btn.disabled = false;
     }
   }
 
   (async function init() {
+    const sp = new URLSearchParams(window.location.search);
+    const authReturned = sp.get('auth') === 'success';
     restoreFiltersFromUrl();
     await initAuthAndModes();
     await loadKanbanTracker();
     await updateStatsCounters();
     await fetchOpportunities();
+    if (window.location.hash === '#assistant' || authReturned) {
+      switchWorkspace('assistant');
+      if (authReturned && currentUser) {
+        showToast(`Welcome back, ${currentUser.full_name}.`, 'success');
+        sp.delete('auth');
+        const cleanQs = sp.toString();
+        window.history.replaceState(null, '', cleanQs ? `${window.location.pathname}?${cleanQs}` : window.location.pathname);
+      }
+    }
   })();
 </script>
 </body>
