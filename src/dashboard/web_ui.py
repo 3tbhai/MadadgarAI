@@ -92,6 +92,7 @@ def render_dashboard_html() -> str:
       transition: background-color 0.15s ease, border-color 0.15s ease;
     }
     .btn-secondary:hover { background: #F5F1EB; border-color: #C8BEB0; }
+    .btn-secondary:active { transform: translateY(1px); }
     .field-input {
       background: #FCFBF9;
       border: 1px solid #DDD6CB;
