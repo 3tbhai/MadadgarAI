@@ -206,3 +206,24 @@ def test_4_end_to_end_ingestion_cited_rag_sse_stream_and_cascading_delete():
         assert client.delete(f"/api/saral/documents/{doc_id}").status_code == 200
         assert client.get(f"/api/saral/documents/{first_cite['doc_id']}/chunks/{first_cite['chunk_id']}").status_code == 404
         assert client.delete(f"/api/saral/sessions/{sid}").status_code == 200
+
+
+def test_5_authenticated_tracker_isolation_and_dev_auth_guard(monkeypatch):
+    """Verify user-scoped tracker routes enforce JWT ownership and ALLOW_LOCAL_DEV_AUTH=false blocks dev-login."""
+    with TestClient(app) as client_a, TestClient(app) as client_b, TestClient(app) as anon:
+        r_a = client_a.post("/api/auth/dev-login", json={"email": "tracker_a@saral.test", "full_name": "Tracker A"})
+        r_b = client_b.post("/api/auth/dev-login", json={"email": "tracker_b@saral.test", "full_name": "Tracker B"})
+        assert r_a.status_code == 200 and r_b.status_code == 200
+        uid_a = r_a.json()["user"]["id"]
+
+        # Unauthenticated caller rejected with 401; another signed-in user rejected with 403
+        assert anon.get(f"/api/tracker/user:{uid_a}").status_code == 401
+        assert client_b.get(f"/api/tracker/user:{uid_a}").status_code == 403
+        assert client_b.get(f"/api/tracker/user:{uid_a}/reminders").status_code == 403
+        # Owner succeeds with 200
+        assert client_a.get(f"/api/tracker/user:{uid_a}").status_code == 200
+        assert client_a.get(f"/api/tracker/user:{uid_a}/reminders").status_code == 200
+
+        # When ALLOW_LOCAL_DEV_AUTH=false, dev-login is blocked with 403
+        monkeypatch.setenv("ALLOW_LOCAL_DEV_AUTH", "false")
+        assert anon.post("/api/auth/dev-login", json={"email": "blocked@saral.test"}).status_code == 403

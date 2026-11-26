@@ -8,7 +8,7 @@ import logging
 import os
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, File, Form, HTTPException, Query, Response, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, Request, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
@@ -16,8 +16,8 @@ from pydantic import BaseModel, Field
 from src.ai.document_assistant import IntelligentDocumentAssistant
 from src.ai.rag_engine import SaralSamjhautiRAG
 from src.ai.session_store import ConversationalMemoryStore
-from src.api.saral_router import router as saral_v2_router, saral_gemini
-from src.auth.security import get_google_client_id
+from src.api.saral_router import router as saral_v2_router, saral_db, saral_gemini
+from src.auth.security import get_google_client_id, get_optional_current_user
 from src.crawlers.deep_analyzer import DeepPageAnalysis, DeepPageAnalyzer
 from src.crawlers.link_verifier import PLAYWRIGHT_AVAILABLE
 from src.crawlers.pipeline import LiveOpportunityStore, LivePipelineOrchestrator, live_opportunity_to_foa
@@ -380,9 +380,22 @@ async def deep_analyze_live_opportunity(opp_id: str):
 # Personal Application Kanban Tracker & Saved Deadlines (.ics)
 # -------------------------------------------------------------
 
+def _enforce_tracker_ownership(session_id: str, request: Request) -> None:
+    """Enforces JWT ownership whenever a tracker session is scoped to an authenticated user (`user:<id>`)."""
+    if not session_id.startswith("user:"):
+        return
+    owner_id = session_id[5:].strip()
+    current_user = get_optional_current_user(request, saral_db)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Sign in required to access your personal tracker.")
+    if current_user["id"] != owner_id:
+        raise HTTPException(status_code=403, detail="Access denied to another user's tracker.")
+
+
 @app.get("/api/tracker/{session_id}")
-async def get_kanban_tracker(session_id: str):
+async def get_kanban_tracker(session_id: str, request: Request):
     """Returns all saved Kanban application items for a user session."""
+    _enforce_tracker_ownership(session_id, request)
     items = session_store.get_kanban_items(session_id)
     return {
         "session_id": session_id,
@@ -392,8 +405,9 @@ async def get_kanban_tracker(session_id: str):
 
 
 @app.post("/api/tracker/{session_id}")
-async def add_or_update_kanban_item(session_id: str, req: KanbanUpsertRequest):
+async def add_or_update_kanban_item(session_id: str, req: KanbanUpsertRequest, request: Request):
     """Saves an opportunity into the user's Personal Application Kanban Tracker."""
+    _enforce_tracker_ownership(session_id, request)
     matched_opp: Optional[LiveOpportunity] = None
     for opp in live_store.load_all(exclude_expired=False):
         if opp.id == req.opp_id:
@@ -435,8 +449,9 @@ async def add_or_update_kanban_item(session_id: str, req: KanbanUpsertRequest):
 
 
 @app.patch("/api/tracker/{session_id}/{opp_id}")
-async def move_kanban_item_stage(session_id: str, opp_id: str, req: KanbanStageUpdateRequest):
+async def move_kanban_item_stage(session_id: str, opp_id: str, req: KanbanStageUpdateRequest, request: Request):
     """Moves a saved application card across Kanban stages (Saved -> Preparing Docs -> Applied -> Result)."""
+    _enforce_tracker_ownership(session_id, request)
     items = session_store.update_kanban_stage(
         session_id=session_id,
         opp_id=opp_id,
@@ -447,15 +462,17 @@ async def move_kanban_item_stage(session_id: str, opp_id: str, req: KanbanStageU
 
 
 @app.delete("/api/tracker/{session_id}/{opp_id}")
-async def remove_kanban_tracker_item(session_id: str, opp_id: str):
+async def remove_kanban_tracker_item(session_id: str, opp_id: str, request: Request):
     """Removes an opportunity from the user's Kanban tracker."""
+    _enforce_tracker_ownership(session_id, request)
     items = session_store.remove_kanban_item(session_id=session_id, opp_id=opp_id)
     return {"session_id": session_id, "total": len(items), "items": items}
 
 
 @app.get("/api/tracker/{session_id}/calendar.ics")
-async def export_saved_kanban_calendar(session_id: str):
+async def export_saved_kanban_calendar(session_id: str, request: Request):
     """Exports an iCalendar (.ics) bundle containing only the user's saved Kanban opportunities."""
+    _enforce_tracker_ownership(session_id, request)
     items = session_store.get_kanban_items(session_id)
     live_lookup = {o.id: o for o in live_store.load_all(exclude_expired=False)}
     saved_foas: List[FundingOpportunity] = []
@@ -521,8 +538,9 @@ def _compute_due_kanban_alerts(session_id: str, max_lead_days: int = 14) -> List
 
 
 @app.get("/api/tracker/{session_id}/reminders")
-async def get_tracker_reminders(session_id: str):
+async def get_tracker_reminders(session_id: str, request: Request):
     """Returns configured reminder subscriptions and currently approaching saved deadlines."""
+    _enforce_tracker_ownership(session_id, request)
     reminders = session_store.list_reminders(session_id)
     max_lead = max([r["lead_days"] for r in reminders], default=14)
     return {
@@ -533,8 +551,9 @@ async def get_tracker_reminders(session_id: str):
 
 
 @app.post("/api/tracker/{session_id}/reminders")
-async def add_tracker_reminder(session_id: str, req: ReminderCreateRequest):
+async def add_tracker_reminder(session_id: str, req: ReminderCreateRequest, request: Request):
     """Creates a deadline reminder subscription (Browser, Email, or Discord/Slack Webhook)."""
+    _enforce_tracker_ownership(session_id, request)
     reminders = session_store.add_reminder(
         session_id=session_id,
         channel=req.channel,
@@ -549,14 +568,16 @@ async def add_tracker_reminder(session_id: str, req: ReminderCreateRequest):
 
 
 @app.delete("/api/tracker/{session_id}/reminders/{reminder_id}")
-async def delete_tracker_reminder(session_id: str, reminder_id: int):
+async def delete_tracker_reminder(session_id: str, reminder_id: int, request: Request):
+    _enforce_tracker_ownership(session_id, request)
     reminders = session_store.delete_reminder(session_id=session_id, reminder_id=reminder_id)
     return {"session_id": session_id, "reminders": reminders}
 
 
 @app.post("/api/tracker/{session_id}/reminders/dispatch")
-async def dispatch_tracker_reminders(session_id: str):
+async def dispatch_tracker_reminders(session_id: str, request: Request):
     """Evaluates approaching deadlines and dispatches webhook alerts (or returns email/browser summary)."""
+    _enforce_tracker_ownership(session_id, request)
     import httpx as _httpx
 
     reminders = session_store.list_reminders(session_id)
