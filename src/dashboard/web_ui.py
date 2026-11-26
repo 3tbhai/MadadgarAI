@@ -132,6 +132,7 @@ def render_dashboard_html() -> str:
     tbody tr:hover { background-color: rgba(180, 76, 46, 0.025); }
     details[open] summary ~ * { animation: accordionSlide 0.2s ease-out; }
     @keyframes accordionSlide { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-backdrop-smooth { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
   </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-claySoft selection:text-clayDark">
