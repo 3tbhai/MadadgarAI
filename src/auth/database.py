@@ -10,7 +10,9 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 import uuid
 
 from src.auth.modes import UserMode
-from src.config import BASE_DIR, DATABASE_PATH
+from src.config import DATABASE_PATH
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 logger = logging.getLogger("MadadgaarAI.Auth.DB")
 
@@ -149,7 +151,7 @@ class SaralMultiTenantDB:
 
     def _init_schema(self):
         if self.is_postgres:
-            mig_path = BASE_DIR / "migrations" / "001_saral_multitenant_pgvector.sql"
+            mig_path = PROJECT_ROOT / "migrations" / "001_saral_multitenant_pgvector.sql"
             if mig_path.exists():
                 sql_script = mig_path.read_text(encoding="utf-8")
                 with self._connect() as conn:
