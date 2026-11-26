@@ -126,6 +126,8 @@ def render_dashboard_html() -> str:
     .toast-entry { animation: toastSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
     #authUserDropdown:not(.hidden) { animation: menuFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes statusPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    .status-pulse-dot { animation: statusPulse 2.4s ease-in-out infinite; }
   </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-claySoft selection:text-clayDark">
