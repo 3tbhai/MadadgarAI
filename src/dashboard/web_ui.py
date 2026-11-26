@@ -135,6 +135,7 @@ def render_dashboard_html() -> str:
     .modal-backdrop-smooth { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
     header button.group svg { transition: transform 0.2s ease; }
     header button.group:hover svg { transform: scale(1.04); }
+    @media print { header, #toastContainer, nav { display: none !important; } .paper-card { border: 1px solid #ccc !important; box-shadow: none !important; } }
   </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-claySoft selection:text-clayDark">
