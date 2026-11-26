@@ -53,7 +53,13 @@ def is_cookie_secure() -> bool:
 
 
 def is_dev_auth_allowed() -> bool:
-    return (os.getenv("ALLOW_LOCAL_DEV_AUTH", "true").strip().lower() in ("1", "true", "yes"))
+    explicit = os.getenv("ALLOW_LOCAL_DEV_AUTH")
+    if explicit is not None and explicit.strip() != "":
+        return explicit.strip().lower() in ("1", "true", "yes")
+    env_mode = (os.getenv("MADADGAAR_ENV") or "").strip().lower()
+    if env_mode in ("prod", "production"):
+        return False
+    return True
 
 
 def _hash_token(raw_token: str) -> str:
@@ -269,6 +275,22 @@ def build_get_current_user(db: SaralMultiTenantDB):
         return user
 
     return get_current_user
+
+
+def get_optional_current_user(request: Request, db: SaralMultiTenantDB) -> Optional[Dict[str, Any]]:
+    """Returns authenticated user dict if a valid JWT cookie/Bearer token is present, else None."""
+    token = request.cookies.get(ACCESS_COOKIE_NAME)
+    if not token:
+        auth_hdr = request.headers.get("Authorization") or ""
+        if auth_hdr.lower().startswith("bearer "):
+            token = auth_hdr[7:].strip()
+    if not token:
+        return None
+    try:
+        payload = decode_access_token(token)
+        return db.get_user_by_id(payload["sub"])
+    except HTTPException:
+        return None
 
 
 class SlidingWindowRateLimiter:

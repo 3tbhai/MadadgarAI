@@ -772,10 +772,30 @@ def render_dashboard_html() -> str:
   let currentModalOpp = null;
   let kanbanItems = [];
   const KANBAN_STAGES = ['Saved', 'Preparing Docs', 'Applied', 'Result'];
-  let activeSessionId = localStorage.getItem('madadgaar_session_id') || '';
-  if (!activeSessionId) {
-    activeSessionId = 'sess-' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-    localStorage.setItem('madadgaar_session_id', activeSessionId);
+  let anonSessionId = localStorage.getItem('madadgaar_session_id') || '';
+  if (!anonSessionId) {
+    anonSessionId = 'sess-' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    localStorage.setItem('madadgaar_session_id', anonSessionId);
+  }
+  let activeSessionId = anonSessionId;
+  let pendingRefreshPromise = null;
+
+  async function authFetch(url, options = {}) {
+    const opts = { ...options, credentials: 'include' };
+    let res = await fetch(url, opts);
+    if (res.status === 401 && !options._retried) {
+      if (!pendingRefreshPromise) {
+        pendingRefreshPromise = fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' })
+          .then(r => r.ok)
+          .catch(() => false)
+          .finally(() => { pendingRefreshPromise = null; });
+      }
+      const refreshed = await pendingRefreshPromise;
+      if (refreshed) {
+        res = await fetch(url, { ...opts, _retried: true });
+      }
+    }
+    return res;
   }
 
   function escapeHtml(str) {
@@ -1589,7 +1609,7 @@ def render_dashboard_html() -> str:
 
   async function loadKanbanTracker() {
     try {
-      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`);
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`);
       if (!res.ok) return;
       const data = await res.json();
       kanbanItems = data.items || [];
@@ -1604,12 +1624,12 @@ def render_dashboard_html() -> str:
       await removeKanbanItem(opp.id);
     } else {
       try {
-        const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`, {
+        const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ opp_id: opp.id, stage: 'Saved' })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error('Save failed');
         const data = await res.json();
         kanbanItems = data.items || [];
         updateTrackerBadge();
@@ -1629,12 +1649,12 @@ def render_dashboard_html() -> str:
       await toggleSaveOpportunity(currentModalIdx);
     } else {
       try {
-        const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`, {
+        const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ opp_id: currentModalOpp.id, stage: 'Saved' })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error('Save failed');
         const data = await res.json();
         kanbanItems = data.items || [];
         updateTrackerBadge();
@@ -1646,12 +1666,12 @@ def render_dashboard_html() -> str:
 
   async function moveKanbanStage(oppId, newStage) {
     try {
-      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stage: newStage })
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Move failed');
       const data = await res.json();
       kanbanItems = data.items || [];
       updateTrackerBadge();
@@ -1665,12 +1685,12 @@ def render_dashboard_html() -> str:
 
   async function saveKanbanNote(oppId, stage, noteText) {
     try {
-      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stage, notes: noteText })
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Note save failed');
       const data = await res.json();
       kanbanItems = data.items || [];
       showToast('Note saved to tracker.', 'success');
@@ -1681,10 +1701,10 @@ def render_dashboard_html() -> str:
 
   async function removeKanbanItem(oppId) {
     try {
-      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/${encodeURIComponent(oppId)}`, {
         method: 'DELETE'
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Delete failed');
       const data = await res.json();
       kanbanItems = data.items || [];
       updateTrackerBadge();
@@ -1755,7 +1775,7 @@ def render_dashboard_html() -> str:
 
   async function loadTrackerReminders() {
     try {
-      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders`);
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders`);
       if (!res.ok) return;
       const data = await res.json();
       trackerReminders = data.reminders || [];
@@ -1768,13 +1788,16 @@ def render_dashboard_html() -> str:
     const target = document.getElementById('remTarget').value.trim() || (channel === 'browser' ? 'In-App Browser Alert' : '');
     const lead_days = parseInt(document.getElementById('remLeadDays').value || '7', 10);
     if (!target) { showToast('Enter a webhook URL or email address.', 'warning'); return; }
+    if (channel === 'browser' && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      try { await Notification.requestPermission(); } catch (e) {}
+    }
     try {
-      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders`, {
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ channel, target, lead_days })
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error('Save failed');
       const data = await res.json();
       trackerReminders = data.reminders || [];
       document.getElementById('remTarget').value = '';
@@ -1785,7 +1808,7 @@ def render_dashboard_html() -> str:
 
   async function deleteTrackerReminder(remId) {
     try {
-      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders/${remId}`, { method: 'DELETE' });
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders/${remId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       trackerReminders = data.reminders || [];
@@ -1796,7 +1819,7 @@ def render_dashboard_html() -> str:
 
   async function dispatchTrackerReminders() {
     try {
-      const res = await fetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders/dispatch`, { method: 'POST' });
+      const res = await authFetch(`/api/tracker/${encodeURIComponent(activeSessionId)}/reminders/dispatch`, { method: 'POST' });
       if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       const list = data.dispatched || [];
@@ -1805,6 +1828,12 @@ def render_dashboard_html() -> str:
         return;
       }
       const totalDue = list.reduce((acc, x) => acc + (x.due_count || 0), 0);
+      if (totalDue > 0 && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        const bItem = list.find(x => x.channel === 'browser' && x.due_count > 0);
+        if (bItem) {
+          try { new Notification('MadadgaarAI Deadline Alert', { body: bItem.preview }); } catch (e) {}
+        }
+      }
       showToast(
         totalDue > 0 ? `${totalDue} saved deadline(s) closing soon.` : 'All caught up — no urgent deadlines right now.',
         totalDue > 0 ? 'warning' : 'success'
@@ -2050,6 +2079,7 @@ def render_dashboard_html() -> str:
     document.getElementById('privateWorkspaceGrid').classList.toggle('hidden', !loggedIn);
 
     if (loggedIn) {
+      activeSessionId = 'user:' + currentUser.id;
       const mc = currentUser.mode_config || {};
       const sel = document.getElementById('headerModeSelect');
       sel.value = currentUser.user_mode || 'student';
@@ -2066,6 +2096,8 @@ def render_dashboard_html() -> str:
       pBadge.style.backgroundColor = mc.badge_bg || '#ffcc00';
       pBadge.style.color = mc.badge_text || '#18181b';
       document.getElementById('privateModeDesc').innerText = mc.description || '';
+    } else {
+      activeSessionId = anonSessionId;
     }
   }
 
@@ -2082,7 +2114,7 @@ def render_dashboard_html() -> str:
           document.getElementById('devLoginSection').classList.add('hidden');
         }
       }
-      const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+      const meRes = await authFetch('/api/auth/me');
       if (meRes.ok) {
         const me = await meRes.json();
         currentUser = me.user;
@@ -2111,6 +2143,7 @@ def render_dashboard_html() -> str:
       currentUser = data.user;
       closeAuthModal();
       applyAuthUIState();
+      await loadKanbanTracker();
       await loadPrivateDocuments();
       await loadPrivateSessions();
       showToast(`Signed in as ${currentUser.full_name} (${currentUser.mode_config?.display_name || 'Student Mode'})`, 'success');
@@ -2121,10 +2154,9 @@ def render_dashboard_html() -> str:
 
   async function handleModeSwitch(newMode) {
     try {
-      const res = await fetch('/api/auth/mode', {
+      const res = await authFetch('/api/auth/mode', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ user_mode: newMode })
       });
       if (!res.ok) throw new Error('Mode switch failed');
@@ -2145,13 +2177,16 @@ def render_dashboard_html() -> str:
     activePrivateSessionId = null;
     document.getElementById('authUserDropdown').classList.add('hidden');
     applyAuthUIState();
+    await loadKanbanTracker();
+    renderKanbanBoard();
+    renderTimelineView();
     showToast('Signed out.', 'info');
   }
 
   async function loadPrivateDocuments() {
     if (!currentUser) return;
     try {
-      const res = await fetch('/api/saral/documents', { credentials: 'include' });
+      const res = await authFetch('/api/saral/documents');
       if (!res.ok) return;
       const data = await res.json();
       const docs = data.documents || [];
@@ -2207,7 +2242,7 @@ def render_dashboard_html() -> str:
     const fd = new FormData();
     fd.append('file', inp.files[0]);
     try {
-      const res = await fetch('/api/saral/documents/upload', { method: 'POST', credentials: 'include', body: fd });
+      const res = await authFetch('/api/saral/documents/upload', { method: 'POST', body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Upload failed');
       inp.value = '';
@@ -2222,10 +2257,9 @@ def render_dashboard_html() -> str:
     if (!url) return;
     showToast('Adding link to your documents...', 'info');
     try {
-      const res = await fetch('/api/saral/documents/ingest-url', {
+      const res = await authFetch('/api/saral/documents/ingest-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ url })
       });
       const data = await res.json();
@@ -2238,7 +2272,7 @@ def render_dashboard_html() -> str:
 
   async function deletePrivateDocument(docId) {
     try {
-      const res = await fetch(`/api/saral/documents/${encodeURIComponent(docId)}`, { method: 'DELETE', credentials: 'include' });
+      const res = await authFetch(`/api/saral/documents/${encodeURIComponent(docId)}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Delete failed');
       showToast('Document removed.', 'info');
       await loadPrivateDocuments();
@@ -2248,7 +2282,7 @@ def render_dashboard_html() -> str:
   async function loadPrivateSessions() {
     if (!currentUser) return;
     try {
-      const res = await fetch('/api/saral/sessions', { credentials: 'include' });
+      const res = await authFetch('/api/saral/sessions');
       if (!res.ok) return;
       const data = await res.json();
       const list = data.sessions || [];
@@ -2258,12 +2292,28 @@ def render_dashboard_html() -> str:
         return;
       }
       el.innerHTML = list.map(s => `
-        <button onclick="openPrivateSession('${escapeHtml(s.id)}')" class="w-full text-left px-2.5 py-1.5 border border-ink ${s.id === activePrivateSessionId ? 'bg-accent font-bold' : 'bg-cream/50 hover:bg-sand'} flex items-center justify-between gap-2">
-          <span class="truncate">${escapeHtml(s.title)}</span>
-          <span class="font-mono text-[9px] uppercase text-neutral-600 shrink-0">${escapeHtml(s.user_mode)}</span>
-        </button>
+        <div class="flex items-center gap-1 border border-ink ${s.id === activePrivateSessionId ? 'bg-accent font-bold' : 'bg-cream/50 hover:bg-sand'}">
+          <button onclick="openPrivateSession('${escapeHtml(s.id)}')" class="flex-1 min-w-0 text-left px-2.5 py-1.5 flex items-center justify-between gap-2">
+            <span class="truncate">${escapeHtml(s.title)}</span>
+            <span class="font-mono text-[9px] uppercase text-neutral-600 shrink-0">${escapeHtml(s.user_mode)}</span>
+          </button>
+          <button onclick="deletePrivateSession('${escapeHtml(s.id)}')" class="px-2 py-1.5 text-[10px] font-bold text-neutral-500 hover:text-vermilion shrink-0" title="Delete chat">✕</button>
+        </div>
       `).join('');
     } catch (e) {}
+  }
+
+  async function deletePrivateSession(sid) {
+    try {
+      const res = await authFetch(`/api/saral/sessions/${encodeURIComponent(sid)}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      if (activePrivateSessionId === sid) {
+        startNewPrivateSession();
+      } else {
+        await loadPrivateSessions();
+      }
+      showToast('Chat removed.', 'info');
+    } catch (e) { showToast('Could not remove chat.', 'error'); }
   }
 
   function startNewPrivateSession() {
@@ -2279,7 +2329,7 @@ def render_dashboard_html() -> str:
   async function openPrivateSession(sid) {
     activePrivateSessionId = sid;
     try {
-      const res = await fetch(`/api/saral/sessions/${encodeURIComponent(sid)}/messages`, { credentials: 'include' });
+      const res = await authFetch(`/api/saral/sessions/${encodeURIComponent(sid)}/messages`);
       if (!res.ok) return;
       const data = await res.json();
       const box = document.getElementById('privateChatMessages');
@@ -2335,7 +2385,7 @@ def render_dashboard_html() -> str:
 
   async function openCitationChunk(docId, chunkId) {
     try {
-      const res = await fetch(`/api/saral/documents/${encodeURIComponent(docId)}/chunks/${encodeURIComponent(chunkId)}`, { credentials: 'include' });
+      const res = await authFetch(`/api/saral/documents/${encodeURIComponent(docId)}/chunks/${encodeURIComponent(chunkId)}`);
       if (!res.ok) throw new Error('Could not open source');
       const data = await res.json();
       const ch = data.chunk;
@@ -2373,10 +2423,9 @@ def render_dashboard_html() -> str:
     let latestCitations = [];
 
     try {
-      const res = await fetch('/api/saral/chat/stream', {
+      const res = await authFetch('/api/saral/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ query, session_id: activePrivateSessionId })
       });
       if (!res.ok) {
