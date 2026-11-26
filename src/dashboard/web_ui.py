@@ -120,6 +120,7 @@ def render_dashboard_html() -> str:
     ::-webkit-scrollbar-thumb { background: #DDD6CB; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #B9AFA1; }
     :focus-visible { outline: 2px solid #B44C2E; outline-offset: 2px; }
+    .stype-pill { transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease; }
   </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-claySoft selection:text-clayDark">
