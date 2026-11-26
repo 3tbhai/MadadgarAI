@@ -722,6 +722,7 @@ async def draft_proposal_skeleton(foa_id: str, req: ProposalDraftRequest):
         pi_name=req.pi_name,
         institution_name=req.institution_name,
         custom_abstract=req.custom_abstract,
+        use_llm=True,
     )
 
 
