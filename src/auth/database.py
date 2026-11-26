@@ -1,14 +1,16 @@
-"""Multi-Tenant ACID Relational + Vector Chunk Store for Saral AI (Strict user_id Isolation)."""
+"""Multi-Tenant ACID Relational + Vector Chunk Store for Saral AI (Dual SQLite WAL & PostgreSQL pgvector)."""
+from contextlib import contextmanager
 from datetime import datetime, timezone
 import json
 import logging
+import os
 from pathlib import Path
 import sqlite3
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 import uuid
 
 from src.auth.modes import UserMode
-from src.config import DATABASE_PATH
+from src.config import BASE_DIR, DATABASE_PATH
 
 logger = logging.getLogger("MadadgaarAI.Auth.DB")
 
@@ -17,26 +19,144 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _format_pgvector(vec: List[float]) -> str:
+    return "[" + ",".join(f"{float(v):.6f}" for v in vec) + "]"
+
+
+def _parse_pgvector(raw: Any) -> List[float]:
+    if isinstance(raw, (list, tuple)):
+        return [float(x) for x in raw]
+    if isinstance(raw, str):
+        s = raw.strip().strip("[]")
+        if not s:
+            return []
+        return [float(x) for x in s.split(",") if x.strip()]
+    return []
+
+
+class _PgCursorWrapper:
+    """Thin DB-API wrapper exposing SQLite-like dict rows and `?` -> `%s` parameter conversion."""
+
+    def __init__(self, cur: Any):
+        self._cur = cur
+
+    @property
+    def rowcount(self) -> int:
+        return int(getattr(self._cur, "rowcount", 0) or 0)
+
+    def execute(self, sql: str, params: Tuple[Any, ...] | List[Any] = ()) -> "_PgCursorWrapper":
+        pg_sql = sql.replace("?", "%s")
+        self._cur.execute(pg_sql, params or ())
+        return self
+
+    def fetchone(self) -> Optional[Dict[str, Any]]:
+        row = self._cur.fetchone()
+        if row is None:
+            return None
+        if isinstance(row, dict):
+            return row
+        cols = [d[0] for d in (self._cur.description or [])]
+        return dict(zip(cols, row))
+
+    def fetchall(self) -> List[Dict[str, Any]]:
+        rows = self._cur.fetchall() or []
+        if not rows:
+            return []
+        if isinstance(rows[0], dict):
+            return list(rows)
+        cols = [d[0] for d in (self._cur.description or [])]
+        return [dict(zip(cols, r)) for r in rows]
+
+
+class _PgConnWrapper:
+    def __init__(self, raw_conn: Any):
+        self._conn = raw_conn
+
+    def cursor(self) -> _PgCursorWrapper:
+        return _PgCursorWrapper(self._conn.cursor())
+
+    def execute(self, sql: str, params: Tuple[Any, ...] | List[Any] = ()) -> _PgCursorWrapper:
+        return self.cursor().execute(sql, params)
+
+    def commit(self) -> None:
+        self._conn.commit()
+
+    def close(self) -> None:
+        self._conn.close()
+
+
 class SaralMultiTenantDB:
     """
-    ACID SQLite store for Users, Refresh Tokens, Tenant-Isolated Documents,
+    ACID Multi-Tenant Store for Users, Refresh Tokens, Tenant-Isolated Documents,
     Vector Chunks (with ON DELETE CASCADE), and Multi-Turn Chat Sessions/Messages.
-    Production PostgreSQL + pgvector schema parity is provided in migrations/001_saral_multitenant_pgvector.sql.
+
+    Automatically connects to PostgreSQL + pgvector when `DATABASE_URL=postgresql://...`
+    is configured and reachable (psycopg v3 or psycopg2), and seamlessly falls back to
+    local SQLite WAL mode otherwise.
     """
 
-    def __init__(self, db_path: Path = DATABASE_PATH):
+    def __init__(self, db_path: Path = DATABASE_PATH, database_url: Optional[str] = None):
         self.db_path = Path(db_path)
+        self.database_url = (database_url if database_url is not None else (os.getenv("DATABASE_URL") or "")).strip()
+        self._pg_driver: Optional[str] = None
+        self.backend_name: str = "sqlite"
+        self._detect_backend()
         self._init_schema()
 
-    def _connect(self) -> sqlite3.Connection:
+    def _detect_backend(self) -> None:
+        if not self.database_url.startswith(("postgresql://", "postgres://")):
+            self.backend_name = "sqlite"
+            return
+        for mod_name in ("psycopg", "psycopg2"):
+            try:
+                mod = __import__(mod_name)
+                test_conn = mod.connect(self.database_url, connect_timeout=3)
+                test_conn.close()
+                self._pg_driver = mod_name
+                self.backend_name = f"postgresql+pgvector ({mod_name})"
+                logger.info(f"SaralMultiTenantDB connected to PostgreSQL via {mod_name}.")
+                return
+            except Exception as exc:
+                logger.debug(f"PostgreSQL driver {mod_name} unavailable/unreachable: {exc}")
+        logger.info("PostgreSQL not reachable locally; using SQLite WAL backend for SaralMultiTenantDB.")
+        self.backend_name = "sqlite"
+
+    @property
+    def is_postgres(self) -> bool:
+        return self._pg_driver is not None
+
+    @contextmanager
+    def _connect(self) -> Iterator[Any]:
+        if self.is_postgres:
+            mod = __import__(self._pg_driver)
+            raw = mod.connect(self.database_url)
+            wrapper = _PgConnWrapper(raw)
+            try:
+                yield wrapper
+            finally:
+                wrapper.close()
+            return
+
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON;")
         conn.execute("PRAGMA journal_mode = WAL;")
-        return conn
+        try:
+            yield conn
+        finally:
+            conn.close()
 
     def _init_schema(self):
+        if self.is_postgres:
+            mig_path = BASE_DIR / "migrations" / "001_saral_multitenant_pgvector.sql"
+            if mig_path.exists():
+                sql_script = mig_path.read_text(encoding="utf-8")
+                with self._connect() as conn:
+                    conn.execute(sql_script)
+                    conn.commit()
+            return
+
         with self._connect() as conn:
             cur = conn.cursor()
             cur.executescript(
@@ -188,9 +308,9 @@ class SaralMultiTenantDB:
             conn.execute(
                 """
                 INSERT INTO refresh_tokens (jti, user_id, token_hash, expires_at, revoked, created_at)
-                VALUES (?, ?, ?, ?, 0, ?)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
-                (jti, user_id, token_hash, expires_at, _utc_now()),
+                (jti, user_id, token_hash, expires_at, False if self.is_postgres else 0, _utc_now()),
             )
             conn.commit()
 
@@ -202,14 +322,17 @@ class SaralMultiTenantDB:
     def revoke_refresh_token(self, jti: str, replaced_by: Optional[str] = None) -> None:
         with self._connect() as conn:
             conn.execute(
-                "UPDATE refresh_tokens SET revoked = 1, replaced_by = ? WHERE jti = ?",
-                (replaced_by, jti),
+                "UPDATE refresh_tokens SET revoked = ?, replaced_by = ? WHERE jti = ?",
+                (True if self.is_postgres else 1, replaced_by, jti),
             )
             conn.commit()
 
     def revoke_all_user_refresh_tokens(self, user_id: str) -> None:
         with self._connect() as conn:
-            conn.execute("UPDATE refresh_tokens SET revoked = 1 WHERE user_id = ?", (user_id,))
+            conn.execute(
+                "UPDATE refresh_tokens SET revoked = ? WHERE user_id = ?",
+                (True if self.is_postgres else 1, user_id),
+            )
             conn.commit()
 
     # ------------------------------------------------------------------
@@ -318,30 +441,47 @@ class SaralMultiTenantDB:
             cur.execute("DELETE FROM document_chunks WHERE doc_id = ? AND user_id = ?", (doc_id, user_id))
             for ch in chunks:
                 emb = ch["embedding"]
-                cur.execute(
-                    """
-                    INSERT INTO document_chunks (
-                        id, doc_id, user_id, user_mode, doc_title, page_number,
-                        section_header, chunk_index, content, token_count,
-                        embedding_json, embedding_dim, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        ch["id"],
-                        doc_id,
-                        user_id,
-                        ch["user_mode"],
-                        ch["doc_title"],
-                        int(ch["page_number"]),
-                        ch["section_header"],
-                        int(ch["chunk_index"]),
-                        ch["content"],
-                        int(ch["token_count"]),
-                        json.dumps(emb),
-                        len(emb),
-                        now,
-                    ),
-                )
+                if self.is_postgres:
+                    vec_768 = (list(emb) + [0.0] * 768)[:768]
+                    cur.execute(
+                        """
+                        INSERT INTO document_chunks (
+                            id, doc_id, user_id, user_mode, doc_title, page_number,
+                            section_header, chunk_index, content, token_count,
+                            embedding, created_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::vector, ?)
+                        """,
+                        (
+                            ch["id"], doc_id, user_id, ch["user_mode"], ch["doc_title"],
+                            int(ch["page_number"]), ch["section_header"], int(ch["chunk_index"]),
+                            ch["content"], int(ch["token_count"]), _format_pgvector(vec_768), now,
+                        ),
+                    )
+                else:
+                    cur.execute(
+                        """
+                        INSERT INTO document_chunks (
+                            id, doc_id, user_id, user_mode, doc_title, page_number,
+                            section_header, chunk_index, content, token_count,
+                            embedding_json, embedding_dim, created_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            ch["id"],
+                            doc_id,
+                            user_id,
+                            ch["user_mode"],
+                            ch["doc_title"],
+                            int(ch["page_number"]),
+                            ch["section_header"],
+                            int(ch["chunk_index"]),
+                            ch["content"],
+                            int(ch["token_count"]),
+                            json.dumps(emb),
+                            len(emb),
+                            now,
+                        ),
+                    )
             conn.commit()
         return len(chunks)
 
@@ -364,9 +504,43 @@ class SaralMultiTenantDB:
             results: List[Dict[str, Any]] = []
             for r in rows:
                 d = dict(r)
-                d["embedding"] = json.loads(d.pop("embedding_json") or "[]")
+                if self.is_postgres:
+                    d["embedding"] = _parse_pgvector(d.get("embedding"))
+                else:
+                    d["embedding"] = json.loads(d.pop("embedding_json") or "[]")
                 results.append(d)
             return results
+
+    def vector_search_user_chunks(
+        self,
+        user_id: str,
+        query_embedding: List[float],
+        top_k: int = 20,
+        doc_ids: Optional[List[str]] = None,
+    ) -> Optional[List[Dict[str, Any]]]:
+        """Executes native pgvector HNSW cosine search with strict WHERE user_id pre-filtering when on Postgres."""
+        if not self.is_postgres or not query_embedding:
+            return None
+        vec_lit = _format_pgvector((list(query_embedding) + [0.0] * 768)[:768])
+        with self._connect() as conn:
+            if doc_ids:
+                placeholders = ",".join("?" for _ in doc_ids)
+                sql = (
+                    f"SELECT id, doc_id, user_id, user_mode, doc_title, page_number, section_header, "
+                    f"chunk_index, content, token_count, 1 - (embedding <=> ?::vector) AS dense_sim "
+                    f"FROM document_chunks WHERE user_id = ? AND doc_id IN ({placeholders}) "
+                    f"ORDER BY embedding <=> ?::vector LIMIT ?"
+                )
+                rows = conn.execute(sql, [vec_lit, user_id, *doc_ids, vec_lit, int(top_k)]).fetchall()
+            else:
+                sql = (
+                    "SELECT id, doc_id, user_id, user_mode, doc_title, page_number, section_header, "
+                    "chunk_index, content, token_count, 1 - (embedding <=> ?::vector) AS dense_sim "
+                    "FROM document_chunks WHERE user_id = ? "
+                    "ORDER BY embedding <=> ?::vector LIMIT ?"
+                )
+                rows = conn.execute(sql, [vec_lit, user_id, vec_lit, int(top_k)]).fetchall()
+            return [dict(r) for r in rows]
 
     def get_user_chunk(self, chunk_id: str, doc_id: str, user_id: str) -> Optional[Dict[str, Any]]:
         with self._connect() as conn:
@@ -435,24 +609,38 @@ class SaralMultiTenantDB:
         msg_id = f"msg_{uuid.uuid4().hex[:16]}"
         now = _utc_now()
         with self._connect() as conn:
-            conn.execute(
-                """
-                INSERT INTO chat_messages (
-                    id, session_id, user_id, role, content,
-                    cited_chunk_ids_json, citations_json, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    msg_id,
-                    session_id,
-                    user_id,
-                    role,
-                    content,
-                    json.dumps(cited_chunk_ids or []),
-                    json.dumps(citations or []),
-                    now,
-                ),
-            )
+            if self.is_postgres:
+                conn.execute(
+                    """
+                    INSERT INTO chat_messages (
+                        id, session_id, user_id, role, content,
+                        cited_chunk_ids, citations, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?::jsonb, ?::jsonb, ?)
+                    """,
+                    (
+                        msg_id, session_id, user_id, role, content,
+                        json.dumps(cited_chunk_ids or []), json.dumps(citations or []), now,
+                    ),
+                )
+            else:
+                conn.execute(
+                    """
+                    INSERT INTO chat_messages (
+                        id, session_id, user_id, role, content,
+                        cited_chunk_ids_json, citations_json, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        msg_id,
+                        session_id,
+                        user_id,
+                        role,
+                        content,
+                        json.dumps(cited_chunk_ids or []),
+                        json.dumps(citations or []),
+                        now,
+                    ),
+                )
             conn.execute(
                 "UPDATE chat_sessions SET updated_at = ? WHERE id = ? AND user_id = ?",
                 (now, session_id, user_id),
@@ -483,7 +671,13 @@ class SaralMultiTenantDB:
             out: List[Dict[str, Any]] = []
             for r in rows:
                 d = dict(r)
-                d["cited_chunk_ids"] = json.loads(d.pop("cited_chunk_ids_json") or "[]")
-                d["citations"] = json.loads(d.pop("citations_json") or "[]")
+                if self.is_postgres:
+                    cids = d.get("cited_chunk_ids")
+                    cits = d.get("citations")
+                    d["cited_chunk_ids"] = cids if isinstance(cids, list) else json.loads(cids or "[]")
+                    d["citations"] = cits if isinstance(cits, list) else json.loads(cits or "[]")
+                else:
+                    d["cited_chunk_ids"] = json.loads(d.pop("cited_chunk_ids_json") or "[]")
+                    d["citations"] = json.loads(d.pop("citations_json") or "[]")
                 out.append(d)
             return out
